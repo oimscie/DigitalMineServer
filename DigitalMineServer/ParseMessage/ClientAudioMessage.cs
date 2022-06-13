@@ -24,7 +24,7 @@ namespace DigitalMineServer.ParseMessage
                 {
                     case "audio":
                         SendMessage(new REP9101().R9101(orderItem), orderItem[1]);
-                        Session.Sim = orderItem[1];
+                        Session.Sim = orderItem[10];
                         break;
                     case "audioControl":
                         SendMessage(new REP9102().R9102(orderItem), orderItem[1]);
