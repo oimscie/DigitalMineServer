@@ -17,28 +17,32 @@ using System.Threading;
 
 namespace DigitalMineServer.ParseMessage
 {
+    //用户端数据处理软件上传文件
     class FileMessage
     {
         private readonly MySqlHelper mysql = new MySqlHelper();
         private readonly MD5 md5 = MD5.Create();
+        //文件真实路径
         private readonly string FilePath = ConfigurationManager.AppSettings["FilePath"];
+        //文件对外虚拟路径
         private readonly string VritualPath = ConfigurationManager.AppSettings["VritualPath"];
         public void ParseOrder(FileSession Session, byte[] buffer)
         {
+            //判断是否接受了下位机上传的文件信息
             if (!Session.HasHeader)
             {
                 string[] info = Encoding.UTF8.GetString(buffer).Split('!');
                 Session.Company = info[0];
                 Session.FileName = info[1];
                 Session.md5Name = GetMd5(info[1].Split('.')[0]);
-                Session.FilePath = FilePath + implement.Util.GetChsSpell(info[0]);
+                Session.RealFilePath = FilePath + implement.Util.GetChsSpell(info[0]);
                 Session.VritualPath = VritualPath + implement.Util.GetChsSpell(info[0])+'/';
                 Session.TotalSize = int.Parse(info[2]);
                 Session.ReceSize = 0;
                 Session.FileType = "pic";
-                if (implement.Util.DirExit(Session.FilePath, true))
+                if (implement.Util.DirExit(Session.RealFilePath, true))
                 {
-                    Session.fs = implement.Util.FileCreat(Session.FilePath + '/' + Session.md5Name +".jpg") ;
+                    Session.fs = implement.Util.FileCreat(Session.RealFilePath + '/' + Session.md5Name +".jpg") ;
                     Session.HasHeader = true;
                 }
                 else
@@ -48,8 +52,11 @@ namespace DigitalMineServer.ParseMessage
             }
             else
             {
+                //文件数据流暂存
                 Session.FileByteList.Add(buffer);
+                //更改接收体积
                 Session.ReceSize += buffer.Length;
+                //检查文件体积与已经接收的体积
                 if (Session.ReceSize == Session.TotalSize)
                 {
                     if (Session.fs != null)
@@ -61,8 +68,11 @@ namespace DigitalMineServer.ParseMessage
                                 Session.fs.Write(iten, 0, iten.Length);
                             }
                             string md5Name = Session.md5Name + ".jpg";
-                            string path = Session.FilePath + "/" + md5Name;
+                            //真实完整路径
+                            string path = Session.RealFilePath + "/" + md5Name;
+                            //对外虚拟完整路径
                             string vritualPath = Session.VritualPath + md5Name;
+                            //更新信息写入数据库
                             string sql = "select COUNT(ID) as Count from list_monitor_file where COMPANY='" + Session.Company + "' and FILENAME='" + Session.FileName + "'";
                             if (mysql.GetCount(sql) == 0)
                             {
@@ -92,7 +102,7 @@ namespace DigitalMineServer.ParseMessage
                         catch (Exception e)
                         {
                             LogHelper.WriteLog("文件写入错误", e);
-                            File.Delete(Session.FilePath + "/" + Session.FileName);
+                            File.Delete(Session.RealFilePath + "/" + Session.FileName);
                         }
                         finally
                         {

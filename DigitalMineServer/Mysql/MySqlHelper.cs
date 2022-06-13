@@ -52,6 +52,7 @@ namespace DigitalMineServer.Mysql
         {
             Conn.Open();
         }
+        //检查连接头并打开，打开返回true，关闭未false
         public bool CheckConn()
         {
             if (Conn.State == ConnectionState.Closed)
@@ -86,7 +87,7 @@ namespace DigitalMineServer.Mysql
             return true;
         }
         /// <summary>
-        /// select（多条返回）
+        /// 多行查询，查询失败或结果为空均返回null
         /// </summary>
         /// <param name="sql">SQL语句</param>
         /// <param name="fieldName">要查询的数据字段名称集合</param>
@@ -127,10 +128,10 @@ namespace DigitalMineServer.Mysql
         }
 
         /// <summary>
-        /// select（多条返回）
+        /// datagridView数据源更新，查询失败或结果为空均返回null
         /// </summary>
         /// <param name="sql">SQL语句</param>
-        /// <param name="fieldName">要查询的数据字段名称集合</param>
+        /// <param name="fieldName">List<vehicleStateEntity>datagridView数据源</param>
         /// <returns>List<vehicleStateEntity></returns>
         public List<vehicleStateEntity> MultipleSelect(string sql)
         {
@@ -175,12 +176,12 @@ namespace DigitalMineServer.Mysql
             }
         }
         /// <summary>
-        ///  select（多条返回）
+        /// 单字段多行查询，查询失败或结果为空均返回null
         /// </summary>
         /// <param name="sql">SQL语句</param>
         /// <param name="fieldName">要查询的数据字段名称</param>
         /// <returns>ArrayList</returns>
-        public ArrayList MultipleSelect(string sql, string fieldName, string none)
+        public ArrayList MultipleSelect(string sql, string fieldName)
         {
             if (!CheckConn()) { return null; }
             Command.CommandText = sql;
@@ -207,7 +208,7 @@ namespace DigitalMineServer.Mysql
             }
         }
         /// <summary>
-        /// select（单条返回）
+        /// 单字段多行查询，查询失败或结果为空均返回null
         /// </summary>
         /// <param name="sql">SQL语句</param>
         /// <param name="fieldName">要查询的数据字段名称</param>

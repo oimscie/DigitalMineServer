@@ -128,19 +128,21 @@ namespace DigitalMineServer
                     PB0200 bodyinfo = value.Item2;
                     string Sim = value.Item1;
                     DateTime time = bodyinfo.LocationTime.BCDToTimeFormat();
+                    //检查终端数据的时间是否在合理范围，终端可能上传错误时间
                     if ((time - DateTime.Now).TotalMinutes > 10)
                     {
                         implement.Util.AppendText(JtServerForm.JtForm.infoBox, Sim + "--时间异常--" + time.ToString());
                         continue;
                     }
+                    //检查车辆信息List中是否存在此车辆，不存在就返回
                     if (!Resource.VehicleList.ContainsKey(Sim))
                     {
                         implement.Util.AppendText(JtServerForm.JtForm.infoBox, Sim + "--未知车辆--" + time.ToString());
                         continue;
                     }
-                    //坐标转换
+                    //经纬度转换2000坐标
                     List<double> xy = CTransform.WGS84ToXY(Convert.ToDouble(bodyinfo.Latitude) / 1000000, Convert.ToDouble(bodyinfo.Longitude) / 1000000, 3);
-                    //获取车辆信息
+                    //根据sim获取车辆信息
                     Resource.VehicleList.TryGetValue(Sim, out ValueTuple<string, string, string, string, string, string> vehicleInfo);
                     string sql = null;
                     byte[] state = BitConvert.UInt32ToBit(bodyinfo.StatusIndication);

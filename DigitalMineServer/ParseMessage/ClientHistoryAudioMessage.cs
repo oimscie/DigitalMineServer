@@ -9,6 +9,7 @@ using DigitalMineServer.PacketReponse;
 
 namespace DigitalMineServer.ParseMessage
 {
+    //客户端历史音频连接，目前未启用
     class ClientHistoryAudioMessage
     {
         private readonly byte[] error = Encoding.UTF8.GetBytes("未发现设备");

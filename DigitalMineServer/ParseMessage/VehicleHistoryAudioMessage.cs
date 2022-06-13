@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.Linq;
 namespace DigitalMineServer.ParseMessage
 {
+    //终端历史音频，目前未启用
     class VehicleHistoryAudioMessage
     {
         public void Parse(VehicleHistoryAudioSession session,byte[] buffer)

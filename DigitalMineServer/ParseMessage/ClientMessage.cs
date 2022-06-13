@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 namespace DigitalMineServer.ParseMessage
 {
+    //客户端消息
     class ClientMessage
     {
         public void ParseOrder(ClientSession session,byte[] buffer)
@@ -14,9 +15,11 @@ namespace DigitalMineServer.ParseMessage
             string[] orderItem = Encoding.UTF8.GetString(buffer).Trim('$').Split('!');
             switch (orderItem[0])
             {
+                //客户所登录
                 case "login":
                     session.Uuid = orderItem[1];
                     break;
+                //心跳
                 case "heart":
                     break;
                 default:
