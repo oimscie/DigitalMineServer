@@ -190,7 +190,7 @@ namespace DigitalMineServer
         }
         private void getCompany() {
             string sql = "select distinct Company from list_user";
-            ArrayList data=MySqlHelper.MultipleSelect(sql, "Company","");
+            ArrayList data=MySqlHelper.MultipleSelect(sql, "Company");
             comboBox1.DataSource = data;
         }
 
