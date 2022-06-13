@@ -1,0 +1,150 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{94C8025D-4D31-42FF-82BF-5842524B3641}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>JtLibrary</RootNamespace>
+    <AssemblyName>JtLibrary</AssemblyName>
+    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <Deterministic>true</Deterministic>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="log4net, Version=1.2.13.0, Culture=neutral, PublicKeyToken=669e0ddf0bb1aa2a, processorArchitecture=MSIL">
+      <HintPath>..\packages\log4net.2.0.3\lib\net40-full\log4net.dll</HintPath>
+    </Reference>
+    <Reference Include="SuperSocket.Common, Version=1.6.6.1, Culture=neutral, PublicKeyToken=6c80000676988ebb, processorArchitecture=MSIL">
+      <HintPath>..\packages\SuperSocket.1.6.6.1\lib\net45\SuperSocket.Common.dll</HintPath>
+    </Reference>
+    <Reference Include="SuperSocket.Facility, Version=1.6.6.1, Culture=neutral, PublicKeyToken=6c80000676988ebb, processorArchitecture=MSIL">
+      <HintPath>..\packages\SuperSocket.1.6.6.1\lib\net45\SuperSocket.Facility.dll</HintPath>
+    </Reference>
+    <Reference Include="SuperSocket.SocketBase, Version=1.6.6.1, Culture=neutral, PublicKeyToken=6c80000676988ebb, processorArchitecture=MSIL">
+      <HintPath>..\packages\SuperSocket.1.6.6.1\lib\net45\SuperSocket.SocketBase.dll</HintPath>
+    </Reference>
+    <Reference Include="SuperSocket.WebSocket, Version=1.6.6.1, Culture=neutral, PublicKeyToken=6c80000676988ebb, processorArchitecture=MSIL">
+      <HintPath>..\packages\SuperSocket.WebSocket.1.6.6.1\lib\net45\SuperSocket.WebSocket.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Configuration" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Jt1078\Request\REQ_9101.cs" />
+    <Compile Include="Jt1078\Request\REQ_9202.cs" />
+    <Compile Include="Jt1078\Request\REQ_9102.cs" />
+    <Compile Include="Jt1078\Request\REQ_9201.cs" />
+    <Compile Include="Jt808\Reponse\REP_0001.cs" />
+    <Compile Include="Jt808\Reponse\REP_0100.cs" />
+    <Compile Include="Jt808\Reponse\REP_0102.cs" />
+    <Compile Include="Jt808\Reponse\REP_0104.cs" />
+    <Compile Include="Jt808\Reponse\REP_0107.cs" />
+    <Compile Include="Jt808\Reponse\REP_0108.cs" />
+    <Compile Include="Jt808\Reponse\REP_0200.cs" />
+    <Compile Include="Jt808\Reponse\REP_0201.cs" />
+    <Compile Include="Jt808\Reponse\REP_0301.cs" />
+    <Compile Include="Jt808\Reponse\REP_0302.cs" />
+    <Compile Include="Jt808\Reponse\REP_0303.cs" />
+    <Compile Include="Jt808\Reponse\REP_0500.cs" />
+    <Compile Include="Jt808\Reponse\REP_0700.cs" />
+    <Compile Include="Jt808\Reponse\REP_0701.cs" />
+    <Compile Include="Jt808\Reponse\REP_0702.cs" />
+    <Compile Include="Jt808\Reponse\REP_0704.cs" />
+    <Compile Include="Jt808\Reponse\REP_0705.cs" />
+    <Compile Include="Jt808\Reponse\REP_0800.cs" />
+    <Compile Include="Jt808\Reponse\REP_0801.cs" />
+    <Compile Include="Jt808\Reponse\REP_0802.cs" />
+    <Compile Include="Jt808\Reponse\REP_0805.cs" />
+    <Compile Include="Jt808\Reponse\REP_0900.cs" />
+    <Compile Include="Jt808\Reponse\REP_0901.cs" />
+    <Compile Include="Jt808\Reponse\REP_0A00.cs" />
+    <Compile Include="Jt808\Request\REQ_8001.cs" />
+    <Compile Include="Jt808\Request\REQ_8003.cs" />
+    <Compile Include="Jt808\Request\REQ_8100.cs" />
+    <Compile Include="Jt808\Request\REQ_8103.cs" />
+    <Compile Include="Jt808\Request\REQ_8105.cs" />
+    <Compile Include="Jt808\Request\REQ_8106.cs" />
+    <Compile Include="Jt808\Request\REQ_8108.cs" />
+    <Compile Include="Jt808\Request\REQ_8202.cs" />
+    <Compile Include="Jt808\Request\REQ_8203.cs" />
+    <Compile Include="Jt808\Request\REQ_8300.cs" />
+    <Compile Include="Jt808\Request\REQ_8301.cs" />
+    <Compile Include="Jt808\Request\REQ_8302.cs" />
+    <Compile Include="Jt808\Request\REQ_8303.cs" />
+    <Compile Include="Jt808\Request\REQ_8304.cs" />
+    <Compile Include="Jt808\Request\REQ_8400.cs" />
+    <Compile Include="Jt808\Request\REQ_8401.cs" />
+    <Compile Include="Jt808\Request\REQ_8500.cs" />
+    <Compile Include="Jt808\Request\REQ_8600.cs" />
+    <Compile Include="Jt808\Request\REQ_8601.cs" />
+    <Compile Include="Jt808\Request\REQ_8602.cs" />
+    <Compile Include="Jt808\Request\REQ_8603.cs" />
+    <Compile Include="Jt808\Request\REQ_8604.cs" />
+    <Compile Include="Jt808\Request\REQ_8605.cs" />
+    <Compile Include="Jt808\Request\REQ_8606.cs" />
+    <Compile Include="Jt808\Request\REQ_8607.cs" />
+    <Compile Include="Jt808\Request\REQ_8700.cs" />
+    <Compile Include="Jt808\Request\REQ_8701.cs" />
+    <Compile Include="Jt808\Request\REQ_8800.cs" />
+    <Compile Include="Jt808\Request\REQ_8801.cs" />
+    <Compile Include="Jt808\Request\REQ_8802.cs" />
+    <Compile Include="Jt808\Request\REQ_8803.cs" />
+    <Compile Include="Jt808\Request\REQ_8804.cs" />
+    <Compile Include="Jt808\Request\REQ_8805.cs" />
+    <Compile Include="Jt808\Request\REQ_8900.cs" />
+    <Compile Include="Jt808\Request\REQ_8A00.cs" />
+    <Compile Include="Nactive\Api.cs" />
+    <Compile Include="PacketBody\Jt1078PacketBody.cs" />
+    <Compile Include="PacketBody\Jt808PacketBody.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Providers\IPacketProvider.cs" />
+    <Compile Include="Providers\PacketProvider.cs" />
+    <Compile Include="Providers\ReqPacketFrom.cs" />
+    <Compile Include="Providers\RspPacketFrom.cs" />
+    <Compile Include="Structures\PacketCmd.cs" />
+    <Compile Include="Structures\PacketFrom.cs" />
+    <Compile Include="Structures\PacketMessage.cs" />
+    <Compile Include="Structures\ReplyCode.cs" />
+    <Compile Include="Structures\WarnType.cs" />
+    <Compile Include="Utils\BitConvert.cs" />
+    <Compile Include="Utils\CoordinateTransform.cs" />
+    <Compile Include="Utils\Extension.cs" />
+    <Compile Include="Utils\Polygon.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Jt1078\Reponse\" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+</Project>

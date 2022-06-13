@@ -1,0 +1,260 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{CA6258B1-9652-46E8-8786-634EEA818AF7}</ProjectGuid>
+    <OutputType>WinExe</OutputType>
+    <RootNamespace>DigitalMineServer</RootNamespace>
+    <AssemblyName>DigitalMineServer</AssemblyName>
+    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <Deterministic>true</Deterministic>
+    <TargetFrameworkProfile />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="BouncyCastle.Crypto, Version=1.8.5.0, Culture=neutral, PublicKeyToken=0e99375e54769942">
+      <HintPath>..\packages\BouncyCastle.1.8.5\lib\BouncyCastle.Crypto.dll</HintPath>
+    </Reference>
+    <Reference Include="Google.Protobuf, Version=3.14.0.0, Culture=neutral, PublicKeyToken=a7d26565bac4d604, processorArchitecture=MSIL">
+      <HintPath>..\packages\Google.Protobuf.3.14.0\lib\net45\Google.Protobuf.dll</HintPath>
+    </Reference>
+    <Reference Include="K4os.Compression.LZ4, Version=1.2.6.0, Culture=neutral, PublicKeyToken=2186fa9121ef231d, processorArchitecture=MSIL">
+      <HintPath>..\packages\K4os.Compression.LZ4.1.2.6\lib\net45\K4os.Compression.LZ4.dll</HintPath>
+    </Reference>
+    <Reference Include="K4os.Compression.LZ4.Streams, Version=1.2.6.0, Culture=neutral, PublicKeyToken=2186fa9121ef231d, processorArchitecture=MSIL">
+      <HintPath>..\packages\K4os.Compression.LZ4.Streams.1.2.6\lib\net45\K4os.Compression.LZ4.Streams.dll</HintPath>
+    </Reference>
+    <Reference Include="K4os.Hash.xxHash, Version=1.0.6.0, Culture=neutral, PublicKeyToken=32cd54395057cec3, processorArchitecture=MSIL">
+      <HintPath>..\packages\K4os.Hash.xxHash.1.0.6\lib\net45\K4os.Hash.xxHash.dll</HintPath>
+    </Reference>
+    <Reference Include="log4net, Version=1.2.13.0, Culture=neutral, PublicKeyToken=669e0ddf0bb1aa2a, processorArchitecture=MSIL">
+      <HintPath>..\packages\log4net.2.0.3\lib\net40-full\log4net.dll</HintPath>
+    </Reference>
+    <Reference Include="MySql.Data, Version=8.0.28.0, Culture=neutral, PublicKeyToken=c5687fc88969c44d, processorArchitecture=MSIL">
+      <HintPath>..\packages\MySql.Data.8.0.28\lib\net452\MySql.Data.dll</HintPath>
+    </Reference>
+    <Reference Include="SuperSocket.Common, Version=1.6.6.1, Culture=neutral, PublicKeyToken=6c80000676988ebb, processorArchitecture=MSIL">
+      <HintPath>..\packages\SuperSocket.1.6.6.1\lib\net45\SuperSocket.Common.dll</HintPath>
+    </Reference>
+    <Reference Include="SuperSocket.Facility, Version=1.6.6.1, Culture=neutral, PublicKeyToken=6c80000676988ebb, processorArchitecture=MSIL">
+      <HintPath>..\packages\SuperSocket.1.6.6.1\lib\net45\SuperSocket.Facility.dll</HintPath>
+    </Reference>
+    <Reference Include="SuperSocket.SocketBase, Version=1.6.6.1, Culture=neutral, PublicKeyToken=6c80000676988ebb, processorArchitecture=MSIL">
+      <HintPath>..\packages\SuperSocket.1.6.6.1\lib\net45\SuperSocket.SocketBase.dll</HintPath>
+    </Reference>
+    <Reference Include="SuperSocket.SocketEngine, Version=1.6.6.1, Culture=neutral, PublicKeyToken=6c80000676988ebb, processorArchitecture=MSIL">
+      <HintPath>..\packages\SuperSocket.Engine.1.6.6.1\lib\net45\SuperSocket.SocketEngine.dll</HintPath>
+    </Reference>
+    <Reference Include="SuperSocket.SocketService, Version=1.6.6.1, Culture=neutral, PublicKeyToken=6c80000676988ebb, processorArchitecture=MSIL">
+      <HintPath>..\packages\SuperSocket.Engine.1.6.6.1\lib\net45\SuperSocket.SocketService.exe</HintPath>
+    </Reference>
+    <Reference Include="SuperSocket.WebSocket, Version=1.6.6.1, Culture=neutral, PublicKeyToken=6c80000676988ebb, processorArchitecture=MSIL">
+      <HintPath>..\packages\SuperSocket.WebSocket.1.6.6.1\lib\net45\SuperSocket.WebSocket.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Buffers, Version=4.0.3.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Buffers.4.5.1\lib\netstandard1.1\System.Buffers.dll</HintPath>
+    </Reference>
+    <Reference Include="System.ComponentModel" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
+    <Reference Include="System.Configuration" />
+    <Reference Include="System.Configuration.Install" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Management" />
+    <Reference Include="System.Memory, Version=4.0.1.1, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Memory.4.5.4\lib\netstandard1.1\System.Memory.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Runtime.CompilerServices.Unsafe, Version=5.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Runtime.CompilerServices.Unsafe.5.0.0\lib\net45\System.Runtime.CompilerServices.Unsafe.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Transactions" />
+    <Reference Include="System.ValueTuple, Version=4.0.3.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.ValueTuple.4.5.0\lib\netstandard1.0\System.ValueTuple.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Deployment" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
+    <Reference Include="Ubiety.Dns.Core, Version=2.2.1.0, Culture=neutral, PublicKeyToken=c5687fc88969c44d, processorArchitecture=MSIL">
+      <HintPath>..\packages\MySql.Data.8.0.28\lib\net452\Ubiety.Dns.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="ZstdNet, Version=1.4.5.0, Culture=neutral, PublicKeyToken=c5687fc88969c44d, processorArchitecture=MSIL">
+      <HintPath>..\packages\MySql.Data.8.0.28\lib\net452\ZstdNet.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="JTServerWindow.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="JTServerWindow.Designer.cs">
+      <DependentUpon>JTServerWindow.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Mysql\MySqlHelper.cs" />
+    <Compile Include="Mysql\vehicleStateEntity.cs" />
+    <Compile Include="PacketReponse\REP0002.cs" />
+    <Compile Include="PacketReponse\REP0100.cs" />
+    <Compile Include="PacketReponse\REP0102.cs" />
+    <Compile Include="PacketReponse\REP0200.cs" />
+    <Compile Include="PacketReponse\REP0702.cs" />
+    <Compile Include="PacketReponse\REP0704.cs" />
+    <Compile Include="PacketReponse\REP8600.cs" />
+    <Compile Include="PacketReponse\REP8601.cs" />
+    <Compile Include="PacketReponse\REP8605.cs" />
+    <Compile Include="PacketReponse\REP8604.cs" />
+    <Compile Include="PacketReponse\REP8300.cs" />
+    <Compile Include="PacketReponse\REP9101.cs" />
+    <Compile Include="PacketReponse\REP9202.cs" />
+    <Compile Include="PacketReponse\REP9102.cs" />
+    <Compile Include="PacketReponse\REP9201.cs" />
+    <Compile Include="PacketReponse\REPDefault.cs" />
+    <Compile Include="PacketReponse\VehicleVideo.cs" />
+    <Compile Include="ParseMessage\FileMessage.cs" />
+    <Compile Include="ParseMessage\MontorMessage.cs" />
+    <Compile Include="ParseMessage\DataMessage.cs" />
+    <Compile Include="ParseMessage\ClientAudioMessage.cs" />
+    <Compile Include="ParseMessage\ClientHistoryVideoMessage.cs" />
+    <Compile Include="ParseMessage\ClientHistoryAudioMessage.cs" />
+    <Compile Include="ParseMessage\ClientVideoMessage.cs" />
+    <Compile Include="ParseMessage\Jt808Message.cs" />
+    <Compile Include="ParseMessage\ClientMessage.cs" />
+    <Compile Include="ParseMessage\VehicleHistoryAudioMessage.cs" />
+    <Compile Include="ParseMessage\VehicleAudioMessage.cs" />
+    <Compile Include="ParseMessage\VehicleHistoryVideoMessage.cs" />
+    <Compile Include="ParseMessage\VehicleVideoMessage.cs" />
+    <Compile Include="SuperSocket\Command\FileCommand.cs" />
+    <Compile Include="SuperSocket\Command\MontorCommand.cs" />
+    <Compile Include="SuperSocket\Command\DataCommand.cs" />
+    <Compile Include="SuperSocket\Command\ClientAudioCommand.cs" />
+    <Compile Include="SuperSocket\Command\ClientHistoryVideoCommand.cs" />
+    <Compile Include="SuperSocket\Command\ClientHistoryAudioCommand.cs" />
+    <Compile Include="SuperSocket\Command\ClientVideoCommand.cs" />
+    <Compile Include="SuperSocket\Command\VehicleHistoryAudioCommand.cs" />
+    <Compile Include="SuperSocket\Command\VehicleAudioCommand.cs" />
+    <Compile Include="SuperSocket\Command\VehicleHistoryVideoCommand.cs" />
+    <Compile Include="SuperSocket\Command\VehicleVideoCommand.cs" />
+    <Compile Include="SuperSocket\Command\ClientCommand.cs" />
+    <Compile Include="SuperSocket\Command\WebOrder.cs" />
+    <Compile Include="SuperSocket\ReceiveFilter\FileReceiveFilter.cs" />
+    <Compile Include="SuperSocket\ReceiveFilter\MontorReceiveFilter.cs" />
+    <Compile Include="SuperSocket\ReceiveFilter\DataReceiveFilter.cs" />
+    <Compile Include="SuperSocket\ReceiveFilter\ClientAudioReceiveFilter.cs" />
+    <Compile Include="SuperSocket\ReceiveFilter\ClientHistoryAudioReceiveFilter.cs" />
+    <Compile Include="SuperSocket\ReceiveFilter\ClientHistoryVideoReceiveFilter.cs" />
+    <Compile Include="SuperSocket\ReceiveFilter\ClientVideoReceiveFilter.cs" />
+    <Compile Include="SuperSocket\ReceiveFilter\ClientReceiveFilter.cs" />
+    <Compile Include="SuperSocket\ReceiveFilter\VehicleHistoryAudioReceiveFilter.cs" />
+    <Compile Include="SuperSocket\ReceiveFilter\VehicleAudioReceiveFilter.cs" />
+    <Compile Include="SuperSocket\ReceiveFilter\VehicleHistoryVideoReceiveFilter.cs" />
+    <Compile Include="SuperSocket\ReceiveFilter\VehicleVideoReceiveFilter.cs" />
+    <Compile Include="SuperSocket\SocketServer\ClientAudioServer.cs" />
+    <Compile Include="SuperSocket\SocketServer\ClientHistoryAudioServer.cs" />
+    <Compile Include="SuperSocket\SocketServer\ClientHistoryVideoServer.cs" />
+    <Compile Include="SuperSocket\SocketServer\ClientVideoServer.cs" />
+    <Compile Include="SuperSocket\SocketServer\FileServer.cs" />
+    <Compile Include="SuperSocket\SocketServer\MontorServer.cs" />
+    <Compile Include="SuperSocket\SocketServer\DataServer.cs" />
+    <Compile Include="SuperSocket\SocketServer\VehicleHistoryAudioServer.cs" />
+    <Compile Include="SuperSocket\SocketServer\VehicleAudioServer.cs" />
+    <Compile Include="SuperSocket\SocketServer\VehicleHistoryVideoServer.cs" />
+    <Compile Include="SuperSocket\SocketServer\VehicleVideoServer.cs" />
+    <Compile Include="SuperSocket\SocketServer\ClientServer.cs" />
+    <Compile Include="SuperSocket\SocketServer\WebSocketServer.cs" />
+    <Compile Include="SuperSocket\SocketSession\FileSession.cs" />
+    <Compile Include="SuperSocket\SocketSession\ClientAudioSession.cs" />
+    <Compile Include="SuperSocket\SocketSession\ClientHistoryAudioSession.cs" />
+    <Compile Include="SuperSocket\SocketSession\ClientHistoryVideoSession.cs" />
+    <Compile Include="SuperSocket\SocketSession\ClientVideoSession.cs" />
+    <Compile Include="SuperSocket\SocketSession\ClientSession.cs" />
+    <Compile Include="SuperSocket\SocketSession\MontorSession.cs" />
+    <Compile Include="SuperSocket\SocketSession\DataSession.cs" />
+    <Compile Include="SuperSocket\SocketSession\VehicleHistoryAudioSession.cs" />
+    <Compile Include="SuperSocket\SocketSession\VehicleAudioSession.cs" />
+    <Compile Include="SuperSocket\SocketSession\VehicleHistoryVideoSession.cs" />
+    <Compile Include="SuperSocket\SocketSession\VehicleVideoSession.cs" />
+    <Compile Include="SuperSocket\SocketSession\WebSession.cs" />
+    <Compile Include="Util\Util.cs" />
+    <Compile Include="Program.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Static\SocketMap.cs" />
+    <Compile Include="SuperSocket\ReceiveFilter\Jt808ReceiveFilter.cs" />
+    <Compile Include="SuperSocket\Command\Jt808Command.cs" />
+    <Compile Include="SuperSocket\SocketServer\Jt808Server.cs" />
+    <Compile Include="SuperSocket\SocketSession\Jt808Session.cs" />
+    <Compile Include="Util\LogHelper.cs" />
+    <Compile Include="Util\Transform\CS2000ToWGS84.cs" />
+    <Compile Include="Util\Transform\WGS84ToCS2000.cs" />
+    <Compile Include="InfoInit\Vehicle.cs" />
+    <EmbeddedResource Include="JTServerWindow.resx">
+      <DependentUpon>JTServerWindow.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Resources.resx</DependentUpon>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <None Include="Config\log4net.config">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Config\log4net.unix.config">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="packages.config" />
+    <None Include="Properties\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
+    <Compile Include="Properties\Settings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Settings.settings</DependentUpon>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+    </Compile>
+    <None Include="supersocket.cmd" />
+    <None Include="supersocket.sh" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="App.config">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Jt808Library\JtLibrary.csproj">
+      <Project>{94c8025d-4d31-42ff-82bf-5842524b3641}</Project>
+      <Name>JtLibrary</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <WCFMetadata Include="Connected Services\" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+</Project>

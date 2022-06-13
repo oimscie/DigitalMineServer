@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.30011.22
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DigitalMineServer", "DigitalMineServer\DigitalMineServer.csproj", "{CA6258B1-9652-46E8-8786-634EEA818AF7}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JtLibrary", "Jt808Library\JtLibrary.csproj", "{94C8025D-4D31-42FF-82BF-5842524B3641}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{CA6258B1-9652-46E8-8786-634EEA818AF7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CA6258B1-9652-46E8-8786-634EEA818AF7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CA6258B1-9652-46E8-8786-634EEA818AF7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CA6258B1-9652-46E8-8786-634EEA818AF7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{94C8025D-4D31-42FF-82BF-5842524B3641}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{94C8025D-4D31-42FF-82BF-5842524B3641}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{94C8025D-4D31-42FF-82BF-5842524B3641}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{94C8025D-4D31-42FF-82BF-5842524B3641}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {AC3D4AD9-43B3-4BB7-9225-028B6EF81B1D}
+	EndGlobalSection
+EndGlobal
