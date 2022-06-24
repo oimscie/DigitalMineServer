@@ -12,6 +12,7 @@ namespace DigitalMineServer.Static
     {
         public Resource()
         {
+            isVehicleUpdate = false;
 
             OriginalDataQueues = new ConcurrentQueue<(byte[], Jt808Session)>();
 
@@ -49,6 +50,8 @@ namespace DigitalMineServer.Static
         /// item6：司机
         /// </summary>
         public static ConcurrentDictionary<string, ValueTuple<string, string, string, string, string, string>> VehicleList;
+        //是否正在更新车辆信息
+        public static bool isVehicleUpdate;
         /// <summary>
         /// 禁止驶入围栏信息，sim为key
         /// item1:围栏名称

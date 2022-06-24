@@ -129,7 +129,7 @@ namespace DigitalMineServer
         /// </summary>
         public void CarInfoCheckTimers()
         {
-            VehicleInfo = new System.Timers.Timer(1000 * 60 * 1);
+            VehicleInfo = new System.Timers.Timer(1000 * 10 * 1);
             VehicleInfo.Elapsed += new ElapsedEventHandler(new Vehicle().VehicleInfo);
             VehicleInfo.AutoReset = true;
             VehicleInfo.Enabled = true;

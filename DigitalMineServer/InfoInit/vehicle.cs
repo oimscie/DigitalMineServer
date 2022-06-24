@@ -1,6 +1,7 @@
 ﻿using DigitalMineServer.implement;
 using DigitalMineServer.Mysql;
 using DigitalMineServer.Static;
+using DigitalMineServer.Util;
 using JtLibrary.Utils;
 using System;
 using System.Collections.Generic;
@@ -20,99 +21,137 @@ namespace DigitalMineServer.VehicleInfo
 
         public void VehicleInfo(object source, System.Timers.ElapsedEventArgs e)
         {
-           //车辆信息字段List(数据库ID，终端Sim，车辆类型，车辆限速值，归属公司，车辆编号，驾驶员)
-            List<string> fileName = new List<string> { "ID", "VEHICLE_SIM", "VEHICLE_TYPE", "VEHICLE_SPEED",  "COMPANY",  "VEHICLE_ID", "VEHICLE_DRIVER" };
-            //更新车辆信息
-            string sql = "select ID,VEHICLE_ID,VEHICLE_SIM,VEHICLE_TYPE,VEHICLE_SPEED,VEHICLE_DRIVER,COMPANY from list_vehicle";
-            List<Dictionary<string, string>> result = mySql.MultipleSelect(sql, fileName);
-            //临时信息存储，供围栏信息使用
-            Dictionary<string, ValueTuple<string, string, string>> temp = new Dictionary<string, (string, string, string)>();
-            //判断服务器返回的车辆信息是否为空，为空就清除车辆信息List
-            if (result != null)
+            try
             {
-                foreach (var item in result)
+                Resource.isVehicleUpdate = true;
+                //车辆信息字段List(数据库ID，终端Sim，车辆类型，车辆限速值，归属公司，车辆编号，驾驶员)
+                List<string> fileName = new List<string> { "ID", "VEHICLE_SIM", "VEHICLE_TYPE", "VEHICLE_SPEED", "COMPANY", "VEHICLE_ID", "VEHICLE_DRIVER" };
+                //更新车辆信息
+                string sql = "select ID,VEHICLE_ID,VEHICLE_SIM,VEHICLE_TYPE,VEHICLE_SPEED,VEHICLE_DRIVER,COMPANY from list_vehicle";
+                List<Dictionary<string, string>> result = mySql.MultipleSelect(sql, fileName);
+                //临时信息存储，供围栏信息使用
+                Dictionary<string, ValueTuple<string, string, string>> temp = new Dictionary<string, (string, string, string)>();
+                //判断服务器返回的车辆信息是否为空，为空就清除车辆信息List
+                if (result != null)
                 {
-                    item.TryGetValue("VEHICLE_SIM", out string sim);
-                    item.TryGetValue("ID", out string id);
-                    item.TryGetValue("VEHICLE_TYPE", out string type);
-                    item.TryGetValue("COMPANY", out string company);
-                    item.TryGetValue("VEHICLE_SPEED", out string speed);
-                    item.TryGetValue("VEHICLE_ID", out string vid);
-                    item.TryGetValue("VEHICLE_DRIVER", out string driver);
-                    temp.Add(sim, new ValueTuple<string, string, string>(type, vid, driver));
-                    //检查车辆信息List里是否存在此车辆，存在则更改，不存在则新增
-                    if (Resource.VehicleList.ContainsKey(sim))
+                    foreach (var item in result)
                     {
-                        Resource.VehicleList[sim] = new ValueTuple<string, string, string, string, string, string>(id, type, company, speed, vid, driver);
-                    }
-                    else
-                    {
-                        Resource.VehicleList.TryAdd(sim, new ValueTuple<string, string, string, string, string, string>(id, type, company, speed, vid, driver));
+                        item.TryGetValue("VEHICLE_SIM", out string sim);
+                        item.TryGetValue("ID", out string id);
+                        item.TryGetValue("VEHICLE_TYPE", out string type);
+                        item.TryGetValue("COMPANY", out string company);
+                        item.TryGetValue("VEHICLE_SPEED", out string speed);
+                        item.TryGetValue("VEHICLE_ID", out string vid);
+                        item.TryGetValue("VEHICLE_DRIVER", out string driver);
+                        temp.Add(sim, new ValueTuple<string, string, string>(type, vid, driver));
+                        //检查车辆信息List里是否存在此车辆，存在则更改，不存在则新增
+                        if (Resource.VehicleList.ContainsKey(sim))
+                        {
+                            Resource.VehicleList[sim] = new ValueTuple<string, string, string, string, string, string>(id, type, company, speed, vid, driver);
+                        }
+                        else
+                        {
+                            Resource.VehicleList.TryAdd(sim, new ValueTuple<string, string, string, string, string, string>(id, type, company, speed, vid, driver));
+                        }
                     }
                 }
-            }
-            else {
-                Resource.VehicleList.Clear();
-            }
-            //围栏信息字段List（终端SIM，经度，纬度，围栏名称，围栏类型，车辆归属公司）
-            fileName = new List<string> { "SIM", "LON", "LAT", "NAME", "TYPES", "COMPANY" };
-            sql = "select SIM,LON,LAT,NAME,TYPES,COMPANY from list_fence";
-            result = mySql.MultipleSelect(sql, fileName);
-            //判断服务器返回的信息是否为空，为空就清除车辆围栏List
-            if (result != null)
-            {
-                foreach (var item in result)
+                else
                 {
-                    item.TryGetValue("SIM", out string sim);
-                    item.TryGetValue("LON", out string lon);
-                    item.TryGetValue("LAT", out string lat);
-                    item.TryGetValue("NAME", out string name);
-                    item.TryGetValue("COMPANY", out string company);
-                    item.TryGetValue("TYPES", out string type);
-                    string driver = "未记录";
-                    string vid = "未记录";
-                    string vType = "未记录";
-                    if (temp.ContainsKey(sim))
+                    Resource.VehicleList.Clear();
+                }
+                //围栏信息字段List（终端SIM，经度，纬度，围栏名称，围栏类型，车辆归属公司）
+                fileName = new List<string> { "SIM", "X", "Y", "NAME", "TYPES", "COMPANY" };
+                sql = "select SIM,X,Y,NAME,TYPES,COMPANY from list_fence ORDER BY ID ";
+                result = mySql.MultipleSelect(sql, fileName);
+                //判断服务器返回的信息是否为空，为空就清除车辆围栏List
+                if (result != null)
+                {
+                    //禁止驶出围栏临时存储
+                    Dictionary<string, ValueTuple<string, string, string, string, string, List<Point>>> tempDicOut = new Dictionary<string, ValueTuple<string, string, string, string, string, List<Point>>>();
+                    //禁止驶入围栏临时存储
+                    Dictionary<string, ValueTuple<string, string, string, string, string, List<Point>>> tempDicIn = new Dictionary<string, ValueTuple<string, string, string, string, string, List<Point>>>();
+                    foreach (var item in result)
                     {
-                        vType = temp[sim].Item1;
-                        vid = temp[sim].Item2;
-                        driver = temp[sim].Item3;
+                        item.TryGetValue("SIM", out string sim);
+                        item.TryGetValue("X", out string x);
+                        item.TryGetValue("Y", out string y);
+                        item.TryGetValue("NAME", out string name);
+                        item.TryGetValue("COMPANY", out string company);
+                        item.TryGetValue("TYPES", out string type);
+                        string driver = "未记录";
+                        string vid = "未记录";
+                        string vType = "未记录";
+                        if (temp.ContainsKey(sim))
+                        {
+                            vType = temp[sim].Item1;
+                            vid = temp[sim].Item2;
+                            driver = temp[sim].Item3;
+                        }
+                        //判断围栏类型
+                        switch (type)
+                        {
+                            //禁止驶入围栏
+                            case "forbid_in":
+                                if (tempDicIn.ContainsKey(sim))
+                                {
+                                    ValueTuple<string, string, string, string, string, List<Point>> val = new ValueTuple<string, string, string, string, string, List<Point>>(name, company, vType, vid, driver, new List<Point>() { new Point(double.Parse(x), double.Parse(y)) });
+                                    tempDicIn[sim].Item6.Add(new Point(double.Parse(x), double.Parse(y)));
+                                }
+                                else {
+                                    tempDicIn.Add(sim, new ValueTuple<string, string, string, string, string, List<Point>>(name, company, vType, vid, driver, new List<Point>() { new Point(double.Parse(x), double.Parse(y)) }));
+                                }
+                                break;
+                            //禁止驶出围栏
+                            case "forbid_out":
+                                if (tempDicOut.ContainsKey(sim))
+                                {
+                                    ValueTuple<string, string, string, string, string, List<Point>> val = new ValueTuple<string, string, string, string, string, List<Point>>(name, company, vType, vid, driver, new List<Point>() { new Point(double.Parse(x), double.Parse(y)) });
+                                    tempDicOut[sim].Item6.Add(new Point(double.Parse(x), double.Parse(y)));
+                                }
+                                else
+                                {
+                                    tempDicOut.Add(sim, new ValueTuple<string, string, string, string, string, List<Point>>(name, company, vType, vid, driver, new List<Point>() { new Point(double.Parse(x), double.Parse(y)) }));
+                                }
+                                break;
+                        }
                     }
-                    //判断围栏类型
-                    switch (type)
+                    //更新车辆禁止驶出围栏信息
+                    foreach (var item in tempDicOut) {
+                        if (Resource.fenceFanbidOutInfo.ContainsKey(item.Key))
+                        {
+                            Resource.fenceFanbidOutInfo[item.Key] = item.Value;
+                        }
+                        else
+                        {
+                            Resource.fenceFanbidOutInfo.TryAdd(item.Key, item.Value);
+                        }
+                    }
+                    //更新车辆禁止驶入围栏信息
+                    foreach (var item in tempDicIn)
                     {
-                        //禁止驶入围栏
-                        case "forbid_in":
-                            if (Resource.fenceFanbidInInfo.ContainsKey(sim))
-                            {
-                                List<Point> temp2 = Resource.fenceFanbidInInfo[sim].Item6;
-                                temp2.Add(new Point(int.Parse(lon), int.Parse(lat)));
-                                Resource.fenceFanbidInInfo[sim] = new ValueTuple<string, string, string, string, string, List<Point>>(name, company, vType, vid, driver, temp2);
-                            }
-                            else
-                            {
-                                Resource.fenceFanbidInInfo.TryAdd(sim, new ValueTuple<string, string, string, string, string, List<Point>>(name, company, vType, vid, driver, new List<Point>() { new Point(int.Parse(lon), int.Parse(lat)) }));
-                            }
-                            break;
-                        //禁止驶出围栏
-                        case "forbid_out":
-                            if (Resource.fenceFanbidOutInfo.ContainsKey(sim))
-                            {
-                                List<Point> temp2 = Resource.fenceFanbidOutInfo[sim].Item6;
-                                temp2.Add(new Point(int.Parse(lon), int.Parse(lat)));
-                                Resource.fenceFanbidOutInfo[sim] = new ValueTuple<string, string, string, string, string, List<Point>>(name, company, vType, vid, driver, temp2);
-                            }
-                            else
-                            {
-                                Resource.fenceFanbidOutInfo.TryAdd(sim, new ValueTuple<string, string, string, string, string, List<Point>>(name, company, vType, vid, driver, new List<Point>() { new Point(int.Parse(lon), int.Parse(lat)) }));
-                            }
-                            break;
+                        if (Resource.fenceFanbidInInfo.ContainsKey(item.Key))
+                        {
+                            Resource.fenceFanbidInInfo[item.Key] = item.Value;
+                        }
+                        else
+                        {
+                            Resource.fenceFanbidInInfo.TryAdd(item.Key, item.Value);
+                        }
                     }
                 }
+                else
+                {
+                    Resource.fenceFanbidOutInfo.Clear();
+                    Resource.fenceFanbidInInfo.Clear();
+                }
             }
-            else {
-                Resource.fenceFanbidOutInfo.Clear();
-                Resource.fenceFanbidInInfo.Clear();
+            catch(Exception ex)
+            {
+                LogHelper.WriteLog("车辆信息更新错误",ex);
+            }
+            finally
+            {
+                Resource.isVehicleUpdate = false;
             }
         }
     }

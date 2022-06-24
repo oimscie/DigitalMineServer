@@ -6,6 +6,7 @@ using DigitalMineServer.SuperSocket;
 using DigitalMineServer.Util;
 using JtLibrary;
 using JtLibrary.PacketBody;
+using JtLibrary.PacketBody.Reponse;
 using JtLibrary.Structures;
 using JtLibrary.Utils;
 using System;
@@ -119,7 +120,7 @@ namespace DigitalMineServer
             {
                 try
                 {
-                    if (Resource.InsertQueues.Count <= 0)
+                    if (Resource.InsertQueues.Count <1)
                     {
                         Thread.Sleep(200);
                         continue;
@@ -199,11 +200,14 @@ namespace DigitalMineServer
                             mysql.UpdOrInsOrdel(sql);
                         }
                     }
+                    if (Resource.isVehicleUpdate) {
+                        continue;
+                    }
                     //判断禁入围栏
                     if (Resource.fenceFanbidInInfo.ContainsKey(Sim))
                     {
                         ValueTuple<string, string, string, string, string, List<Point>> temp = Resource.fenceFanbidInInfo[Sim];
-                        if (Polygon.IsInPolygon(new Point((int)bodyinfo.Longitude, (int)bodyinfo.Latitude), temp.Item6))
+                        if (Polygon.IsInPolygon(new Point(xy[0],xy[1]), temp.Item6))
                         {
                             sql = "select COUNT(ID) as Count from rec_unu_info where COMPANY='" + temp.Item2 + "' and VEHICLE_ID='" + temp.Item4 + "' and WARNTYPE='" + WarnType.Forbid_In + "' and ADD_TIME>=DATE_SUB(NOW(),INTERVAL 5 MINUTE)";
                             if (mysql.GetCount(sql) == 0)
@@ -218,7 +222,7 @@ namespace DigitalMineServer
                     if (Resource.fenceFanbidOutInfo.ContainsKey(Sim))
                     {
                         ValueTuple<string, string, string, string, string, List<Point>> temp = Resource.fenceFanbidOutInfo[Sim];
-                        if (!Polygon.IsInPolygon(new Point((int)bodyinfo.Longitude, (int)bodyinfo.Latitude), temp.Item6))
+                        if (!Polygon.IsInPolygon(new Point(xy[0],xy[1]), temp.Item6))
                         {
                             sql = "select COUNT(ID) as Count from rec_unu_info where COMPANY='" + temp.Item2 + "' and VEHICLE_ID='" + temp.Item4 + "' and WARNTYPE='" + WarnType.Forbid_Out + "' and ADD_TIME>=DATE_SUB(NOW(),INTERVAL 5 MINUTE)";
                             if (mysql.GetCount(sql) == 0)
@@ -244,6 +248,11 @@ namespace DigitalMineServer
                 str += i.ToString("X2") + " ";
             }
             implement.Util.AppendText(JtServerForm.JtForm.infoBox, str);
+            PacketMessage msg =PacketProvider.CreateProvider().Decode(buffer,0, buffer.Length);
+            if (msg.pmPacketHead.phMessageId== JT808Cmd.RSP_0200) {
+                PB0200 bodyinfo = new REP_0200().Decode(msg.pmMessageBody);
+                implement.Util.AppendText(JtServerForm.JtForm.infoBox, "经度"+bodyinfo.Longitude+"纬度"+ bodyinfo.Latitude);
+            }
         }
 
         private void CheckWarn(uint AlarmIndication) {

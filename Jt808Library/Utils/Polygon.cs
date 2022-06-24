@@ -11,12 +11,12 @@ namespace JtLibrary.Utils
     /// </summary>
     public class Point
     {
-        public Point(int x,int y) {
+        public Point(double x, double y) {
             X = x;
             Y = y;
         }
-        public int X { get; set; }
-        public int Y { get; set; }
+        public double X { get; set; }
+        public double Y { get; set; }
     }
 
     public class Polygon
@@ -40,6 +40,7 @@ namespace JtLibrary.Utils
             {
                 p1 = polygonPoints[i];
                 p2 = polygonPoints[j];
+
                 if (checkPoint.Y < p2.Y)
                 {//p2在射线之上
                     if (p1.Y <= checkPoint.Y)
