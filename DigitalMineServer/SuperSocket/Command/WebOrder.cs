@@ -31,7 +31,7 @@ namespace DigitalMineServer.SuperSocket.Command
                     SendMessage(requestInfo.Body, session);
                     break;
                 case "text":
-                    SendMessage(new REP8300().R8300(item), item[1], session);
+                    SendMessage(new REP8300().R8300(item[1],item[3]), item[1], session);
                     break;
                 case "deleteFence":
                     Resource.fenceFanbidInInfo.TryRemove(item[1], out _);

@@ -185,7 +185,7 @@ namespace DigitalMineServer
                             "and Company='" + vehicleInfo.Item3 + "' and ADD_TIME>=DATE_SUB(NOW(),INTERVAL 1 MINUTE)") == 0)
                         {
                             //给车辆发送超速警告
-                            SendMessage(Sim, new REP8300().R8300(new string[]{ "超速警告，限速" + vehicleInfo.Item4, Sim }));
+                            SendMessage(Sim, new REP8300().R8300(Sim, "你已超速，限速" + vehicleInfo.Item4 ));
                             sql = "INSERT INTO `rec_unu_speed`" +
                                 "(`VEHICLE_ID`, `DRIVER`, `VEHICLE_TYPE`, `POSI_SPEED`, `POSI_X`, `POSI_Y`, `COMPANY`, `ADD_TIME`, `TEMP1`, `TEMP2`, `TEMP3`, `TEMP4`" +
                                 ") " +

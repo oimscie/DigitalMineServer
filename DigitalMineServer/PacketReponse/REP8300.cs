@@ -12,7 +12,7 @@ namespace DigitalMineServer.PacketReponse
 {
     class REP8300
     {
-        public  byte[] R8300(string[] data)
+        public  byte[] R8300(string sim,string info)
         {
             byte[] body_8300 = new REQ_8300().Encode(new PB8300()
             {
@@ -21,7 +21,7 @@ namespace DigitalMineServer.PacketReponse
                 tts = 1,
                 adScreen = 1,
                 msgType = 0,
-                msgContent = data[3],
+                msgContent = info,
             });
             byte[] buffer = PacketProvider.CreateProvider().Encode(new PacketFrom()
             {
@@ -32,7 +32,7 @@ namespace DigitalMineServer.PacketReponse
                 pSerialnumber = 1,
                 pSubFlag = 0,
                 pTotal = 1,
-                simNumber = Extension.ToBCD(data[1]),
+                simNumber = Extension.ToBCD(sim),
             });
             return buffer;
         }
