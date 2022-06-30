@@ -3,14 +3,17 @@ using DigitalMineServer.Mysql;
 using DigitalMineServer.PacketReponse;
 using DigitalMineServer.Static;
 using DigitalMineServer.SuperSocket;
+using DigitalMineServer.SuperSocket.SocketServer;
 using DigitalMineServer.Util;
 using JtLibrary;
 using JtLibrary.PacketBody;
 using JtLibrary.PacketBody.Reponse;
 using JtLibrary.Structures;
 using JtLibrary.Utils;
+using SuperSocket.SocketBase;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Threading;
 
@@ -120,7 +123,7 @@ namespace DigitalMineServer
             {
                 try
                 {
-                    if (Resource.InsertQueues.Count <1)
+                    if (Resource.InsertQueues.Count < 1)
                     {
                         Thread.Sleep(200);
                         continue;
@@ -147,7 +150,7 @@ namespace DigitalMineServer
                     Resource.VehicleList.TryGetValue(Sim, out ValueTuple<string, string, string, string, string, string> vehicleInfo);
                     string sql = null;
                     byte[] state = BitConvert.UInt32ToBit(bodyinfo.StatusIndication);
-                    string ACC = state[0] == 0 ? ACC = "关" : ACC = "开";               
+                    string ACC = state[0] == 0 ? ACC = "关" : ACC = "开";
                     string IsStop = state[1] == 0 ? IsStop = "未定位" : IsStop = "已定位";
                     //检查车辆在状态表中是否存在
                     if (mysql.GetCount("select count(ID) as Count from vehicle_state where FID='" + vehicleInfo.Item1 + "'") == 0)
@@ -158,8 +161,8 @@ namespace DigitalMineServer
                              "`TEMP1`, `TEMP2`, `TEMP3`, `TEMP4`) " +
                              "VALUES" +
                              " ('" + vehicleInfo.Item1 + "', '" + IsStop + "', '" + xy[0] + "', '" + xy[1] + "','" + bodyinfo.Speed * 0.1 + "'," +
-                             " 0, '"+ ACC + "', 0, '" + vehicleInfo.Item3 + "', '" + time + "', " +
-                              "NULL, NULL, NULL, NULL);";
+                             " 0, '" + ACC + "', 0, '" + vehicleInfo.Item3 + "', '" + time + "', " +
+                              "NULL, NULL, NULL, NULL)";
                     }
                     else
                     {
@@ -170,23 +173,25 @@ namespace DigitalMineServer
                     }
                     mysql.UpdOrInsOrdel(sql);
                     //定位信息插入临时表
-                    sql = "INSERT INTO `temp_posi`( `VEHICLE_ID`, `VEHICLE_TYPE`, `POSI_X`, `POSI_Y`, `POSI_SPEED`, `COMPANY`, `ADD_TIME`, `TEMP1`, `TEMP2`, `TEMP3`, `TEMP4`) VALUES ( '" + vehicleInfo.Item5 + "', '" + vehicleInfo.Item2 + "'," + xy[0] + ", " + xy[1] + ", '" + bodyinfo.Speed * 0.1 + "', '" + vehicleInfo.Item3 + "', '" + time + "', NULL, NULL, NULL, NULL);";
+                    sql = "INSERT INTO `temp_posi`( `VEHICLE_ID`, `VEHICLE_TYPE`, `POSI_X`, `POSI_Y`, `POSI_SPEED`, `COMPANY`, `ADD_TIME`, `TEMP1`, `TEMP2`, `TEMP3`, `TEMP4`) VALUES ( '" + vehicleInfo.Item5 + "', '" + vehicleInfo.Item2 + "'," + xy[0] + ", " + xy[1] + ", '" + bodyinfo.Speed * 0.1 + "', '" + vehicleInfo.Item3 + "', '" + time + "', NULL, NULL, NULL, NULL)";
                     mysql.UpdOrInsOrdel(sql);
                     //定位信息插入永久表
-                    sql = "INSERT INTO `posi_vehicle`( `VEHICLE_ID`, `VEHICLE_TYPE`, `POSI_X`, `POSI_Y`, `POSI_SPEED`, `COMPANY`, `ADD_TIME`, `TEMP1`, `TEMP2`, `TEMP3`, `TEMP4`) VALUES ( '" + vehicleInfo.Item5 + "', '" + vehicleInfo.Item2 + "'," + xy[0] + ", " + xy[1] + ", '" + bodyinfo.Speed * 0.1 + "', '" + vehicleInfo.Item3 + "', '" + time + "', NULL, NULL, NULL, NULL);";
+                    sql = "INSERT INTO `posi_vehicle`( `VEHICLE_ID`, `VEHICLE_TYPE`, `POSI_X`, `POSI_Y`, `POSI_SPEED`, `COMPANY`, `ADD_TIME`, `TEMP1`, `TEMP2`, `TEMP3`, `TEMP4`) VALUES ( '" + vehicleInfo.Item5 + "', '" + vehicleInfo.Item2 + "'," + xy[0] + ", " + xy[1] + ", '" + bodyinfo.Speed * 0.1 + "', '" + vehicleInfo.Item3 + "', '" + time + "', NULL, NULL, NULL, NULL)";
                     mysql.UpdOrInsOrdel(sql);
                     //检查超速
-                    if (bodyinfo.Speed*0.1 > int.Parse(vehicleInfo.Item4))
+                    if (bodyinfo.Speed * 0.1 > int.Parse(vehicleInfo.Item4))
                     {
                         if (mysql.GetCount("select COUNT(ID) as Count from rec_unu_speed where VEHICLE_ID='" + vehicleInfo.Item5 + "'" +
-                            "and Company='" + vehicleInfo.Item3 + "' and ADD_TIME>=DATE_SUB(NOW(),INTERVAL 5 MINUTE)") == 0)
+                            "and Company='" + vehicleInfo.Item3 + "' and ADD_TIME>=DATE_SUB(NOW(),INTERVAL 1 MINUTE)") == 0)
                         {
+                            //给车辆发送超速警告
+                            SendMessage(Sim, new REP8300().R8300(new string[]{ "超速警告，限速" + vehicleInfo.Item4, Sim }));
                             sql = "INSERT INTO `rec_unu_speed`" +
                                 "(`VEHICLE_ID`, `DRIVER`, `VEHICLE_TYPE`, `POSI_SPEED`, `POSI_X`, `POSI_Y`, `COMPANY`, `ADD_TIME`, `TEMP1`, `TEMP2`, `TEMP3`, `TEMP4`" +
                                 ") " +
                                 "VALUES ( " +
                                 "'" + vehicleInfo.Item5 + "', '" + vehicleInfo.Item6 + "', '" + vehicleInfo.Item2 + "','" + bodyinfo.Speed * 0.1 + "', '" + xy[0] + "', '" + xy[1] + "', '" + vehicleInfo.Item3 + "', '" + time + "', NULL, NULL, NULL, NULL" +
-                                ");";
+                                ")";
                             mysql.UpdOrInsOrdel(sql);
                         }
                     }
@@ -200,14 +205,15 @@ namespace DigitalMineServer
                             mysql.UpdOrInsOrdel(sql);
                         }
                     }
-                    if (Resource.isVehicleUpdate) {
+                    if (Resource.isVehicleUpdate)
+                    {
                         continue;
                     }
                     //判断禁入围栏
                     if (Resource.fenceFanbidInInfo.ContainsKey(Sim))
                     {
                         ValueTuple<string, string, string, string, string, List<Point>> temp = Resource.fenceFanbidInInfo[Sim];
-                        if (Polygon.IsInPolygon(new Point(xy[0],xy[1]), temp.Item6))
+                        if (Polygon.IsInPolygon(new Point(xy[0], xy[1]), temp.Item6))
                         {
                             sql = "select COUNT(ID) as Count from rec_unu_info where COMPANY='" + temp.Item2 + "' and VEHICLE_ID='" + temp.Item4 + "' and WARNTYPE='" + WarnType.Forbid_In + "' and ADD_TIME>=DATE_SUB(NOW(),INTERVAL 5 MINUTE)";
                             if (mysql.GetCount(sql) == 0)
@@ -217,12 +223,12 @@ namespace DigitalMineServer
                             }
                         }
                     }
-                  
+
                     //判断禁出围栏
                     if (Resource.fenceFanbidOutInfo.ContainsKey(Sim))
                     {
                         ValueTuple<string, string, string, string, string, List<Point>> temp = Resource.fenceFanbidOutInfo[Sim];
-                        if (!Polygon.IsInPolygon(new Point(xy[0],xy[1]), temp.Item6))
+                        if (!Polygon.IsInPolygon(new Point(xy[0], xy[1]), temp.Item6))
                         {
                             sql = "select COUNT(ID) as Count from rec_unu_info where COMPANY='" + temp.Item2 + "' and VEHICLE_ID='" + temp.Item4 + "' and WARNTYPE='" + WarnType.Forbid_Out + "' and ADD_TIME>=DATE_SUB(NOW(),INTERVAL 5 MINUTE)";
                             if (mysql.GetCount(sql) == 0)
@@ -239,6 +245,18 @@ namespace DigitalMineServer
                 }
             }
         }
+        //给指定终端下发消息
+        private void SendMessage(string sim, byte[] info)
+        {
+            //获取终端连接下发指令
+            Jt808Server Jt808 = JtServerForm.bootstrap.GetServerByName("Jt808Server") as Jt808Server;
+            var sessions = Jt808.GetSessions(s => s.Sim == sim);
+            if (sessions.Count() == 1)
+            {
+               sessions.First().Send(info,0, info.Length);
+            }
+        }
+
         private void OutMessage(object obj)
         {
             byte[] buffer = (byte[])obj;
@@ -248,14 +266,16 @@ namespace DigitalMineServer
                 str += i.ToString("X2") + " ";
             }
             implement.Util.AppendText(JtServerForm.JtForm.infoBox, str);
-            PacketMessage msg =PacketProvider.CreateProvider().Decode(buffer,0, buffer.Length);
-            if (msg.pmPacketHead.phMessageId== JT808Cmd.RSP_0200) {
+            PacketMessage msg = PacketProvider.CreateProvider().Decode(buffer, 0, buffer.Length);
+            if (msg.pmPacketHead.phMessageId == JT808Cmd.RSP_0200)
+            {
                 PB0200 bodyinfo = new REP_0200().Decode(msg.pmMessageBody);
-                implement.Util.AppendText(JtServerForm.JtForm.infoBox, "经度"+bodyinfo.Longitude+"纬度"+ bodyinfo.Latitude);
+                implement.Util.AppendText(JtServerForm.JtForm.infoBox, "经度---" + bodyinfo.Longitude + "纬度---" + bodyinfo.Latitude);
             }
         }
 
-        private void CheckWarn(uint AlarmIndication) {
+        private void CheckWarn(uint AlarmIndication)
+        {
             //检查报警标识
             byte[] warn = BitConvert.UInt32ToBit(AlarmIndication);
             if (warn[0] == 1)
