@@ -215,7 +215,7 @@ namespace DigitalMineServer
                         ValueTuple<string, string, string, string, string, List<Point>> temp = Resource.fenceFanbidInInfo[Sim];
                         if (Polygon.IsInPolygon(new Point(xy[0], xy[1]), temp.Item6))
                         {
-                            sql = "select COUNT(ID) as Count from rec_unu_info where COMPANY='" + temp.Item2 + "' and VEHICLE_ID='" + temp.Item4 + "' and WARNTYPE='" + WarnType.Forbid_In + "' and ADD_TIME>=DATE_SUB(NOW(),INTERVAL 5 MINUTE)";
+                            sql = "select COUNT(ID) as Count from rec_unu_info where COMPANY='" + temp.Item2 + "' and VEHICLE_ID='" + temp.Item4 + "' and WARNTYPE='" + WarnType.Forbid_In + "' and ADD_TIME>=DATE_SUB(NOW(),INTERVAL 2 MINUTE)";
                             if (mysql.GetCount(sql) == 0)
                             {
                                 sql = "INSERT INTO `product`.`rec_unu_info`( `VEHICLE_ID`, `VEHICLE_TYPE`, `WARNTYPE`, `INFO`, `DRIVER`, `COMPANY`, `ADD_TIME`, `TEMP1`, `TEMP2`, `TEMP3`, `TEMP4`) VALUES ('" + temp.Item4 + "','" + temp.Item3 + "', '" + WarnType.Forbid_In + "', '围栏名称：" + temp.Item1 + "', '" + temp.Item5 + "', '" + temp.Item2 + "', '" + DateTime.Now + "', NULL, NULL, NULL, NULL)";
@@ -230,7 +230,7 @@ namespace DigitalMineServer
                         ValueTuple<string, string, string, string, string, List<Point>> temp = Resource.fenceFanbidOutInfo[Sim];
                         if (!Polygon.IsInPolygon(new Point(xy[0], xy[1]), temp.Item6))
                         {
-                            sql = "select COUNT(ID) as Count from rec_unu_info where COMPANY='" + temp.Item2 + "' and VEHICLE_ID='" + temp.Item4 + "' and WARNTYPE='" + WarnType.Forbid_Out + "' and ADD_TIME>=DATE_SUB(NOW(),INTERVAL 5 MINUTE)";
+                            sql = "select COUNT(ID) as Count from rec_unu_info where COMPANY='" + temp.Item2 + "' and VEHICLE_ID='" + temp.Item4 + "' and WARNTYPE='" + WarnType.Forbid_Out + "' and ADD_TIME>=DATE_SUB(NOW(),INTERVAL 2 MINUTE)";
                             if (mysql.GetCount(sql) == 0)
                             {
                                 sql = "INSERT INTO `product`.`rec_unu_info`( `VEHICLE_ID`, `VEHICLE_TYPE`, `WARNTYPE`, `INFO`, `DRIVER`, `COMPANY`, `ADD_TIME`, `TEMP1`, `TEMP2`, `TEMP3`, `TEMP4`) VALUES ('" + temp.Item4 + "','" + temp.Item3 + "', '" + WarnType.Forbid_Out + "', '围栏名称：" + temp.Item1 + "', '" + temp.Item5 + "', '" + temp.Item2 + "', '" + DateTime.Now + "', NULL, NULL, NULL, NULL)";
