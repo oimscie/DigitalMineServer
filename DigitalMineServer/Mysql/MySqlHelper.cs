@@ -42,47 +42,56 @@ namespace DigitalMineServer.Mysql
         /// </summary>
         public void Close()
         {
-            Conn.Close();
+            try
+            {
+                Conn.Close();
+            }
+            catch (Exception e)
+            {
+                LogHelper.WriteLog("mysql关闭错误", e);
+            }
         }
         /// <summary>
         /// 打开连接
         /// </summary>
         /// <returns></returns>
-        public void Open()
+        public bool Open()
         {
-            Conn.Open();
+            try
+            {
+                Conn.Open();
+                if (Conn.State == ConnectionState.Open)
+                {
+                    return true;
+                }
+                return false;
+            }
+            catch (Exception e)
+            {
+                implement.Util.AppendText(JtServerForm.JtForm.infoBox, e.Message);
+                LogHelper.WriteLog("数据库打开错误", e);
+                return false;
+            }
         }
         //检查连接头并打开，打开返回true，关闭未false
         public bool CheckConn()
         {
             if (Conn.State == ConnectionState.Closed)
             {
-                try
-                {
-                    Conn.Open();
-                    return true;
-                }
-                catch (Exception e)
-                {
-                    implement.Util.AppendText(JtServerForm.JtForm.infoBox, e.Message);
-                    LogHelper.WriteLog("数据库打开错误", e);
-                    return false;
-                }
-
+                return Open();
             }
             if (Conn.State == ConnectionState.Broken)
             {
-                try
-                {
-                    Conn.Close();
-                    Conn.Open();
-                    return true;
-                }
-                catch (Exception e)
-                {
-                    LogHelper.WriteLog("数据库打开错误", e);
-                    return false;
-                }
+                Close();
+                return Open();
+            }
+            if (Conn.State == ConnectionState.Connecting)
+            {
+                return false;
+            }
+            if (Conn.State == ConnectionState.Executing || Conn.State == ConnectionState.Fetching)
+            {
+                return false;
             }
             return true;
         }
