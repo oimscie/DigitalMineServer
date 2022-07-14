@@ -167,6 +167,7 @@ namespace DigitalMineServer
                     else
                     {
                         Dictionary<string, string> dic = mysql.SingleSelect("select POSI_NUM from vehicle_state where FID='" + vehicleInfo.Item1 + "' ", "POSI_NUM");
+                        //获取定位更新次数
                         dic.TryGetValue("POSI_NUM", out string num);
                         sql = "UPDATE `vehicle_state` SET " +
                             " `POSI_STATE` = '" + IsStop + "', `POSI_X` = '" + xy[0] + "', `POSI_Y` = '" + xy[1] + "', `POSI_SPEED` ='" + bodyinfo.Speed * 0.1 + "', `ACC` = '" + ACC + "', `POSI_NUM` = '" + (int.Parse(num) + 1) + "',`ADD_TIME`='" + time + "' WHERE FID='" + vehicleInfo.Item1 + "' ";
@@ -181,10 +182,11 @@ namespace DigitalMineServer
                     //检查超速
                     if (bodyinfo.Speed * 0.1 > int.Parse(vehicleInfo.Item4))
                     {
+                        //检查1min内是否已上报超度记录，有则跳过
                         if (mysql.GetCount("select COUNT(ID) as Count from rec_unu_speed where VEHICLE_ID='" + vehicleInfo.Item5 + "'" +
                             "and Company='" + vehicleInfo.Item3 + "' and ADD_TIME>=DATE_SUB(NOW(),INTERVAL 1 MINUTE)") == 0)
                         {
-                            //给车辆发送超速警告
+                            //给车辆发送超速警告，语音播报
                             SendMessage(Sim, new REP8300().R8300(Sim, "你已超速，限速" + vehicleInfo.Item4 ));
                             sql = "INSERT INTO `rec_unu_speed`" +
                                 "(`VEHICLE_ID`, `DRIVER`, `VEHICLE_TYPE`, `POSI_SPEED`, `POSI_X`, `POSI_Y`, `COMPANY`, `ADD_TIME`, `TEMP1`, `TEMP2`, `TEMP3`, `TEMP4`" +
@@ -198,6 +200,7 @@ namespace DigitalMineServer
                     //附加消息体
                     for (int i = 0; i < bodyinfo.AttachItems.Count; i++)
                     {
+                        //获取油量
                         if (bodyinfo.AttachItems[i].Value == 0x23 || bodyinfo.AttachItems[i].Value.ToString("X2") == "2")
                         {
                             string ico = Encoding.ASCII.GetString(bodyinfo.AttachItems[i].BytesValue);
