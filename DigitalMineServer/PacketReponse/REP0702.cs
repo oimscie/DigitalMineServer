@@ -33,17 +33,18 @@ namespace DigitalMineServer.PacketReponse
             });
             Session.Send(buffer, 0, buffer.Length);
             PB0702 bodyinfo_0702 = new REP_0702_2013().Decode(msg.pmMessageBody);
-            string sim= Extension.BCDToString(msg.pmPacketHead.hSimNumber);
+            string sim = Extension.BCDToString(msg.pmPacketHead.hSimNumber);
             if (Resource.VehicleList.ContainsKey(sim))
             {
                 if (bodyinfo_0702.Status == 0x01)
                 {
                     MysqlHelper.UpdOrInsOrdel("UPDATE `list_vehicle` SET `VEHICLE_DRIVER` = '" + bodyinfo_0702.DriverName + "' where  COMPANY='" + Resource.VehicleList[sim].Item3 + "' and   VEHICLE_SIM='" + sim + "' ");
                 }
-                else {
+                else
+                {
                     MysqlHelper.UpdOrInsOrdel("UPDATE `list_vehicle` SET `VEHICLE_DRIVER` = '已退签' where  COMPANY='" + Resource.VehicleList[sim].Item3 + "' and   VEHICLE_SIM='" + sim + "' ");
                 }
-            }        
+            }
         }
     }
 }

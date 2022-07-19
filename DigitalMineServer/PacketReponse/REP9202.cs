@@ -2,17 +2,12 @@
 using JtLibrary.Jt1078_2016.Request;
 using JtLibrary.PacketBody;
 using JtLibrary.Structures;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace DigitalMineServer.PacketReponse
 {
     class REP9202
     {
-        public  byte[] R9202( string[] data)
+        public byte[] R9202(string[] data)
         {
             byte[] body_9202 = new REQ_9202_2016().Encode(new PB9202()
             {
@@ -20,7 +15,7 @@ namespace DigitalMineServer.PacketReponse
                 type = byte.Parse(data[3]),
                 order = byte.Parse(data[4]),
                 time = Extension.ToBCD(data[5])
-            }) ;
+            });
             byte[] buffer = PacketProvider.CreateProvider().Encode(new PacketFrom()
             {
                 msgBody = body_9202,

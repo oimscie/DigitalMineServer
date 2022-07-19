@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 
 namespace JtLibrary.Utils
 {
@@ -11,7 +7,8 @@ namespace JtLibrary.Utils
     /// </summary>
     public class Point
     {
-        public Point(double x, double y) {
+        public Point(double x, double y)
+        {
             X = x;
             Y = y;
         }

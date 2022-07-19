@@ -1,18 +1,14 @@
 ﻿using JtLibrary;
 using JtLibrary.Jt808_2013.Request_2013;
-using JtLibrary.PacketBody;
 using JtLibrary.Structures;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace DigitalMineServer.PacketReponse
 {
-   public class REP8605
+    public class REP8605
     {
-        public  byte[] R8605(string sim)
+        public byte[] R8605(string sim)
         {
             byte[] body_8605 = new REQ_8605_2013().Encode(new List<UInt32>() { });
             byte[] buffer = PacketProvider.CreateProvider().Encode(new PacketFrom()

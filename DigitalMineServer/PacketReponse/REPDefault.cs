@@ -6,6 +6,7 @@ using JtLibrary.Structures;
 
 namespace DigitalMineServer.PacketReponse
 {
+    //默认回复
     class REPDefault
     {
         public void Default(PacketMessage msg, IPacketProvider pConvert, Jt808Session Session)

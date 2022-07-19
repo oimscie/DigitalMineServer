@@ -4,9 +4,6 @@ using JtLibrary.PacketBody;
 using JtLibrary.Structures;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace DigitalMineServer.PacketReponse
 {
@@ -46,7 +43,7 @@ namespace DigitalMineServer.PacketReponse
             {
                 settingProperty = 2,
 
-                circleItemsInfo = new List<PB8600Item>() {  PB8600Item   }
+                circleItemsInfo = new List<PB8600Item>() { PB8600Item }
             });
             byte[] buffer = PacketProvider.CreateProvider().Encode(new PacketFrom()
             {

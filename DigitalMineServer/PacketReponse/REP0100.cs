@@ -1,20 +1,14 @@
-﻿using DigitalMineServer.implement;
-using DigitalMineServer.SuperSocket;
+﻿using DigitalMineServer.SuperSocket;
 using JtLibrary;
-using JtLibrary.PacketBody;
 using JtLibrary.Jt808_2013.Request_2013;
+using JtLibrary.PacketBody;
 using JtLibrary.Structures;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace DigitalMineServer.PacketReponse
 {
     class REP0100
     {
-        public  void R0100(PacketMessage msg, IPacketProvider pConvert, Jt808Session Session)
+        public void R0100(PacketMessage msg, IPacketProvider pConvert, Jt808Session Session)
         {
             byte[] body_0100 = new REQ_8100_2013().Encode(new PB8100()
             {
@@ -33,7 +27,7 @@ namespace DigitalMineServer.PacketReponse
                 pTotal = 1,
                 simNumber = msg.pmPacketHead.hSimNumber,
             });
-            Session.Send(buffer,0, buffer.Length);
+            Session.Send(buffer, 0, buffer.Length);
         }
     }
 }

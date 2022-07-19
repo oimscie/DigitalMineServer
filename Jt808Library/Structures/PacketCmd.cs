@@ -1,11 +1,4 @@
-﻿/*-------------------------------------------------------------
- *   auth: bouyei
- *   date: 2017/6/21 11:06:44
- *contact: 453840293@qq.com
- *profile: www.openthinking.cn
- *    Ltd: 
- *   guid: bc873b3a-cfaa-460f-b2da-995e0e828f0a
----------------------------------------------------------------*/
+﻿
 using System;
 using System.Runtime.InteropServices;
 

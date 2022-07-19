@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace JtLibrary.Structures
+﻿namespace JtLibrary.Structures
 {
     /// <summary>
     /// 终端各协议版本

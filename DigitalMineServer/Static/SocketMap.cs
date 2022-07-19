@@ -63,7 +63,7 @@ namespace DigitalMineServer.Static
         /// item5:司机
         /// item6:点集
         /// </summary>
-        public static ConcurrentDictionary<string, ValueTuple< string, string, string, string, string, List<Point>>> fenceFanbidInInfo;
+        public static ConcurrentDictionary<string, ValueTuple<string, string, string, string, string, List<Point>>> fenceFanbidInInfo;
         /// <summary>
         /// 禁止驶出围栏信息，sim为key
         /// item1:围栏名称
@@ -73,7 +73,7 @@ namespace DigitalMineServer.Static
         /// item5:司机
         /// item6:点集
         /// </summary>
-        public static ConcurrentDictionary<string, ValueTuple<string,string, string, string, string, List<Point>>> fenceFanbidOutInfo;
+        public static ConcurrentDictionary<string, ValueTuple<string, string, string, string, string, List<Point>>> fenceFanbidOutInfo;
         /// <summary>
         /// 终端版本字典<终端SIM号，版本信息>
         /// item1:808版本

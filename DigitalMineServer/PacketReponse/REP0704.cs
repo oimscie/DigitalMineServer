@@ -13,7 +13,7 @@ namespace DigitalMineServer.PacketReponse
     {
         public void R0704(PacketMessage msg, IPacketProvider pConvert, Jt808Session Session)
         {
-            //补传
+            //补传包
             byte[] body_0704 = new REQ_8001_2013().Encode(new PB8001()
             {
                 Serialnumber = msg.pmPacketHead.phSerialnumber,

@@ -4,13 +4,10 @@ using JtLibrary.PacketBody;
 using JtLibrary.Structures;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace DigitalMineServer.PacketReponse
 {
-   public class REP8604
+    public class REP8604
     {
         public byte[] R8604(string sim, List<UInt32UInt32> polygonItemsInfo)
         {
@@ -31,11 +28,11 @@ namespace DigitalMineServer.PacketReponse
                     communicationflag = 0,
                     samplingflag = 1
                 }),
-                stime =DateTime.Parse("1970-1-1 00:00:00"),
-                etime= DateTime.Parse("2170-1-1 00:00:00"),
-                maxSpeed=0,
-                overSpeedingTime=0,
-                polygonItemsInfo= polygonItemsInfo
+                stime = DateTime.Parse("1970-1-1 00:00:00"),
+                etime = DateTime.Parse("2170-1-1 00:00:00"),
+                maxSpeed = 0,
+                overSpeedingTime = 0,
+                polygonItemsInfo = polygonItemsInfo
             });
             byte[] buffer = PacketProvider.CreateProvider().Encode(new PacketFrom()
             {

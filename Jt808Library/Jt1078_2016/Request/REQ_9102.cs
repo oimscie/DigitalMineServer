@@ -1,13 +1,9 @@
 ﻿using JtLibrary.PacketBody;
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace JtLibrary.Jt1078_2016.Request
 {
-   public class REQ_9102_2016
+    public class REQ_9102_2016
     {
         /// <summary>
         /// 0x9102消息体数据打包

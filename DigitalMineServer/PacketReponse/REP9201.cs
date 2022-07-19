@@ -4,10 +4,6 @@ using JtLibrary.Jt1078_2016.Request;
 using JtLibrary.PacketBody;
 using JtLibrary.Structures;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace DigitalMineServer.PacketReponse
 {
@@ -17,7 +13,7 @@ namespace DigitalMineServer.PacketReponse
         {
             ushort ports = 8089;
             byte id = byte.Parse(data[5]);
-            if (data[2]== "1")
+            if (data[2] == "1")
             {
                 ports = 8088;
             }
@@ -28,11 +24,11 @@ namespace DigitalMineServer.PacketReponse
                 port = ports,
                 ports = 0,
                 id = id,
-                datatype =2,
+                datatype = 2,
                 datatypes = 1,
                 memoryType = 0,
                 ReviewType = 0,
-                FastOrSlow =0,
+                FastOrSlow = 0,
                 StartTime = Extension.TimeFormatToBCD(Convert.ToDateTime(data[3])),
                 OverTime = Extension.TimeFormatToBCD(Convert.ToDateTime(data[4])),
             });

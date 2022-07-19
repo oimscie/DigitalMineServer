@@ -10,9 +10,9 @@ namespace DigitalMineServer.PacketReponse
         public byte[] R9101(string[] data)
         {
             ushort ports = 8087;
-            byte id =byte.Parse(data[3]);
+            byte id = byte.Parse(data[3]);
             if (data[2] == "2")
-           {
+            {
                 ports = 8086;
             }
             byte[] body_9101 = new REQ_9101_2016().Encode(new PB9101()

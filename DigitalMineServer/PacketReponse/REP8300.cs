@@ -2,17 +2,12 @@
 using JtLibrary.Jt808_2013.Request_2013;
 using JtLibrary.PacketBody;
 using JtLibrary.Structures;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace DigitalMineServer.PacketReponse
 {
     class REP8300
     {
-        public  byte[] R8300(string sim,string info)
+        public byte[] R8300(string sim, string info)
         {
             byte[] body_8300 = new REQ_8300_2013().Encode(new PB8300()
             {

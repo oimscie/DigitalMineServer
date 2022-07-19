@@ -1,10 +1,4 @@
-﻿/*-------------------------------------------------------------
- *   auth: bouyei
- *   date: 2017/6/21 19:09:10
- *contact: 453840293@qq.com
- *profile: www.openthinking.cn
- *   guid: d4f4edc0-8a48-4355-a58e-befc6887f021
----------------------------------------------------------------*/
+﻿
 using JtLibrary.PacketBody;
 using System;
 using System.Collections.Generic;

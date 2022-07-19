@@ -1,8 +1,7 @@
-﻿using DigitalMineServer.implement;
-using DigitalMineServer.SuperSocket;
+﻿using DigitalMineServer.SuperSocket;
 using JtLibrary;
-using JtLibrary.PacketBody;
 using JtLibrary.Jt808_2013.Request_2013;
+using JtLibrary.PacketBody;
 using JtLibrary.Structures;
 
 namespace DigitalMineServer.PacketReponse
@@ -17,7 +16,7 @@ namespace DigitalMineServer.PacketReponse
                 MessageId = msg.pmPacketHead.phMessageId,
                 Result = 0,
             });
-            Session.Sim = Extension.BCDToString(msg.pmPacketHead.hSimNumber);          
+            Session.Sim = Extension.BCDToString(msg.pmPacketHead.hSimNumber);
             byte[] buffer = pConvert.Encode(new PacketFrom()
             {
                 msgBody = body_0102,

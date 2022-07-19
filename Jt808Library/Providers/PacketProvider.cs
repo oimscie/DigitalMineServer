@@ -4,7 +4,7 @@ namespace JtLibrary
 {
     using Structures;
 
-    public class PacketProvider:IPacketProvider
+    public class PacketProvider : IPacketProvider
     {
         public PacketProvider()
         { }
@@ -30,7 +30,7 @@ namespace JtLibrary
         /// <param name="buffer"></param>
         /// <param name="error">错误信息</param>
         /// <returns></returns>
-        public PacketMessage Decode(byte[] buffer,int offset,int count)
+        public PacketMessage Decode(byte[] buffer, int offset, int count)
         {
             if (count <= 14 || count >= 1040)
             {

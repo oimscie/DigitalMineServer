@@ -27,7 +27,7 @@ namespace DigitalMineServer.PacketReponse
                 pTotal = 1,
                 simNumber = msg.pmPacketHead.hSimNumber,
             });
-            Session.Send(buffer,0, buffer.Length);
+            Session.Send(buffer, 0, buffer.Length);
         }
     }
 }

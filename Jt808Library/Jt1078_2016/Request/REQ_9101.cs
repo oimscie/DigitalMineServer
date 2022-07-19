@@ -4,7 +4,7 @@ using System.Text;
 
 namespace JtLibrary.Jt1078_2016.Request
 {
-   public class REQ_9101_2016
+    public class REQ_9101_2016
     {
         private readonly Encoding encoding = Encoding.GetEncoding("GBK");
         /// <summary>

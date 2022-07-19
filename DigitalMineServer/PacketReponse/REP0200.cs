@@ -1,12 +1,11 @@
-﻿using DigitalMineServer.implement;
-using DigitalMineServer.Static;
+﻿using DigitalMineServer.Static;
 using DigitalMineServer.SuperSocket;
 using JtLibrary;
-using JtLibrary.PacketBody;
+using JtLibrary.Jt808_2013.Reponse_2013;
 using JtLibrary.Jt808_2013.Request_2013;
+using JtLibrary.PacketBody;
 using JtLibrary.Structures;
 using System;
-using JtLibrary.Jt808_2013.Reponse_2013;
 
 namespace DigitalMineServer.PacketReponse
 {

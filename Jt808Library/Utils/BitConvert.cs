@@ -1,11 +1,4 @@
-/*-------------------------------------------------------------
- *   auth: bouyei
- *   date: 2017/6/21 15:21:14
- *contact: 453840293@qq.com
- *profile: www.openthinking.cn
- *    Ltd: 
- *   guid: 6f3bdb9e-1d34-4645-9167-6aba2e1045f3
----------------------------------------------------------------*/
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
