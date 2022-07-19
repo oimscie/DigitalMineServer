@@ -51,7 +51,10 @@ namespace JtLibrary.Structures
         /// 消息体
         /// </summary>
         public byte[] msgBody = null;
-
+        /// <summary>
+        /// 2013版本封包
+        /// </summary>
+        /// <returns></returns>
         internal byte[] Encoding_2013()
         {
             UInt16 k = 12;
@@ -102,6 +105,10 @@ namespace JtLibrary.Structures
 
             return Escape(buffer);
         }
+        /// <summary>
+        /// 2019版本封包
+        /// </summary>
+        /// <returns></returns>
         internal byte[] Encoding_2019()
         {
             UInt16 k = 17;
