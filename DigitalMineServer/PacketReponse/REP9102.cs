@@ -1,5 +1,5 @@
 ﻿using JtLibrary;
-using JtLibrary.Jt1078.Request;
+using JtLibrary.Jt1078_2016.Request;
 using JtLibrary.PacketBody;
 using JtLibrary.Structures;
 using System;
@@ -14,7 +14,7 @@ namespace DigitalMineServer.PacketReponse
     {
         public  byte[] R9102( string[] data)
         {
-            byte[] body_9102 = new REQ_9102().Encode(new PB9102()
+            byte[] body_9102 = new REQ_9102_2016().Encode(new PB9102()
             {
                 id = byte.Parse(data[2]),
                 order = byte.Parse(data[3]),

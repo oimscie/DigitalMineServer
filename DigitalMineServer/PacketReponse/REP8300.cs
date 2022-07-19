@@ -1,6 +1,6 @@
 ﻿using JtLibrary;
+using JtLibrary.Jt808_2013.Request_2013;
 using JtLibrary.PacketBody;
-using JtLibrary.PacketBody.Request;
 using JtLibrary.Structures;
 using System;
 using System.Collections.Generic;
@@ -14,7 +14,7 @@ namespace DigitalMineServer.PacketReponse
     {
         public  byte[] R8300(string sim,string info)
         {
-            byte[] body_8300 = new REQ_8300().Encode(new PB8300()
+            byte[] body_8300 = new REQ_8300_2013().Encode(new PB8300()
             {
                 EmFlag = 1,
                 displayScreen = 1,

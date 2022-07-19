@@ -1,7 +1,7 @@
 ﻿using DigitalMineServer.SuperSocket;
 using JtLibrary;
+using JtLibrary.Jt808_2013.Request_2013;
 using JtLibrary.PacketBody;
-using JtLibrary.PacketBody.Request;
 using JtLibrary.Structures;
 
 namespace DigitalMineServer.PacketReponse
@@ -11,7 +11,7 @@ namespace DigitalMineServer.PacketReponse
         public void Default(PacketMessage msg, IPacketProvider pConvert, Jt808Session Session)
         {
 
-            byte[] body_default = new REQ_8001().Encode(new PB8001()
+            byte[] body_default = new REQ_8001_2013().Encode(new PB8001()
             {
                 Serialnumber = msg.pmPacketHead.phSerialnumber,
                 MessageId = msg.pmPacketHead.phMessageId,

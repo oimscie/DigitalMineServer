@@ -1,9 +1,9 @@
 ﻿using DigitalMineServer.Static;
 using DigitalMineServer.SuperSocket;
 using JtLibrary;
+using JtLibrary.Jt808_2013.Reponse_2013;
+using JtLibrary.Jt808_2013.Request_2013;
 using JtLibrary.PacketBody;
-using JtLibrary.PacketBody.Reponse;
-using JtLibrary.PacketBody.Request;
 using JtLibrary.Structures;
 using System;
 
@@ -14,7 +14,7 @@ namespace DigitalMineServer.PacketReponse
         public void R0704(PacketMessage msg, IPacketProvider pConvert, Jt808Session Session)
         {
             //补传
-            byte[] body_0704 = new REQ_8001().Encode(new PB8001()
+            byte[] body_0704 = new REQ_8001_2013().Encode(new PB8001()
             {
                 Serialnumber = msg.pmPacketHead.phSerialnumber,
                 MessageId = msg.pmPacketHead.phMessageId,
@@ -34,7 +34,7 @@ namespace DigitalMineServer.PacketReponse
             Session.Send(buffer, 0, buffer.Length);
             try
             {
-                PB0704 bodyinfo_0704 = new REP_0704().Decode(msg.pmMessageBody);
+                PB0704 bodyinfo_0704 = new REP_0704_2013().Decode(msg.pmMessageBody);
                 for (int i = 0; i < bodyinfo_0704.PositionInformationItems.Count; i++)
                 {
 

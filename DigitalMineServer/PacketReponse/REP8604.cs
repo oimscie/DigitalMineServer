@@ -1,6 +1,6 @@
 ﻿using JtLibrary;
+using JtLibrary.Jt808_2013.Request_2013;
 using JtLibrary.PacketBody;
-using JtLibrary.PacketBody.Request;
 using JtLibrary.Structures;
 using System;
 using System.Collections.Generic;
@@ -14,7 +14,7 @@ namespace DigitalMineServer.PacketReponse
     {
         public byte[] R8604(string sim, List<UInt32UInt32> polygonItemsInfo)
         {
-            byte[] body_8604 = new REQ_8604().Encode(new PB8604()
+            byte[] body_8604 = new REQ_8604_2013().Encode(new PB8604()
             {
                 polygonId = 1,
                 polygonProperty = AreaAttribute(new AreaAttribute()

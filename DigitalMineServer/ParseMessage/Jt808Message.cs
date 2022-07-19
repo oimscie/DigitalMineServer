@@ -6,8 +6,8 @@ using DigitalMineServer.SuperSocket;
 using DigitalMineServer.SuperSocket.SocketServer;
 using DigitalMineServer.Util;
 using JtLibrary;
+using JtLibrary.Jt808_2013.Reponse_2013;
 using JtLibrary.PacketBody;
-using JtLibrary.PacketBody.Reponse;
 using JtLibrary.Structures;
 using JtLibrary.Utils;
 using SuperSocket.SocketBase;
@@ -272,7 +272,7 @@ namespace DigitalMineServer
             PacketMessage msg = PacketProvider.CreateProvider().Decode(buffer, 0, buffer.Length);
             if (msg.pmPacketHead.phMessageId == JT808Cmd.RSP_0200)
             {
-                PB0200 bodyinfo = new REP_0200().Decode(msg.pmMessageBody);
+                PB0200 bodyinfo = new REP_0200_2013().Decode(msg.pmMessageBody);
                 implement.Util.AppendText(JtServerForm.JtForm.infoBox, "经度---" + bodyinfo.Longitude + "纬度---" + bodyinfo.Latitude);
             }
         }

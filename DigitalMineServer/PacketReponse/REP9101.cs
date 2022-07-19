@@ -1,5 +1,5 @@
 ﻿using JtLibrary;
-using JtLibrary.Jt1078.Request;
+using JtLibrary.Jt1078_2016.Request;
 using JtLibrary.PacketBody;
 using JtLibrary.Structures;
 
@@ -15,7 +15,7 @@ namespace DigitalMineServer.PacketReponse
            {
                 ports = 8086;
             }
-            byte[] body_9101 = new REQ_9101().Encode(new PB9101()
+            byte[] body_9101 = new REQ_9101_2016().Encode(new PB9101()
             {
                 length = 12,
                 ip = "120.27.8.104",

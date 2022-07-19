@@ -1,6 +1,6 @@
 ﻿using JtLibrary;
+using JtLibrary.Jt808_2013.Request_2013;
 using JtLibrary.PacketBody;
-using JtLibrary.PacketBody.Request;
 using JtLibrary.Structures;
 using System;
 using System.Collections.Generic;
@@ -42,7 +42,7 @@ namespace DigitalMineServer.PacketReponse
             };
 
 
-            byte[] body_8600 = new REQ_8600().Encode(new PB8600()
+            byte[] body_8600 = new REQ_8600_2013().Encode(new PB8600()
             {
                 settingProperty = 2,
 

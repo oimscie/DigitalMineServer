@@ -3,20 +3,20 @@ using DigitalMineServer.Static;
 using DigitalMineServer.SuperSocket;
 using JtLibrary;
 using JtLibrary.PacketBody;
-using JtLibrary.PacketBody.Reponse;
-using JtLibrary.PacketBody.Request;
+using JtLibrary.Jt808_2013.Request_2013;
 using JtLibrary.Structures;
 using System;
+using JtLibrary.Jt808_2013.Reponse_2013;
 
 namespace DigitalMineServer.PacketReponse
 {
     class REP0200
     {
-        private readonly REP_0200 PB0200X = new REP_0200();
+        private readonly REP_0200_2013 PB0200X = new REP_0200_2013();
         private PB0200 bodyinfo;
         public void R0200(PacketMessage msg, IPacketProvider pConvert, Jt808Session Session)
         {
-            byte[] body_0200 = new REQ_8001().Encode(new PB8001()
+            byte[] body_0200 = new REQ_8001_2013().Encode(new PB8001()
             {
                 Serialnumber = msg.pmPacketHead.phSerialnumber,
                 MessageId = msg.pmPacketHead.phMessageId,
