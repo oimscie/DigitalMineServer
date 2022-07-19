@@ -21,7 +21,7 @@ namespace JtLibrary
         /// <returns></returns>
         public byte[] Encode(PacketFrom item)
         {
-            return item.Encoding();
+            return item.Encoding_2013();
         }
 
         /// <summary>
@@ -91,9 +91,9 @@ namespace JtLibrary
         /// <param name="buffer"></param>
         /// <param name="pos">解析的位置,初始化为1开始</param>
         /// <returns></returns>
-        public PacketHead DecodeRawHead(byte[] buffer, ref int pos)
+        public PacketHead_2013 DecodeRawHead(byte[] buffer, ref int pos)
         {
-            PacketHead headInfo = new PacketHead();
+            PacketHead_2013 headInfo = new PacketHead_2013();
 
             //获取消息ID
             headInfo.phMessageId = buffer.ToUInt16(pos);
@@ -125,9 +125,9 @@ namespace JtLibrary
         /// </summary>
         /// <param name="attr"></param>
         /// <returns></returns>
-        public PacketAttribute PakcetAttributeDecode(UInt16 attr)
+        public PacketAttribute_2013 PakcetAttributeDecode(UInt16 attr)
         {
-            return new PacketAttribute()
+            return new PacketAttribute_2013()
             {
                 paMessageBodyLength = (UInt16)(attr & 0x03FF),
                 paEncryptFlag = (byte)((attr >> 10) & 0x01),

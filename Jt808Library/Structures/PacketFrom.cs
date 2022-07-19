@@ -36,19 +36,27 @@ namespace JtLibrary.Structures
         /// </summary>
         public byte pSubFlag = 0;
         /// <summary>
-        /// 六位BCD编码的SIM卡号,默认分配6个字节空间
+        /// 此处适用2019版本十位BCD编码的SIM卡号,默认分配10个字节空间，13版本前四位默认0
         /// </summary>
-        public byte[] simNumber = new byte[6];
+        public byte[] simNumber = new byte[10];
+        /// <summary>
+        /// 版本标识
+        /// </summary>
+        public byte IdentifiersVersion;
+        /// <summary>
+        /// 协议版本号
+        /// </summary>
+        public byte protocolVersion;
         /// <summary>
         /// 消息体
         /// </summary>
         public byte[] msgBody = null;
 
-        internal byte[] Encoding()
+        internal byte[] Encoding_2013()
         {
-            UInt16 k = 12, blen = 0;
+            UInt16 k = 12;
             //计算包的长度
-            blen = (UInt16)(msgBody == null ? 0 : msgBody.Length);
+            ushort blen = (ushort)(msgBody == null ? 0 : msgBody.Length);
 
             //数据包总长度
             int pLen = blen + (pSubFlag == 0 ? 12 : 16);
@@ -61,7 +69,7 @@ namespace JtLibrary.Structures
             buffer[1] = (byte)msgId;          //存低位
 
             //消息属性
-            byte[] arr = (new PacketAttribute()
+            byte[] arr = (new PacketAttribute_2013()
             {
                 paEncryptFlag = pEncryptFlag,
                 paSubFlag = pSubFlag,
@@ -70,16 +78,8 @@ namespace JtLibrary.Structures
 
             buffer[2] = arr[0];
             buffer[3] = arr[1];
-
-            //手机号
-            simNumber.CopyTo(buffer, 4);//6 byte
-            //buffer[4] = simNumber[0];
-            //buffer[5] = simNumber[1];
-            //buffer[6] = simNumber[2];
-            //buffer[7] = simNumber[3];
-            //buffer[8] = simNumber[4];
-            //buffer[9] = simNumber[5];
-
+            //终端手机号,13版本前四位默认0
+            Buffer.BlockCopy(simNumber, 4, buffer, 4, 6);
             //流水号
             buffer[10] = (byte)(msgSerialnumber >> 8);
             buffer[11] = (byte)msgSerialnumber;
@@ -102,7 +102,57 @@ namespace JtLibrary.Structures
 
             return Escape(buffer);
         }
+        internal byte[] Encoding_2019()
+        {
+            UInt16 k = 17;
+            //计算包的长度
+            ushort blen = (ushort)(msgBody == null ? 0 : msgBody.Length);
 
+            //数据包总长度
+            int pLen = blen + (pSubFlag == 0 ? 17 : 21);
+
+            //分配数据长度
+            byte[] buffer = new byte[pLen];
+
+            //消息头ID
+            buffer[0] = (byte)(msgId >> 8);   //存高位
+            buffer[1] = (byte)msgId;          //存低位
+
+            //消息属性
+            byte[] arr = new PacketAttribute_2019()
+            {
+                paEncryptFlag = pEncryptFlag,
+                paSubFlag = pSubFlag,
+                paMessageBodyLength = blen,
+                IdentifiersVersion = IdentifiersVersion
+            }.Encoding();
+
+            buffer[2] = arr[0];
+            buffer[3] = arr[1];
+            //协议版本号
+            buffer[4] = protocolVersion;
+            //手机号
+            simNumber.CopyTo(buffer, 5);//10 byte
+            //流水号
+            buffer[15] = (byte)(msgSerialnumber >> 8);
+            buffer[16] = (byte)msgSerialnumber;
+            //判断是否分包
+            if (pSubFlag != 0)
+            {
+                //包总数
+                buffer[17] = (byte)(pTotal >> 8);
+                buffer[18] = (byte)pTotal;
+                //包序号
+                buffer[19] = (byte)(pSerialnumber >> 8);
+                buffer[20] = (byte)pSerialnumber;
+                k = 21;
+            }
+            if (blen > 0)
+            {
+                msgBody.CopyTo(buffer, k);
+            }
+            return Escape(buffer);
+        }
         /// <summary>
         /// 数据转义
         /// </summary>
