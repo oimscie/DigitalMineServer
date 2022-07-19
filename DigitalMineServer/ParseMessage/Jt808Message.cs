@@ -20,7 +20,7 @@ namespace DigitalMineServer
 {
     public class Jt808Message
     {
-        private MySqlHelper mysql;
+        private readonly MySqlHelper mysql;
         public Jt808Message()
         {
             mysql = new MySqlHelper();
@@ -67,39 +67,41 @@ namespace DigitalMineServer
                 {
                     ThreadPool.QueueUserWorkItem(OutMessage, Rebyte);
                 }
-                if (msg != null && msg.pmPacketHead.phMessageId.ToString() != null)
+                if (msg == null)
                 {
-                    switch (msg.pmPacketHead.phMessageId)
-                    {
-                        case JT808Cmd.RSP_0102:
-                            new REP0102().R0102(msg, pConvert, Session);
-                            break;
-                        case JT808Cmd.RSP_0100:
-                            new REP0100().R0100(msg, pConvert, Session);
-                            break;
-                        case JT808Cmd.RSP_0200:
-                            new REP0200().R0200(msg, pConvert, Session);
-                            break;
-                        case JT808Cmd.RSP_0002:
-                            new REP0002().R0002(msg, pConvert, Session);
-                            break;
-                        case JT808Cmd.RSP_0702:
-                            new REP0702().R0702(msg, pConvert, Session);
-                            break;
-                        case JT808Cmd.RSP_0704:
-                            new REP0704().R0704(msg, pConvert, Session);
-                            break;
-                        case JT1078Cmd.REQ_1003:
-                            new REPDefault().Default(msg, pConvert, Session);
-                            break;
-                        case JT1078Cmd.REQ_1205:
-                            new REPDefault().Default(msg, pConvert, Session);
-                            break;
-                        default:
-                            new REPDefault().Default(msg, pConvert, Session);
-                            break;
-                    }
+                    return;
                 }
+                switch (msg.pmPacketHead.phMessageId)
+                {
+                    case JT808Cmd.RSP_0102:
+                        new REP0102().R0102(msg, pConvert, Session);
+                        break;
+                    case JT808Cmd.RSP_0100:
+                        new REP0100().R0100(msg, pConvert, Session);
+                        break;
+                    case JT808Cmd.RSP_0200:
+                        new REP0200().R0200(msg, pConvert, Session);
+                        break;
+                    case JT808Cmd.RSP_0002:
+                        new REP0002().R0002(msg, pConvert, Session);
+                        break;
+                    case JT808Cmd.RSP_0702:
+                        new REP0702().R0702(msg, pConvert, Session);
+                        break;
+                    case JT808Cmd.RSP_0704:
+                        new REP0704().R0704(msg, pConvert, Session);
+                        break;
+                    case JT1078Cmd.REQ_1003:
+                        new REPDefault().Default(msg, pConvert, Session);
+                        break;
+                    case JT1078Cmd.REQ_1205:
+                        new REPDefault().Default(msg, pConvert, Session);
+                        break;
+                    default:
+                        new REPDefault().Default(msg, pConvert, Session);
+                        break;
+                }
+
             }
             catch (Exception e)
             {

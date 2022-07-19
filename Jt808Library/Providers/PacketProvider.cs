@@ -91,22 +91,34 @@ namespace JtLibrary
         /// <param name="buffer"></param>
         /// <param name="pos">解析的位置,初始化为1开始</param>
         /// <returns></returns>
-        public PacketHead_2013 DecodeRawHead(byte[] buffer, ref int pos)
+        public PacketHead DecodeRawHead(byte[] buffer, ref int pos)
         {
-            PacketHead_2013 headInfo = new PacketHead_2013();
+            PacketHead headInfo = new PacketHead();
 
             //获取消息ID
             headInfo.phMessageId = buffer.ToUInt16(pos);
-
             //获取消息体属性
             UInt16 attr = buffer.ToUInt16(pos += 2);
             headInfo.phPacketHeadAttribute = PakcetAttributeDecode(attr);
-
-            //获取电话号码
-            buffer.CopyTo(pos += 2, headInfo.hSimNumber, 0, 6);
-
-            //获取消息流水号
-            headInfo.phSerialnumber = buffer.ToUInt16(pos += 6);
+            //根据版本标识判断终端版本
+            if (headInfo.phPacketHeadAttribute.IdentifiersVersion == 1)
+            {
+                //获取协议版本号
+                headInfo.protocolVersion = buffer[pos += 1];
+                //获取电话号码
+                buffer.CopyTo(pos += 2, headInfo.hSimNumber, 0, 10);
+                //获取消息流水号
+                headInfo.phSerialnumber = buffer.ToUInt16(pos += 10);
+            }
+            else
+            {
+                //获取电话号码,13版6位BCD格式，此处使用19版10位BCD格式，因此前四位为0
+                buffer.CopyTo(pos += 2, headInfo.hSimNumber, 4, 6);
+                //获取消息流水号
+                headInfo.phSerialnumber = buffer.ToUInt16(pos += 6);
+                //13版没有协议版本号，此处记为0
+                headInfo.protocolVersion = 0;
+            }
             //消息包封装项
             if (headInfo.phPacketHeadAttribute.paSubFlag == 1)
             {
@@ -125,13 +137,14 @@ namespace JtLibrary
         /// </summary>
         /// <param name="attr"></param>
         /// <returns></returns>
-        public PacketAttribute_2013 PakcetAttributeDecode(UInt16 attr)
+        public PacketAttribute PakcetAttributeDecode(UInt16 attr)
         {
-            return new PacketAttribute_2013()
+            return new PacketAttribute()
             {
                 paMessageBodyLength = (UInt16)(attr & 0x03FF),
                 paEncryptFlag = (byte)((attr >> 10) & 0x01),
-                paSubFlag = (byte)((attr >> 13) & 0x01)
+                paSubFlag = (byte)((attr >> 13) & 0x01),
+                IdentifiersVersion = (byte)((attr >> 14) & 0x01)
             };
         }
 
