@@ -45,6 +45,8 @@ namespace JtLibrary.Jt808_2019.Reponse_2019
                 item.CertificateAuthorityName = encoding.GetString(msgBody.Copy(indexOffset += 1, len));
 
                 item.CertificateDeadline = msgBody.Copy(indexOffset += len, 4);
+
+                item.DriverIdentityCard= encoding.GetString(msgBody.Copy(indexOffset +=4, 20));
             }
 
             return item;

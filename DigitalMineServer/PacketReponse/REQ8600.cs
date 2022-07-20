@@ -1,13 +1,17 @@
 ﻿using JtLibrary;
 using JtLibrary.Jt808_2013.Request_2013;
 using JtLibrary.PacketBody;
+using JtLibrary.Providers;
 using JtLibrary.Structures;
 using System;
 using System.Collections.Generic;
 
 namespace DigitalMineServer.PacketReponse
 {
-    public class REP8600
+    /// <summary>
+    /// 电子围栏弃用，改由服务器判定是否越界
+    /// </summary>
+    public class REQ8600
     {
         public byte[] R8600(string sim)
         {
@@ -45,7 +49,7 @@ namespace DigitalMineServer.PacketReponse
 
                 circleItemsInfo = new List<PB8600Item>() { PB8600Item }
             });
-            byte[] buffer = PacketProvider.CreateProvider().Encode(new PacketFrom()
+            byte[] buffer = PacketProvider.CreateProvider().Encode_2013(new PacketFrom()
             {
                 msgBody = body_8600,
                 msgId = JT808Cmd.REQ_8600,

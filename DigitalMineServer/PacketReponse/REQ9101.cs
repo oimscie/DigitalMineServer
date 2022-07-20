@@ -1,11 +1,12 @@
 ﻿using JtLibrary;
-using JtLibrary.Jt1078_2016.Request;
+using JtLibrary.Jt1078_2016.Request_2016;
 using JtLibrary.PacketBody;
+using JtLibrary.Providers;
 using JtLibrary.Structures;
 
 namespace DigitalMineServer.PacketReponse
 {
-    class REP9101
+    class REQ9101
     {
         public byte[] R9101(string[] data)
         {
@@ -25,7 +26,7 @@ namespace DigitalMineServer.PacketReponse
                 datatype = byte.Parse(data[2]),
                 datatypes = 0
             });
-            byte[] buffer = PacketProvider.CreateProvider().Encode(new PacketFrom()
+            byte[] buffer = PacketProvider.CreateProvider().Encode_2013(new PacketFrom()
             {
                 msgBody = body_9101,
                 msgId = JT1078Cmd.REQ_9101,

@@ -27,12 +27,12 @@ namespace DigitalMineServer.ParseMessage
                 {
                     //音频请求
                     case "audio":
-                        SendMessage(new REP9101().R9101(orderItem), orderItem[1]);
+                        SendMessage(new REQ9101().R9101(orderItem), orderItem[1]);
                         Session.Sim = orderItem[1];
                         break;
                     //音频控制
                     case "audioControl":
-                        SendMessage(new REP9102().R9102(orderItem), orderItem[1]);
+                        SendMessage(new REQ9102().R9102(orderItem), orderItem[1]);
                         break;
                     default:
                         Session.Close();

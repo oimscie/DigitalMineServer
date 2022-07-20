@@ -396,6 +396,10 @@ namespace JtLibrary.PacketBody
         /// 证件期限,4位BCD码
         /// </summary>
         public byte[] CertificateDeadline;
+        /// <summary>
+        /// 驾驶员身份证
+        /// </summary>
+        public string DriverIdentityCard;
     }
 
     /// <summary>
@@ -824,7 +828,7 @@ namespace JtLibrary.PacketBody
     public struct PB8300
     {
         /// <summary>
-        /// （0-1）1:紧急内容
+        /// 13版：（0-1）1:紧急内容||19版：01：服务，10：紧急，11：通知
         /// </summary>
         public byte EmFlag;
         /// <summary>
@@ -836,7 +840,7 @@ namespace JtLibrary.PacketBody
         /// </summary>
         public byte tts;
         /// <summary>
-        /// (0-1)1:广告屏显示
+        /// 13版：(0-1)1:广告屏显示||19版：此位保留置0
         /// </summary>
         public byte adScreen;
         /// <summary>

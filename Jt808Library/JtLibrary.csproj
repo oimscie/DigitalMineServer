@@ -187,6 +187,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Providers\IPacketProvider.cs" />
     <Compile Include="Providers\PacketProvider.cs" />
+    <Compile Include="Providers\RtpDecoding.cs" />
     <Compile Include="Structures\equipVersion.cs" />
     <Compile Include="Structures\PacketCmd.cs" />
     <Compile Include="Structures\PacketFrom.cs" />
@@ -194,9 +195,8 @@
     <Compile Include="Structures\ReplyCode.cs" />
     <Compile Include="Structures\WarnType.cs" />
     <Compile Include="Utils\BitConvert.cs" />
-    <Compile Include="Utils\CoordinateTransform.cs" />
     <Compile Include="Utils\Extension.cs" />
-    <Compile Include="Utils\Polygon.cs" />
+    <Compile Include="Utils\VersionCheck.cs" />
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>

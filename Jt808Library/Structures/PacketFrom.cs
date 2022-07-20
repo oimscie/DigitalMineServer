@@ -126,7 +126,7 @@ namespace JtLibrary.Structures
             buffer[1] = (byte)msgId;          //存低位
 
             //消息属性
-            byte[] arr = new PacketAttribute_2019()
+            byte[] arr = new PacketAttribute()
             {
                 paEncryptFlag = pEncryptFlag,
                 paSubFlag = pSubFlag,

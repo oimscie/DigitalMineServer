@@ -1,12 +1,12 @@
 ﻿using JtLibrary;
 using JtLibrary.PacketBody;
 
-namespace DigitalMineServer.PacketReponse
+namespace JtLibrary.Providers
 {
-    class ParseVehicleVideoAndAudio
+   public class RtpDecoding
     {
         /// <summary>
-        /// 音视频消息体解析
+        /// Rtp音视频消息体解析
         /// </summary>
         /// <param name="msgBody"></param>
         /// <returns></returns>

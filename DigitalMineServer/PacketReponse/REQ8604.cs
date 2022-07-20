@@ -1,13 +1,17 @@
 ﻿using JtLibrary;
 using JtLibrary.Jt808_2013.Request_2013;
 using JtLibrary.PacketBody;
+using JtLibrary.Providers;
 using JtLibrary.Structures;
 using System;
 using System.Collections.Generic;
 
 namespace DigitalMineServer.PacketReponse
 {
-    public class REP8604
+    /// <summary>
+    /// 弃用
+    /// </summary>
+    public class REQ8604
     {
         public byte[] R8604(string sim, List<UInt32UInt32> polygonItemsInfo)
         {
@@ -34,7 +38,7 @@ namespace DigitalMineServer.PacketReponse
                 overSpeedingTime = 0,
                 polygonItemsInfo = polygonItemsInfo
             });
-            byte[] buffer = PacketProvider.CreateProvider().Encode(new PacketFrom()
+            byte[] buffer = PacketProvider.CreateProvider().Encode_2013(new PacketFrom()
             {
                 msgBody = body_8604,
                 msgId = JT808Cmd.REQ_8604,

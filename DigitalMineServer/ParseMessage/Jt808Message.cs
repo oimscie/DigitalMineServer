@@ -4,9 +4,11 @@ using DigitalMineServer.Static;
 using DigitalMineServer.SuperSocket;
 using DigitalMineServer.SuperSocket.SocketServer;
 using DigitalMineServer.Util;
+using DigitalMineServer.Util.Transform;
 using JtLibrary;
 using JtLibrary.Jt808_2013.Reponse_2013;
 using JtLibrary.PacketBody;
+using JtLibrary.Providers;
 using JtLibrary.Structures;
 using JtLibrary.Utils;
 using SuperSocket.SocketBase;
@@ -146,7 +148,7 @@ namespace DigitalMineServer
                         continue;
                     }
                     //经纬度转换2000坐标
-                    List<double> xy = CTransform.WGS84ToXY(Convert.ToDouble(bodyinfo.Latitude) / 1000000, Convert.ToDouble(bodyinfo.Longitude) / 1000000, 3);
+                    List<double> xy = WGS84ToCS2000.WGS84ToXY(Convert.ToDouble(bodyinfo.Latitude) / 1000000, Convert.ToDouble(bodyinfo.Longitude) / 1000000, 3);
                     //根据sim获取车辆信息
                     Resource.VehicleList.TryGetValue(Sim, out ValueTuple<string, string, string, string, string, string> vehicleInfo);
                     string sql = null;
@@ -188,7 +190,7 @@ namespace DigitalMineServer
                             "and Company='" + vehicleInfo.Item3 + "' and ADD_TIME>=DATE_SUB(NOW(),INTERVAL 1 MINUTE)") == 0)
                         {
                             //给车辆发送超速警告，语音播报
-                            SendMessage(Sim, new REP8300().R8300(Sim, "你已超速，限速" + vehicleInfo.Item4));
+                            SendMessage(Sim, new REQ8300().R8300(Sim, "你已超速，限速" + vehicleInfo.Item4));
                             sql = "INSERT INTO `rec_unu_speed`" +
                                 "(`VEHICLE_ID`, `DRIVER`, `VEHICLE_TYPE`, `POSI_SPEED`, `POSI_X`, `POSI_Y`, `COMPANY`, `ADD_TIME`, `TEMP1`, `TEMP2`, `TEMP3`, `TEMP4`" +
                                 ") " +

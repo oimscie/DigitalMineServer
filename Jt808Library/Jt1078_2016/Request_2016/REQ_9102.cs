@@ -1,7 +1,7 @@
 ﻿using JtLibrary.PacketBody;
 using System.Collections.Generic;
 
-namespace JtLibrary.Jt1078_2016.Request
+namespace JtLibrary.Jt1078_2016.Request_2016
 {
     public class REQ_9102_2016
     {

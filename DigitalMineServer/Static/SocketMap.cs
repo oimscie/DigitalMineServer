@@ -5,6 +5,7 @@ using JtLibrary.Utils;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using static JtLibrary.Structures.EquipVersion;
 
 namespace DigitalMineServer.Static
 {
@@ -26,7 +27,7 @@ namespace DigitalMineServer.Static
 
             fenceFanbidOutInfo = new ConcurrentDictionary<string, (string, string, string, string, string, List<Point>)>();
 
-            equipVersion = new ConcurrentDictionary<string, (int, int, int, int)>();
+            equipVersion = new ConcurrentDictionary<string, (Version_808, Version_1078, Version_AcSafe, int)>();
         }
         /// <summary>
         ///终端上传原始数据数据队列(原始数据--session)
@@ -75,12 +76,12 @@ namespace DigitalMineServer.Static
         /// </summary>
         public static ConcurrentDictionary<string, ValueTuple<string, string, string, string, string, List<Point>>> fenceFanbidOutInfo;
         /// <summary>
-        /// 终端版本字典<终端SIM号，版本信息>
+        /// 终端版本字典，sim为key
         /// item1:808版本
         /// item2:主动安全版本
         /// item3:1078版本
         /// Item4:协议版本号，19版开始每次关键修订递增，初始版本为1
         /// </summary>
-        public static ConcurrentDictionary<string, ValueTuple<int, int, int, int>> equipVersion;
+        public static ConcurrentDictionary<string, ValueTuple<Version_808, Version_1078, Version_AcSafe, int>> equipVersion;
     }
 }

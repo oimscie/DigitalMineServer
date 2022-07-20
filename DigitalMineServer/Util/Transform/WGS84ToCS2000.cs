@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace DigitalMineServer.Util.Transform
 {
-    public class WGS84ToCS2000
+    public static class WGS84ToCS2000
     {
         /// <summary>
         /// WGS-84转2000坐标
@@ -15,7 +15,7 @@ namespace DigitalMineServer.Util.Transform
         /// <param name="L">经度</param>
         /// <param name="degree">3度带、6度带</param>
         /// <returns></returns>
-        public static List<double> GpsToXY(double B, double L, double degree)
+        public static List<double> WGS84ToXY(double B, double L, double degree)
         {
             List<double> xy = new List<double>
             {

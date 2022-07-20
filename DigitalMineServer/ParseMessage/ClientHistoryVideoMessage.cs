@@ -25,7 +25,7 @@ namespace DigitalMineServer.ParseMessage
                     var sessions = Server.GetSessions(s => s.Sim == orderItem[1] && s.Port == byte.Parse(orderItem[5]));
                     if (sessions.Count() == 0)
                     {
-                        SendMessage(new REP9201().R9201(orderItem), orderItem, session);
+                        SendMessage(new REQ9201().R9201(orderItem), orderItem, session);
                     }
                     else
                     {
@@ -34,7 +34,7 @@ namespace DigitalMineServer.ParseMessage
                     break;
                 //录像控制请求
                 case "hisVideoControl":
-                    SendMessage(new REP9202().R9202(orderItem), orderItem, session);
+                    SendMessage(new REQ9202().R9202(orderItem), orderItem, session);
                     break;
                 default:
                     session.Close();

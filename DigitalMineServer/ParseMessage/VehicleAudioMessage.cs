@@ -1,11 +1,9 @@
-﻿using DigitalMineServer.implement;
-using DigitalMineServer.PacketReponse;
-using DigitalMineServer.SuperSocket;
+﻿using DigitalMineServer.SuperSocket;
 using DigitalMineServer.SuperSocket.SocketServer;
 using JtLibrary;
 using JtLibrary.PacketBody;
+using JtLibrary.Providers;
 using SuperSocket.SocketBase;
-using System.Collections.Generic;
 using System.Linq;
 namespace DigitalMineServer.ParseMessage
 {
@@ -14,12 +12,12 @@ namespace DigitalMineServer.ParseMessage
     {
         //消息结束符
         private readonly byte[] endMark = new byte[] { 11, 22, 33, 44 };
-        public void Parse(VehicleAudioSession session,byte[] buffer)
+        public void Parse(VehicleAudioSession session, byte[] buffer)
         {
             //判断session是否是首次连接，如果是则解析消息体获取SIM
             if (session.Sim == null)
             {
-                Video bodyinfo = new ParseVehicleVideoAndAudio().Decode(buffer);
+                Video bodyinfo = new RtpDecoding().Decode(buffer);
                 session.Sim = Extension.BCDToString(bodyinfo.SIM);
             }
             //获取客户端音频请求头并下发音频流
@@ -29,7 +27,7 @@ namespace DigitalMineServer.ParseMessage
             {
                 foreach (var item in sessions)
                 {
-                 item.Send(buffer.Concat(endMark).ToArray(), 0, buffer.Length+4);
+                    item.Send(buffer.Concat(endMark).ToArray(), 0, buffer.Length + 4);
                 }
             }
             else

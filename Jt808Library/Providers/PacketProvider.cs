@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace JtLibrary
+namespace JtLibrary.Providers
 {
     using Structures;
 
@@ -15,15 +15,23 @@ namespace JtLibrary
         }
 
         /// <summary>
-        /// 序列化结构信息为字节序
+        /// 序列化结构信息为字节序-2013
         /// </summary>
         /// <param name="item"></param>
         /// <returns></returns>
-        public byte[] Encode(PacketFrom item)
+        public byte[] Encode_2013(PacketFrom item)
         {
             return item.Encoding_2013();
         }
-
+        /// <summary>
+        /// 序列化结构信息为字节序-2019
+        /// </summary>
+        /// <param name="item"></param>
+        /// <returns></returns>
+        public byte[] Encode_2019(PacketFrom item)
+        {
+            return item.Encoding_2019();
+        }
         /// <summary>
         /// 反序列化字节序为结构信息
         /// </summary>

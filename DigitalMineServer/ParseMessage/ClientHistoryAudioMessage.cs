@@ -20,11 +20,11 @@ namespace DigitalMineServer.ParseMessage
             {
                 case "audio":
                     session.Sim = orderItem[1];
-                    SendMessage(new REP9201().R9201(orderItem), orderItem[1], session);
+                    SendMessage(new REQ9201().R9201(orderItem), orderItem[1], session);
                     break;
                 case "audioControl":
                     session.Sim = orderItem[1];
-                    SendMessage(new REP9102().R9102(orderItem), orderItem[1], session);
+                    SendMessage(new REQ9102().R9102(orderItem), orderItem[1], session);
                     break;
                 default:
                     session.Close();

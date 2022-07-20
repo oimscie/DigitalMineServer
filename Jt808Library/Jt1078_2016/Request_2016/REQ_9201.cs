@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace JtLibrary.Jt1078_2016.Request
+namespace JtLibrary.Jt1078_2016.Request_2016
 {
     public class REQ_9201_2016
     {
