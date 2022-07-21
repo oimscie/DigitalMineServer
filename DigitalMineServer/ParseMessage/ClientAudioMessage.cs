@@ -1,4 +1,5 @@
 ﻿using DigitalMineServer.implement;
+using DigitalMineServer.OrderMessage;
 using DigitalMineServer.PacketReponse;
 using DigitalMineServer.SuperSocket;
 using DigitalMineServer.SuperSocket.SocketServer;
@@ -13,7 +14,12 @@ namespace DigitalMineServer.ParseMessage
     //客户端音频消息
     class ClientAudioMessage
     {
-        public void ParseOrder(ClientAudioSession Session,byte[] buffer)
+        private readonly OrderMessageDecode Decode;
+        private ClientAudioMessage()
+        {
+            Decode = new OrderMessageDecode();
+        }
+        public void ParseOrder(ClientAudioSession Session, byte[] buffer)
         {
             //判断消息长度，长度大于30直接转发终端，音频消息头26位结束符4位共计30位
             if (buffer.Length > 30)
@@ -22,17 +28,18 @@ namespace DigitalMineServer.ParseMessage
             }
             else
             {
-                string[] orderItem = Encoding.UTF8.GetString(buffer).Split('!');
-                switch (orderItem[0])
+                switch (Decode.GetMessageHead(buffer))
                 {
                     //音频请求
-                    case "audio":
-                        SendMessage(new REQ9101().R9101(orderItem), orderItem[1]);
-                        Session.Sim = orderItem[1];
+                    case OrderMessageType.AudioAndVideo:
+                        AudioAndVideo Audio = Decode.AudioAndVideo(buffer);
+                        SendMessage(new REQ9101().R9101(Audio), Audio.sim);
+                        Session.Sim = Audio.sim;
                         break;
                     //音频控制
-                    case "audioControl":
-                        SendMessage(new REQ9102().R9102(orderItem), orderItem[1]);
+                    case OrderMessageType.AudioAndVideoControl:
+                        /*   AudioAndVideoControl control=Decode.A
+                           SendMessage(new REQ9102().R9102(orderItem), orderItem[1]);*/
                         break;
                     default:
                         Session.Close();
@@ -56,7 +63,8 @@ namespace DigitalMineServer.ParseMessage
             var Jt808sessions = Jt808Server.GetSessions(s => s.Sim == sim);
             if (Jt808sessions.Count() == 1)
             {
-                foreach (var item in Jt808sessions) {
+                foreach (var item in Jt808sessions)
+                {
                     item.Send(buffer, 0, buffer.Length);
                 }
             }

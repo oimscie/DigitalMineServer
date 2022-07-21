@@ -1,4 +1,5 @@
 ﻿using DigitalMineServer.implement;
+using DigitalMineServer.OrderMessage;
 using DigitalMineServer.PacketReponse;
 using DigitalMineServer.SuperSocket;
 using DigitalMineServer.SuperSocket.SocketServer;
@@ -13,16 +14,21 @@ namespace DigitalMineServer.ParseMessage
     //用户端数据处理软件消息
     class DataMessage
     {
-        public void ParseOrder(DataSession Session,byte[] buffer)
+        private readonly OrderMessageDecode Decode;
+        private DataMessage()
         {
-            string[] info = Encoding.UTF8.GetString(buffer).Split('!');
-            switch (info[0]) {
+            Decode = new OrderMessageDecode();
+        }
+        public void ParseOrder(DataSession Session, byte[] buffer)
+        {
+            switch (Decode.GetMessageHead(buffer))
+            {
                 //心跳
-                case "Heart":
+                case OrderMessageType.LocalHeart:
                     break;
-                //登录
-                case "Company":
-                    Session.Company = Encoding.UTF8.GetString(buffer).Split('!')[1];
+                //本地数据终端上报所属公司
+                case OrderMessageType.LocalReportCompany:
+                    Session.Company = Decode.LocalReportCompany(buffer).Company;
                     break;
                 default:
                     Session.Close();

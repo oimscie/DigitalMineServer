@@ -117,6 +117,9 @@
     </Compile>
     <Compile Include="Mysql\MySqlHelper.cs" />
     <Compile Include="Mysql\vehicleStateEntity.cs" />
+    <Compile Include="OrderMessage\OrderMessageBody.cs" />
+    <Compile Include="OrderMessage\OrderMessageDecode.cs" />
+    <Compile Include="OrderMessage\PacketForm.cs" />
     <Compile Include="PacketReponse\REP0002.cs" />
     <Compile Include="PacketReponse\REP0100.cs" />
     <Compile Include="PacketReponse\REP0102.cs" />
@@ -146,6 +149,7 @@
     <Compile Include="ParseMessage\VehicleAudioMessage.cs" />
     <Compile Include="ParseMessage\VehicleHistoryVideoMessage.cs" />
     <Compile Include="ParseMessage\VehicleVideoMessage.cs" />
+    <Compile Include="OrderMessage\OrderMessageType.cs" />
     <Compile Include="SuperSocket\Command\FileCommand.cs" />
     <Compile Include="SuperSocket\Command\MontorCommand.cs" />
     <Compile Include="SuperSocket\Command\DataCommand.cs" />

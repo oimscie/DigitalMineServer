@@ -1,4 +1,5 @@
 ﻿using DigitalMineServer.implement;
+using DigitalMineServer.OrderMessage;
 using DigitalMineServer.SuperSocket;
 using DigitalMineServer.SuperSocket.SocketServer;
 using SuperSocket.SocketBase;
@@ -10,17 +11,21 @@ namespace DigitalMineServer.ParseMessage
     //客户端消息
     class ClientMessage
     {
+        private readonly OrderMessageDecode Decode;
+        private ClientMessage()
+        {
+            Decode = new OrderMessageDecode();
+        }
         public void ParseOrder(ClientSession session,byte[] buffer)
         {
-            string[] orderItem = Encoding.UTF8.GetString(buffer).Trim('$').Split('!');
-            switch (orderItem[0])
+            switch (Decode.GetMessageHead(buffer))
             {
-                //客户所登录
-                case "login":
-                    session.Uuid = orderItem[1];
+                //客户端登录
+                case OrderMessageType.Login:
+                    session.Uuid = Decode.Login(buffer).uuid;
                     break;
                 //心跳
-                case "heart":
+                case OrderMessageType.ClientHeart:
                     break;
                 default:
                     session.Close();

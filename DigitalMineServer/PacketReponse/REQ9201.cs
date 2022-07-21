@@ -1,4 +1,5 @@
 ﻿
+using DigitalMineServer.OrderMessage;
 using JtLibrary;
 using JtLibrary.Jt1078_2016.Request_2016;
 using JtLibrary.PacketBody;
@@ -10,28 +11,23 @@ namespace DigitalMineServer.PacketReponse
 {
     class REQ9201
     {
-        public byte[] R9201(string[] data)
+        public byte[] R9201(HisVideoAndAudio HisVideoAndAudio)
         {
-            ushort ports = 8089;
-            byte id = byte.Parse(data[5]);
-            if (data[2] == "1")
-            {
-                ports = 8088;
-            }
+            int ports = HisVideoAndAudio.datatype == "1" ? 8088 : 8089;
             byte[] body_9201 = new REQ_9201_2016().Encode(new PB9201()
             {
                 length = 12,
                 ip = "120.27.8.104",
-                port = ports,
+                port = (ushort)ports,
                 ports = 0,
-                id = id,
-                datatype = 2,
-                datatypes = 1,
+                id = byte.Parse(HisVideoAndAudio.id),
+                datatype = byte.Parse(HisVideoAndAudio.datatype),
+                datatypes = byte.Parse(HisVideoAndAudio.datatypes),
                 memoryType = 0,
-                ReviewType = 0,
-                FastOrSlow = 0,
-                StartTime = Extension.TimeFormatToBCD(Convert.ToDateTime(data[3])),
-                OverTime = Extension.TimeFormatToBCD(Convert.ToDateTime(data[4])),
+                ReviewType = byte.Parse(HisVideoAndAudio.ReviewType),
+                FastOrSlow = byte.Parse(HisVideoAndAudio.FastOrSlow),
+                StartTime = Extension.TimeFormatToBCD(Convert.ToDateTime(HisVideoAndAudio.StartTime)),
+                OverTime = Extension.TimeFormatToBCD(Convert.ToDateTime(HisVideoAndAudio.OverTime)),
             });
             byte[] buffer = PacketProvider.CreateProvider().Encode_2013(new PacketFrom()
             {
@@ -42,7 +38,7 @@ namespace DigitalMineServer.PacketReponse
                 pSerialnumber = 1,
                 pSubFlag = 0,
                 pTotal = 1,
-                simNumber = Extension.ToBCD(data[1]),
+                simNumber = Extension.ToBCD(HisVideoAndAudio.sim),
             });
             return buffer;
         }

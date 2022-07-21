@@ -20,11 +20,11 @@ namespace DigitalMineServer.ParseMessage
             {
                 Video bodyinfo = new RtpDecoding().Decode(buffer);
                 session.Sim = Extension.BCDToString(bodyinfo.SIM);
-                session.Port = bodyinfo.ID;
+                session.Id = bodyinfo.ID;
             }
             //获取客户端录像请求连接头下发视频流
             ClientVideoServer Server = JtServerForm.bootstrap.GetServerByName("ClientVideoServer") as ClientVideoServer;
-            var sessions = Server.GetSessions(s => s.Sim == session.Sim && s.Port == session.Port);
+            var sessions = Server.GetSessions(s => s.Sim == session.Sim && s.Id == session.Id);
             if (sessions.Count() > 0)
             {
                 foreach (var item in sessions)

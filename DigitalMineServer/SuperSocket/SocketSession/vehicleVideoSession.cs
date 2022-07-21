@@ -11,8 +11,14 @@ namespace DigitalMineServer.SuperSocket
 {
     public class VehicleVideoSession : AppSession<VehicleVideoSession, BinaryRequestInfo>
     {
+        /// <summary>
+        /// 终端sim
+        /// </summary>
         public string Sim { get; set; }
-        public byte Port { get; set; }
+        /// <summary>
+        /// 通道号
+        /// </summary>
+        public byte Id { get; set; }
         public override void Send(string message)
         { 
             base.Send(message);
