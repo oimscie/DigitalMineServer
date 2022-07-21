@@ -64,4 +64,56 @@ namespace DigitalMineServer.OrderMessage
         /// </summary>
         public const string MonitorUpload = "5100";
     }
+    /// <summary>
+    /// 监控操作类型
+    /// </summary>
+    public struct MonitorOperationType
+    {
+        /// <summary>
+        /// 上
+        /// </summary>
+        public const string up = "1";
+        /// <summary>
+        /// 下
+        /// </summary>
+        public const string down = "2";
+        /// <summary>
+        /// 左
+        /// </summary>
+        public const string left = "3";
+        /// <summary>
+        /// 右
+        /// </summary>
+        public const string right = "4";
+        /// <summary>
+        /// 放大
+        /// </summary>
+        public const string amplification = "5";
+        /// <summary>
+        /// 缩小
+        /// </summary>
+        public const string narrow = "6";
+        /// <summary>
+        /// 前移
+        /// </summary>
+        public const string forward = "7";
+        /// <summary>
+        /// 后移
+        /// </summary>
+        public const string back = "8";
+    }
+    /// <summary>
+    /// 操作类型
+    /// </summary>
+    public struct StartOrStop
+    {
+        /// <summary>
+        /// 开始
+        /// </summary>
+        public const string start = "1";
+        /// <summary>
+        /// 停止
+        /// </summary>
+        public const string Stop = "0";
+    }
 }

@@ -42,13 +42,22 @@ namespace DigitalMineServer.OrderMessage
             return encoding.GetBytes(AudioAndVideo.messageType + Separator + AudioAndVideo.sim + Separator + AudioAndVideo.datatype + Separator + AudioAndVideo.id + Separator + AudioAndVideo.datatypes + Separator + AudioAndVideo.version1078).Concat(Mark2).ToArray();
         }
         /// <summary>
-        /// 车载历史音视频请求封包
+        /// 车载历史视频请求封包
         /// </summary>
         /// <param name="HisVideo"></param>
         /// <returns></returns>
-        public byte[] HisVideoAndAudio(HisVideoAndAudio HisVideo)
+        public byte[] HisVideo(HisVideoAndAudio HisVideo)
         {
-            return encoding.GetBytes(Mark + HisVideo.messageType + Separator + HisVideo.sim + Separator + HisVideo.datatype + Separator + HisVideo.StartTime + Separator + HisVideo.OverTime + Separator + HisVideo.id + Separator + HisVideo.datatypes+Separator+ HisVideo.version1078+Separator+ HisVideo .ReviewType+Separator+ HisVideo .FastOrSlow+ Mark);
+            return encoding.GetBytes(Mark + HisVideo.messageType + Separator + HisVideo.sim + Separator + HisVideo.datatype + Separator + HisVideo.StartTime + Separator + HisVideo.OverTime + Separator + HisVideo.id + Separator + HisVideo.datatypes + Separator + HisVideo.version1078 + Separator + HisVideo.ReviewType + Separator + HisVideo.FastOrSlow + Mark);
+        }
+        /// <summary>
+        /// 车载历史音频请求封包
+        /// </summary>
+        /// <param name="HisVideo"></param>
+        /// <returns></returns>
+        public byte[] HisAudio(HisVideoAndAudio HisAudio)
+        {
+            return encoding.GetBytes(HisAudio.messageType + Separator + HisAudio.sim + Separator + HisAudio.datatype + Separator + HisAudio.StartTime + Separator + HisAudio.OverTime + Separator + HisAudio.id + Separator + HisAudio.datatypes + Separator + HisAudio.version1078 + Separator + HisAudio.ReviewType + Separator + HisAudio.FastOrSlow).Concat(Mark2).ToArray();
         }
 
 
