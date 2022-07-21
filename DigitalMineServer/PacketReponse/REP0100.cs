@@ -6,6 +6,8 @@ using JtLibrary.Jt808_2019.Request_2019;
 using JtLibrary.PacketBody;
 using JtLibrary.Providers;
 using JtLibrary.Structures;
+using JtLibrary.Utils;
+using System;
 using static JtLibrary.Structures.EquipVersion;
 
 namespace DigitalMineServer.PacketReponse
@@ -14,7 +16,30 @@ namespace DigitalMineServer.PacketReponse
     {
         public void R0100(PacketMessage msg, IPacketProvider pConvert, Jt808Session Session)
         {
-            switch (Resource.equipVersion[Extension.BCDToString(msg.pmPacketHead.hSimNumber)].Item1)
+            string sim = Extension.BCDToString(msg.pmPacketHead.hSimNumber);
+            //判断808版本
+            Version_808 Version_808 = VersionCheck.Get808Version(msg.pmPacketHead.phPacketHeadAttribute.IdentifiersVersion);
+            if (Version_808 == Version_808.Ver_808_null)
+            {
+                return;
+            }
+            ValueTuple<Version_808, Version_1078, Version_AcSafe, int> val = new ValueTuple<Version_808, Version_1078, Version_AcSafe, int>
+            {
+                Item1 = Version_808,
+                Item2 = Version_1078.er_1078_null,
+                Item3 = Version_AcSafe.Ver_AcSafe_null,
+                Item4 = msg.pmPacketHead.protocolVersion
+            };
+            //存入字典
+            if (Resource.equipVersion.ContainsKey(sim))
+            {
+                Resource.equipVersion[sim] = val;
+            }
+            else
+            {
+                Resource.equipVersion.TryAdd(sim, val);
+            }
+            switch (Version_808)
             {
                 case Version_808.Ver_808_2013:
                     byte[] buffer_2013 = Packet_0100_2013(msg, pConvert);
