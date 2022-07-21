@@ -69,12 +69,12 @@ namespace DigitalMineServer.OrderMessage
         /// </summary>
         /// <param name="buffer"></param>
         /// <returns></returns>
-        public Login Login(byte[] buffer)
+        public ClientLogin ClientLogin(byte[] buffer)
         {
             string[] array = encoding.GetString(buffer).Trim('$').Split('!');
-            return new Login()
+            return new ClientLogin()
             {
-                messageType = OrderMessageType.Login,
+                messageType = OrderMessageType.ClientLogin,
                 uuid = array[1],
                 type = array[2]
             };
@@ -108,12 +108,12 @@ namespace DigitalMineServer.OrderMessage
         /// </summary>
         /// <param name="buffer"></param>
         /// <returns></returns>
-        public LocalReportCompany LocalReportCompany(byte[] buffer)
+        public LocalLogin LocalLogin(byte[] buffer)
         {
             string[] array = encoding.GetString(buffer).Split('!');
-            return new LocalReportCompany()
+            return new LocalLogin()
             {
-                messageType = OrderMessageType.LocalReportCompany,
+                messageType = OrderMessageType.LocalLogin,
                 Company = array[1]
             };
         }

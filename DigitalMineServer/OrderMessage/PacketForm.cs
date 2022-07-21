@@ -57,7 +57,7 @@ namespace DigitalMineServer.OrderMessage
         /// </summary>
         /// <param name="Login"></param>
         /// <returns></returns>
-        public byte[] Login(Login Login)
+        public byte[] ClientLogin(ClientLogin Login)
         {
             return encoding.GetBytes(Mark + Login.messageType + Separator + Login.uuid + Separator + Login.type + Mark);
         }
@@ -82,11 +82,11 @@ namespace DigitalMineServer.OrderMessage
         /// <summary>
         /// 本地数据终端上报所属公司封包
         /// </summary>
-        /// <param name="LocalReportCompany"></param>
+        /// <param name="LocalLogin"></param>
         /// <returns></returns>
-        public byte[] LocalReportCompany(LocalReportCompany LocalReportCompany)
+        public byte[] LocalLogin(LocalLogin LocalLogin)
         {
-            return encoding.GetBytes(LocalReportCompany.messageType + Separator + LocalReportCompany.Company).Concat(Mark2).ToArray();
+            return encoding.GetBytes(LocalLogin.messageType + Separator + LocalLogin.Company).Concat(Mark2).ToArray();
         }
         /// <summary>
         /// 客户端打开监控请求封包

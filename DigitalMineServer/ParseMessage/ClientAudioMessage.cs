@@ -12,10 +12,10 @@ using System.Text;
 namespace DigitalMineServer.ParseMessage
 {
     //客户端音频消息
-    class ClientAudioMessage
+   public class ClientAudioMessage
     {
         private readonly OrderMessageDecode Decode;
-        private ClientAudioMessage()
+        public ClientAudioMessage()
         {
             Decode = new OrderMessageDecode();
         }

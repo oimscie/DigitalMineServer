@@ -15,7 +15,7 @@ namespace DigitalMineServer.ParseMessage
     class DataMessage
     {
         private readonly OrderMessageDecode Decode;
-        private DataMessage()
+        public DataMessage()
         {
             Decode = new OrderMessageDecode();
         }
@@ -27,8 +27,8 @@ namespace DigitalMineServer.ParseMessage
                 case OrderMessageType.LocalHeart:
                     break;
                 //本地数据终端上报所属公司
-                case OrderMessageType.LocalReportCompany:
-                    Session.Company = Decode.LocalReportCompany(buffer).Company;
+                case OrderMessageType.LocalLogin:
+                    Session.Company = Decode.LocalLogin(buffer).Company;
                     break;
                 default:
                     Session.Close();

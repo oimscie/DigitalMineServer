@@ -144,7 +144,8 @@ namespace DigitalMineServer.OrderMessage
     /// <summary>
     /// 客户端登录
     /// </summary>
-    public struct Login {
+    public struct ClientLogin
+    {
         /// <summary>
         /// 消息类型
         /// </summary>
@@ -181,7 +182,7 @@ namespace DigitalMineServer.OrderMessage
     /// <summary>
     /// 本地数据终端上报所属公司
     /// </summary>
-    public struct LocalReportCompany
+    public struct LocalLogin
     {
         /// <summary>
         /// 消息类型

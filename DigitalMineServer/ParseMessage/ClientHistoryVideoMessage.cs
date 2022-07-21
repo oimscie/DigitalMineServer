@@ -13,7 +13,7 @@ namespace DigitalMineServer.ParseMessage
     class ClientHistoryVideoMessage
     {
         private readonly OrderMessageDecode Decode;
-        private ClientHistoryVideoMessage()
+        public ClientHistoryVideoMessage()
         {
             Decode = new OrderMessageDecode();
         }

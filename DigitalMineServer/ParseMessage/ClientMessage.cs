@@ -12,7 +12,7 @@ namespace DigitalMineServer.ParseMessage
     class ClientMessage
     {
         private readonly OrderMessageDecode Decode;
-        private ClientMessage()
+        public ClientMessage()
         {
             Decode = new OrderMessageDecode();
         }
@@ -21,8 +21,8 @@ namespace DigitalMineServer.ParseMessage
             switch (Decode.GetMessageHead(buffer))
             {
                 //客户端登录
-                case OrderMessageType.Login:
-                    session.Uuid = Decode.Login(buffer).uuid;
+                case OrderMessageType.ClientLogin:
+                    session.Uuid = Decode.ClientLogin(buffer).uuid;
                     break;
                 //心跳
                 case OrderMessageType.ClientHeart:

@@ -38,7 +38,7 @@ namespace DigitalMineServer.OrderMessage
         /// <summary>
         /// 客户端登录
         /// </summary>
-        public const string Login = "3000";
+        public const string ClientLogin = "3000";
         /// <summary>
         /// 客户端心跳
         /// </summary>
@@ -48,9 +48,9 @@ namespace DigitalMineServer.OrderMessage
         /// </summary>
         public const string LocalHeart = "4000";
         /// <summary>
-        /// 本地数据终端上报所属公司
+        /// 本地数据终端登录
         /// </summary>
-        public const string LocalReportCompany = "4001";
+        public const string LocalLogin = "4001";
         /// <summary>
         /// 客户端打开监控请求
         /// </summary>

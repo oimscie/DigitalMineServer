@@ -17,7 +17,7 @@ namespace DigitalMineServer.ParseMessage
     {
         private readonly OrderMessageDecode Decode;
         private readonly byte[] mark;
-        private MontorMessage()
+        public MontorMessage()
         {
             Decode = new OrderMessageDecode();
             //消息结束符
