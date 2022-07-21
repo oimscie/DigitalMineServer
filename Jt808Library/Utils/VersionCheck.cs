@@ -15,7 +15,7 @@ namespace JtLibrary.Utils
         /// </summary>
         /// <param name="IdentifiersVersion">版本标识</param>
         /// <returns></returns>
-        public static Version_808 Get808Version(byte IdentifiersVersion) {
+        public static string Get808Version(byte IdentifiersVersion) {
             switch (IdentifiersVersion) {
                 case 1:
                     return Version_808.Ver_808_2019;
@@ -30,16 +30,16 @@ namespace JtLibrary.Utils
         /// </summary>
         /// <param name="type">版本类型</param>
         /// <returns></returns>
-        public static Version_1078 Get1078Version(string type)
+        public static string Get1078Version(string type)
         {
             switch (type)
             {
                 case "2016":
                     return Version_1078.Ver_1078_2016;
                 case "2016-1019":
-                    return Version_1078.Ver_1078_2016_2019;//粤标改变了终端SIM码的位数，执行808-2019版本10位码
+                    return Version_1078.Ver_1078_2019;//粤标改变了终端SIM码的位数，执行808-2019版本10位码
                 default:
-                    return Version_1078.er_1078_null;
+                    return Version_1078.Ver_1078_null;
             }
         }
         /// <summary>
@@ -47,7 +47,7 @@ namespace JtLibrary.Utils
         /// </summary>
         /// <param name="type">版本类型</param>
         /// <returns></returns>
-        public static Version_AcSafe GetAcSafeVersion(string type)
+        public static string GetAcSafeVersion(string type)
         {
             switch (type)
             {

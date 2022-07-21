@@ -18,15 +18,15 @@ namespace DigitalMineServer.PacketReponse
         {
             string sim = Extension.BCDToString(msg.pmPacketHead.hSimNumber);
             //判断808版本
-            Version_808 Version_808 = VersionCheck.Get808Version(msg.pmPacketHead.phPacketHeadAttribute.IdentifiersVersion);
-            if (Version_808 == Version_808.Ver_808_null)
+            string Version808 = VersionCheck.Get808Version(msg.pmPacketHead.phPacketHeadAttribute.IdentifiersVersion);
+            if (Version808 == Version_808.Ver_808_null)
             {
                 return;
             }
-            ValueTuple<Version_808, Version_1078, Version_AcSafe, int> val = new ValueTuple<Version_808, Version_1078, Version_AcSafe, int>
+            ValueTuple<string, string, string, int> val = new ValueTuple<string, string, string, int>
             {
-                Item1 = Version_808,
-                Item2 = Version_1078.er_1078_null,
+                Item1 = Version808,
+                Item2 = Version_1078.Ver_1078_null,
                 Item3 = Version_AcSafe.Ver_AcSafe_null,
                 Item4 = msg.pmPacketHead.protocolVersion
             };
@@ -39,7 +39,7 @@ namespace DigitalMineServer.PacketReponse
             {
                 Resource.equipVersion.TryAdd(sim, val);
             }
-            switch (Version_808)
+            switch (Version808)
             {
                 case Version_808.Ver_808_2013:
                     byte[] buffer_2013 = Packet_0100_2013(msg, pConvert);

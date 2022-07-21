@@ -25,8 +25,8 @@ namespace DigitalMineServer.PacketReponse
         {
             string sim = Extension.BCDToString(msg.pmPacketHead.hSimNumber);
             //判断808版本
-            Version_808 Version_808 = VersionCheck.Get808Version(msg.pmPacketHead.phPacketHeadAttribute.IdentifiersVersion);
-            if (Version_808 == Version_808.Ver_808_null)
+            string Version808 = VersionCheck.Get808Version(msg.pmPacketHead.phPacketHeadAttribute.IdentifiersVersion);
+            if (Version808 == Version_808.Ver_808_null)
             {
                 return;
             }
@@ -37,11 +37,11 @@ namespace DigitalMineServer.PacketReponse
             {
                 return;
             }
-            Version_1078 Version_1078 = VersionCheck.Get1078Version(list[0]["equip1078"]);
-            Version_AcSafe Version_AcSafe = VersionCheck.GetAcSafeVersion(list[0]["AcSafe"]);
-            ValueTuple<Version_808, Version_1078, Version_AcSafe, int> val = new ValueTuple<Version_808, Version_1078, Version_AcSafe, int>
+            string Version_1078 = VersionCheck.Get1078Version(list[0]["equip1078"]);
+            string Version_AcSafe = VersionCheck.GetAcSafeVersion(list[0]["AcSafe"]);
+            ValueTuple<string, string, string, int> val = new ValueTuple<string, string, string, int>
             {
-                Item1 = Version_808,
+                Item1 = Version808,
                 Item2 = Version_1078,
                 Item3 = Version_AcSafe,
                 Item4= msg.pmPacketHead.protocolVersion
