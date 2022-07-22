@@ -21,8 +21,8 @@ namespace DigitalMineServer.ParseMessage
         }
         public void ParseOrder(ClientAudioSession Session, byte[] buffer)
         {
-            //判断消息长度，长度大于30直接转发终端，音频消息头26位结束符4位共计30位
-            if (buffer.Length > 34)
+            //判断消息长度，音频消息最少324位
+            if (buffer.Length > 100)
             {
                 SendAudio(buffer, Session);
             }
