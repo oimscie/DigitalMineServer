@@ -1,6 +1,7 @@
 ﻿using DigitalMineServer.SuperSocket;
 using DigitalMineServer.SuperSocket.SocketServer;
 using JtLibrary;
+using JtLibrary.Jt1078_2016.RtpPacketDecode;
 using JtLibrary.PacketBody;
 using JtLibrary.Providers;
 using SuperSocket.SocketBase;
@@ -18,7 +19,8 @@ namespace DigitalMineServer.ParseMessage
             //判断是否是首次连接，若是则解析消息获取SIM和通道号
             if (session.Sim == null)
             {
-                Video bodyinfo = new RtpDecoding().Decode(buffer);
+                RtpDecoding decode = new RtpDecoding();
+                Video bodyinfo = decode.Decode(buffer, decode.Check1078Versioin(buffer));
                 session.Sim = Extension.BCDToString(bodyinfo.SIM);
                 session.Id = bodyinfo.ID;
             }

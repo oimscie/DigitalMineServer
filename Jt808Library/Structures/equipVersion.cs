@@ -20,7 +20,10 @@
         public struct Version_1078
         {
             public const string Ver_1078_2016 = "Jt1078-2016";
-            public const string Ver_1078_2019 = "Jt1078-2016->2019";
+            /// <summary>
+            /// 粤标改变了终端SIM码的位数，SIM执行808-2019版本10位BCD码
+            /// </summary>
+            public const string Ver_1078_2019 = "Jt1078-2016-粤标";
             public const string Ver_1078_null = "Jt1078-null";
 
         }
@@ -29,8 +32,8 @@
         /// </summary>
         public struct Version_AcSafe
         {
-            public const string Ver_AcSafe_su = "AcSafe-su";
-            public const string Ver_AcSafe_yue = "AcSafe-ue";
+            public const string Ver_AcSafe_su = "AcSafe-苏标";
+            public const string Ver_AcSafe_yue = "AcSafe-粤标";
             public const string Ver_AcSafe_null = "AcSafe-null";
         }
     }

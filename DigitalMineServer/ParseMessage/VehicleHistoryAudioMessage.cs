@@ -1,6 +1,7 @@
 ﻿using DigitalMineServer.SuperSocket;
 using DigitalMineServer.SuperSocket.SocketServer;
 using JtLibrary;
+using JtLibrary.Jt1078_2016.RtpPacketDecode;
 using JtLibrary.PacketBody;
 using JtLibrary.Providers;
 using SuperSocket.SocketBase;
@@ -14,7 +15,8 @@ namespace DigitalMineServer.ParseMessage
         {
             if (session.Sim == null)
             {
-                Video bodyinfo = new RtpDecoding().Decode(buffer);
+                RtpDecoding decode = new RtpDecoding();
+                Video bodyinfo = decode.Decode(buffer, decode.Check1078Versioin(buffer));
                 session.Sim = Extension.BCDToString(bodyinfo.SIM);
             }
             ClientHistoryAudioServer Server = JtServerForm.bootstrap.GetServerByName("ClientHistoryAudioServer") as ClientHistoryAudioServer;

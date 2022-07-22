@@ -187,7 +187,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Providers\IPacketProvider.cs" />
     <Compile Include="Providers\PacketProvider.cs" />
-    <Compile Include="Providers\RtpDecoding.cs" />
+    <Compile Include="Jt1078_2016\RtpPacketDecode\RtpDecoding.cs" />
     <Compile Include="Structures\equipVersion.cs" />
     <Compile Include="Structures\PacketCmd.cs" />
     <Compile Include="Structures\PacketFrom.cs" />
