@@ -21,14 +21,16 @@ namespace JtLibrary.Jt1078_2016.RtpPacketDecode
             item.M_PT = msgBody[indexOffset += 1];
             item.num = msgBody.ToUInt16(indexOffset += 1);
             //兼容粤标10位
-            if (type_1078==Version_1078.Ver_1078_2019)
+            if (type_1078 == Version_1078.Ver_1078_2019)
             {
                 item.SIM = msgBody.Copy(indexOffset += 2, 10);
                 item.ID = msgBody[indexOffset += 10];
             }
             else
             {
-                item.SIM = msgBody.Copy(indexOffset += 2, 6);
+                byte[] temp = new byte[10];
+                Buffer.BlockCopy(msgBody, indexOffset += 2, temp, 4, 6);
+                item.SIM = temp;
                 item.ID = msgBody[indexOffset += 6];
             }
             item.type = msgBody[indexOffset += 1];
@@ -55,10 +57,14 @@ namespace JtLibrary.Jt1078_2016.RtpPacketDecode
         /// </summary>
         /// <param name="buffer"></param>
         /// <returns></returns>
-        public string Check1078Versioin(byte[] buffer) {
-            if (buffer[8] == 0) {
+        public string Check1078Versioin(byte[] buffer)
+        {
+            if (buffer[8] == 0)
+            {
                 return Version_1078.Ver_1078_2019;
-            } else {
+            }
+            else
+            {
                 return Version_1078.Ver_1078_2016;
             }
         }
