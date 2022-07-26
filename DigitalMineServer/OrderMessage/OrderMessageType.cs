@@ -63,6 +63,22 @@ namespace DigitalMineServer.OrderMessage
         /// 本地数据终端监控视频上传请求
         /// </summary>
         public const string MonitorUpload = "5100";
+        /// <summary>
+        /// 浏览器端心跳
+        /// </summary>
+        public const string WebOrderHeart = "6000";
+        /// <summary>
+        /// 8300指令文字
+        /// </summary>
+        public const string WebText = "6100";
+        /// <summary>
+        /// 删除电子围栏
+        /// </summary>
+        public const string deleteFence = "6200";
+        /// <summary>
+        /// 删除车辆
+        /// </summary>
+        public const string deleteVehicle = "6300";
     }
     /// <summary>
     /// 监控操作类型

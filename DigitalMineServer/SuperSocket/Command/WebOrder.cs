@@ -1,4 +1,5 @@
 ﻿using DigitalMineServer.implement;
+using DigitalMineServer.OrderMessage;
 using DigitalMineServer.PacketReponse;
 using DigitalMineServer.Static;
 using DigitalMineServer.SuperSocket.SocketServer;
@@ -14,31 +15,38 @@ namespace DigitalMineServer.SuperSocket.Command
 {
     public class WebOrder : SubCommandBase<WebSession>
     {
+        private readonly OrderMessageDecode Decode;
+        public WebOrder()
+        {
+            Decode = new OrderMessageDecode();
+        }
         public override void ExecuteCommand(WebSession session, SubRequestInfo requestInfo)
         {      
-            string[] item = requestInfo.Body.Split('!');
-            switch (item[0])
+            switch (Decode.GetMessageHead(requestInfo.Body))
             {
-                case "heart":
+                case OrderMessageType.WebOrderHeart:
                     break;
-                case "vehicleLive":
+                case OrderMessageType.AudioAndVideo:
                     SendMessage(requestInfo.Body, session);
                     break;
-                case "vehiclePlayBack":
+                case OrderMessageType.HisVideoAndAudio:
                     SendMessage(requestInfo.Body, session);
                     break;
-                case "monitorOpen":
+                case OrderMessageType.MonitorOpen:
                     SendMessage(requestInfo.Body, session);
                     break;
-                case "text":
-                    SendMessage(new REQ8300().R8300(item[1],item[3]), item[1], session);
+                case OrderMessageType.WebText:
+                    WebText WebText = Decode.WebText(requestInfo.Body);
+                    SendMessage(new REQ8300().R8300(WebText.sim, WebText.text), WebText.sim, session);
                     break;
-                case "deleteFence":
-                    Resource.fenceFanbidInInfo.TryRemove(item[1], out _);
-                    Resource.fenceFanbidOutInfo.TryRemove(item[1], out _);
+                case OrderMessageType.deleteFence:
+                    DeleteFence deleteFence = Decode.DeleteFence(requestInfo.Body);
+                    Resource.fenceFanbidInInfo.TryRemove(deleteFence.sim, out _);
+                    Resource.fenceFanbidOutInfo.TryRemove(deleteFence.sim, out _);
                     break;
-                case "deleteVehicle":
-                    Resource.VehicleList.TryRemove(item[1], out _);
+                case OrderMessageType.deleteVehicle:
+                    DeleteVehicle deleteVehicle = Decode.DeleteVehicle(requestInfo.Body);
+                    Resource.VehicleList.TryRemove(deleteVehicle.sim, out _);
                     break;
                 default:
                     session.Close();

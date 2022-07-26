@@ -21,8 +21,18 @@ namespace DigitalMineServer.OrderMessage
         /// </summary>
         /// <param name="buffer"></param>
         /// <returns></returns>
-        public string GetMessageHead(byte[]buffer) {
+        public string GetMessageHead(byte[] buffer)
+        {
             return encoding.GetString(buffer).Trim('$').Split('!')[0];
+        }
+        /// <summary>
+        /// 获取消息头
+        /// </summary>
+        /// <param name="buffer"></param>
+        /// <returns></returns>
+        public string GetMessageHead(string order)
+        {
+            return order.Split('!')[0];
         }
         /// <summary>
         /// 音视频请求解包
@@ -166,6 +176,62 @@ namespace DigitalMineServer.OrderMessage
                 CameraIP = array[2],
                 CameraPort = array[3],
                 Brand = array[4]
+            };
+        }
+        /// <summary>
+        /// 浏览器端心跳解包
+        /// </summary>
+        /// <param name="order"></param>
+        /// <returns></returns>
+        public WebOrderHeart WebOrderHeart(string order)
+        {
+            return new WebOrderHeart()
+            {
+                messageType = OrderMessageType.WebOrderHeart
+            };
+        }
+        /// <summary>
+        /// 8300指令文字解包
+        /// </summary>
+        /// <param name="order"></param>
+        /// <returns></returns>
+        public WebText WebText(string order)
+        {
+            string[] array = order.Split('!');
+            return new WebText()
+            {
+                messageType = OrderMessageType.WebText,
+                sim = array[1],
+                version808 = array[2],
+                text = array[3],
+            };
+        }
+        /// <summary>
+        /// 删除电子围栏解包
+        /// </summary>
+        /// <param name="order"></param>
+        /// <returns></returns>
+        public DeleteFence DeleteFence(string order)
+        {
+            string[] array = order.Split('!');
+            return new DeleteFence()
+            {
+                messageType = OrderMessageType.deleteFence,
+                sim = array[1],
+            };
+        }
+        /// <summary>
+        /// 删除车辆解包
+        /// </summary>
+        /// <param name="order"></param>
+        /// <returns></returns>
+        public DeleteVehicle DeleteVehicle(string order)
+        {
+            string[] array = order.Split('!');
+            return new DeleteVehicle()
+            {
+                messageType = OrderMessageType.deleteFence,
+                sim = array[1],
             };
         }
     }

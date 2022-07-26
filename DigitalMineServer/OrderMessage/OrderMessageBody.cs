@@ -65,6 +65,10 @@ namespace DigitalMineServer.OrderMessage
         /// 码流类型
         /// </summary>
         public string datatypes;
+        /// <summary>
+        /// 终端1078版本
+        /// </summary>
+        public string version1078;
     }
     /// <summary>
     /// 车载历史音视频请求请求
@@ -140,6 +144,10 @@ namespace DigitalMineServer.OrderMessage
         /// 终端SIM
         /// </summary>
         public string sim;
+        /// <summary>
+        /// 终端1078版本
+        /// </summary>
+        public string version1078;
     }
     /// <summary>
     /// 客户端登录
@@ -271,5 +279,64 @@ namespace DigitalMineServer.OrderMessage
         /// </summary>
         public string StartOrStop;
 
+    }
+    /// <summary>
+    /// 浏览器端心跳
+    /// </summary>
+    public struct WebOrderHeart {
+        /// <summary>
+        /// 消息类型
+        /// </summary>
+        public string messageType;
+    }
+    /// <summary>
+    /// 8300指令文字
+    /// </summary>
+    public struct WebText
+    {
+        /// <summary>
+        /// 消息类型
+        /// </summary>
+        public string messageType;
+        /// <summary>
+        /// 808版本
+        /// </summary>
+        public string version808;
+        /// <summary>
+        /// 文本内容
+        /// </summary>
+        public string text;
+        /// <summary>
+        /// 终端SIM
+        /// </summary>
+        public string sim;
+    }
+    /// <summary>
+    /// 删除电子围栏
+    /// </summary>
+    public struct DeleteFence
+    {
+        /// <summary>
+        /// 消息类型
+        /// </summary>
+        public string messageType;
+        /// <summary>
+        /// 终端SIM
+        /// </summary>
+        public string sim;
+    }
+    /// <summary>
+    /// 删除车辆
+    /// </summary>
+    public struct DeleteVehicle
+    {
+        /// <summary>
+        /// 消息类型
+        /// </summary>
+        public string messageType;
+        /// <summary>
+        /// 终端SIM
+        /// </summary>
+        public string sim;
     }
 }
