@@ -31,8 +31,8 @@ namespace DigitalMineServer.PacketReponse
                 return;
             }
             //查找服务器存储的1078版本与主动安全版本
-            string sql = "select EQUIP1078_TYPE as equip1078,EQUIP_AcSafe_TYPE as AcSafe from list_vehicle where VEHICLE_SIM='" + Extension.BCDToString(msg.pmPacketHead.hSimNumber) + "'";
-            List<Dictionary<string, string>> list = mysql.MultipleSelect(sql, new List<string>() { "equip1078", "AcSafe" });
+            string sql = "select EQUIP_1078_TYPE as equip_1078,EQUIP_AcSafe_TYPE as AcSafe from list_vehicle where VEHICLE_SIM='" + Extension.BCDToString(msg.pmPacketHead.hSimNumber) + "'";
+            List<Dictionary<string, string>> list = mysql.MultipleSelect(sql, new List<string>() { "equip_1078", "AcSafe" });
             if (list == null)
             {
                 return;
