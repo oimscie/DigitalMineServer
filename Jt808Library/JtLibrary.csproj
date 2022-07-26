@@ -63,6 +63,7 @@
     <Compile Include="Jt1078_2016\Request_2016\REQ_9202.cs" />
     <Compile Include="Jt1078_2016\Request_2016\REQ_9102.cs" />
     <Compile Include="Jt1078_2016\Request_2016\REQ_9201.cs" />
+    <Compile Include="Jt1078_2016\Reponse_2016\REP_1205.cs" />
     <Compile Include="Jt808_2019\Reponse_2019\REP_0001.cs" />
     <Compile Include="Jt808_2019\Reponse_2019\REP_0100.cs" />
     <Compile Include="Jt808_2019\Reponse_2019\REP_0102.cs" />

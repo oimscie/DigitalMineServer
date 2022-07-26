@@ -200,5 +200,20 @@ namespace JtLibrary.PacketBody
         /// </summary>
         public byte[] data;
     }
+    /// <summary>
+    /// 终端音视频资源列表上传
+    /// </summary>
+    [StructLayout(LayoutKind.Sequential)]
+    public struct PB1205
+    {
+        /// <summary>
+        /// 对应查询指令流水号
+        /// </summary>
+        public UInt16 serialNumber;
+        /// <summary>
+        /// 符合条件的音视频资源总数
+        /// </summary>
+        public UInt32 count;
+    }
     #endregion
 }

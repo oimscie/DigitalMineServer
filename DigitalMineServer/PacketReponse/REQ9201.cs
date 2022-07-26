@@ -13,6 +13,10 @@ namespace DigitalMineServer.PacketReponse
 {
     class REQ9201
     {
+        private readonly ushort msgSerialnumber;
+        public REQ9201() {
+            msgSerialnumber = (ushort)Resource.msgSerialnumberDic.Count;
+        }
         public byte[] R9201(HisVideoAndAudio HisVideoAndAudio)
         {
             int port = HisVideoAndAudio.datatype == "1" ? 8088 : 8089;
@@ -45,13 +49,14 @@ namespace DigitalMineServer.PacketReponse
             {
                 msgBody = body_9201,
                 msgId = JT1078Cmd.REQ_9201,
-                msgSerialnumber = 0,
+                msgSerialnumber = msgSerialnumber,
                 pEncryptFlag = 0,
                 pSerialnumber = 1,
                 pSubFlag = 0,
                 pTotal = 1,
                 simNumber = Extension.ToBCD(HisVideoAndAudio.sim),
             });
+            Resource.msgSerialnumberDic.TryAdd(msgSerialnumber, HisVideoAndAudio.sim);
             return buffer;
         }
         private byte[] decode_9201_2019(HisVideoAndAudio HisVideoAndAudio, int port)
@@ -75,13 +80,14 @@ namespace DigitalMineServer.PacketReponse
             {
                 msgBody = body_9201,
                 msgId = JT1078Cmd.REQ_9201,
-                msgSerialnumber = 0,
+                msgSerialnumber = msgSerialnumber,
                 pEncryptFlag = 0,
                 pSerialnumber = 1,
                 pSubFlag = 0,
                 pTotal = 1,
                 simNumber = Extension.ToBCD(HisVideoAndAudio.sim),
             });
+            Resource.msgSerialnumberDic.TryAdd(msgSerialnumber, HisVideoAndAudio.sim);
             return buffer;
         }
     }

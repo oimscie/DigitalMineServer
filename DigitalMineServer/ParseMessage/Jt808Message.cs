@@ -98,6 +98,24 @@ namespace DigitalMineServer
                         break;
                     case JT1078Cmd.REQ_1205:
                         new REPDefault().Default(msg, pConvert, Session);
+                        PB1205 PB1205 = new REP_1205().Decode(msg.pmMessageBody);
+                        if (PB1205.count==0) {
+                            if (!Resource.msgSerialnumberDic.ContainsKey(PB1205.serialNumber)) {
+                                return;
+                            }
+                            //获取客户端录像请求连接头返回结果
+                            ClientHistoryVideoServer Server = JtServerForm.bootstrap.GetServerByName("ClientHistoryVideoServer") as ClientHistoryVideoServer;
+                            var sessions = Server.GetSessions(s => s.Sim == Resource.msgSerialnumberDic[PB1205.serialNumber]);
+                            if (sessions.Count() > 0)
+                            {
+                                byte[] buffer = Encoding.UTF8.GetBytes("未找到资源");
+                                foreach (var item in sessions)
+                                {
+                                    item.Send(buffer.Concat(new byte[] {11,22,33,44 }).ToArray(), 0, buffer.Length + 4);
+                                }
+                            }
+                            Resource.msgSerialnumberDic.TryRemove(PB1205.serialNumber,out _);
+                        }
                         break;
                     default:
                         new REPDefault().Default(msg, pConvert, Session);

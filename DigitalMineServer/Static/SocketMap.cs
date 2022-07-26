@@ -28,6 +28,8 @@ namespace DigitalMineServer.Static
             fenceFanbidOutInfo = new ConcurrentDictionary<string, (string, string, string, string, string, List<Point>)>();
 
             equipVersion = new ConcurrentDictionary<string, (string, string, string, int)>();
+
+            msgSerialnumberDic = new ConcurrentDictionary<ushort, string>();
         }
         /// <summary>
         ///终端上传原始数据数据队列(原始数据--session)
@@ -83,5 +85,9 @@ namespace DigitalMineServer.Static
         /// Item4:协议版本号，19版开始每次关键修订递增，初始版本为1
         /// </summary>
         public static ConcurrentDictionary<string, ValueTuple<string, string, string, int>> equipVersion;
+        /// <summary>
+        /// 终端录像查询指令流水号<流水号，终端sim>
+        /// </summary>
+        public static ConcurrentDictionary<ushort, string> msgSerialnumberDic;
     }
 }
