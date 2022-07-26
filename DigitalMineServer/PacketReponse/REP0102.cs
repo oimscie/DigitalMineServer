@@ -37,7 +37,7 @@ namespace DigitalMineServer.PacketReponse
             {
                 return;
             }
-            string Version_1078 = VersionCheck.Get1078Version(list[0]["equip1078"]);
+            string Version_1078 = VersionCheck.Get1078Version(list[0]["equip_1078"]);
             string Version_AcSafe = VersionCheck.GetAcSafeVersion(list[0]["AcSafe"]);
             ValueTuple<string, string, string, int> val = new ValueTuple<string, string, string, int>
             {
