@@ -35,7 +35,7 @@ namespace JtLibrary.Jt1078_2016.RtpPacketDecode
             }
             item.type = msgBody[indexOffset += 1];
             item.Time = msgBody.Copy(indexOffset += 1, 8);
-            if (BitConvert.ByteToBit(item.type).Substring(0, 4) == "0011")
+            if ((byte)(item.type >> 4) == 0b0011)
             {
                 //音频
                 item.length = msgBody.ToUInt16(indexOffset += 8);
