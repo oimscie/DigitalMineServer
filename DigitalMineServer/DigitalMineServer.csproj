@@ -201,6 +201,7 @@
     <Compile Include="SuperSocket\SocketSession\VehicleHistoryVideoSession.cs" />
     <Compile Include="SuperSocket\SocketSession\VehicleVideoSession.cs" />
     <Compile Include="SuperSocket\SocketSession\WebSession.cs" />
+    <Compile Include="Util\DecodeBSJ.cs" />
     <Compile Include="Util\Polygon.cs" />
     <Compile Include="Util\Util.cs" />
     <Compile Include="Program.cs" />

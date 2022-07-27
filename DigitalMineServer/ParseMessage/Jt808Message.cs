@@ -99,8 +99,10 @@ namespace DigitalMineServer
                     case JT1078Cmd.REQ_1205:
                         new REPDefault().Default(msg, pConvert, Session);
                         PB1205 PB1205 = new REP_1205().Decode(msg.pmMessageBody);
-                        if (PB1205.count==0) {
-                            if (!Resource.msgSerialnumberDic.ContainsKey(PB1205.serialNumber)) {
+                        if (PB1205.count == 0)
+                        {
+                            if (!Resource.msgSerialnumberDic.ContainsKey(PB1205.serialNumber))
+                            {
                                 return;
                             }
                             //获取客户端录像请求连接头返回结果
@@ -111,10 +113,10 @@ namespace DigitalMineServer
                                 byte[] buffer = Encoding.UTF8.GetBytes("未找到资源");
                                 foreach (var item in sessions)
                                 {
-                                    item.Send(buffer.Concat(new byte[] {11,22,33,44 }).ToArray(), 0, buffer.Length + 4);
+                                    item.Send(buffer.Concat(new byte[] { 11, 22, 33, 44 }).ToArray(), 0, buffer.Length + 4);
                                 }
                             }
-                            Resource.msgSerialnumberDic.TryRemove(PB1205.serialNumber,out _);
+                            Resource.msgSerialnumberDic.TryRemove(PB1205.serialNumber, out _);
                         }
                         break;
                     default:
@@ -222,10 +224,18 @@ namespace DigitalMineServer
                     for (int i = 0; i < bodyinfo.AttachItems.Count; i++)
                     {
                         //获取油量
-                        if (bodyinfo.AttachItems[i].Value == 0x23 || bodyinfo.AttachItems[i].Value.ToString("X2") == "2")
+                        if (bodyinfo.AttachItems[i].Value == 0xEB)
                         {
-                            string ico = Encoding.ASCII.GetString(bodyinfo.AttachItems[i].BytesValue);
-                            sql = "INSERT INTO `fuel_orig`( `VEHICLE_ID`, `DRIVE_NAME`, `ORIG_FUEL`, `REC_STATE`, `COMPANY`, `ADD_TIME`) VALUES ('" + vehicleInfo.Item5 + "', '" + vehicleInfo.Item6 + "', '" + Encoding.ASCII.GetString(bodyinfo.AttachItems[i].BytesValue) + "', 'NO', '" + vehicleInfo.Item3 + "', '" + time + "')";
+                            Dictionary<int, byte[]> dic = new DecodeBSJ().decode(bodyinfo.AttachItems[i].BytesValue);
+                            if (dic.ContainsKey(0x23))
+                            {
+                                sql = "INSERT INTO `fuel_orig`( `VEHICLE_ID`, `DRIVE_NAME`, `ORIG_FUEL`, `REC_STATE`, `COMPANY`, `ADD_TIME`) VALUES ('" + vehicleInfo.Item5 + "', '" + vehicleInfo.Item6 + "', '" + Encoding.ASCII.GetString(dic[0x23]) + "', 'NO', '" + vehicleInfo.Item3 + "', '" + time + "')";
+                                mysql.UpdOrInsOrdel(sql);
+                            }
+                        }
+                        if (bodyinfo.AttachItems[i].Value == 0x02)
+                        {
+                            sql = "INSERT INTO `fuel_orig`( `VEHICLE_ID`, `DRIVE_NAME`, `ORIG_FUEL`, `REC_STATE`, `COMPANY`, `ADD_TIME`) VALUES ('" + vehicleInfo.Item5 + "', '" + vehicleInfo.Item6 + "', '" + (bodyinfo.AttachItems[i].BytesValue.ToUInt16(0) / 10) + "', 'NO', '" + vehicleInfo.Item3 + "', '" + time + "')";
                             mysql.UpdOrInsOrdel(sql);
                         }
                     }
