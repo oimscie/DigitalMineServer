@@ -253,6 +253,10 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\ActionSafe\ActionSafe.csproj">
+      <Project>{108F4E29-D92B-49FD-8F8A-363BEBCCFF69}</Project>
+      <Name>ActionSafe</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Jt808Library\JtLibrary.csproj">
       <Project>{94c8025d-4d31-42ff-82bf-5842524b3641}</Project>
       <Name>JtLibrary</Name>

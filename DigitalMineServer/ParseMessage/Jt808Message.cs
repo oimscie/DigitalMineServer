@@ -1,4 +1,7 @@
-﻿using DigitalMineServer.Mysql;
+﻿using ActionSafe.AcSafe_Su.DecodeDriverStateWarnBody;
+using ActionSafe.AcSafe_Su.DecodeWarnBody;
+using ActionSafe.AcSafe_Su.WarnInfo;
+using DigitalMineServer.Mysql;
 using DigitalMineServer.PacketReponse;
 using DigitalMineServer.Static;
 using DigitalMineServer.SuperSocket;
@@ -17,17 +20,19 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading;
+using static ActionSafe.AcSafe_Su.PacketBody.PacketBody;
 
 namespace DigitalMineServer
 {
     public class Jt808Message
     {
         private readonly MySqlHelper mysql;
+
         public Jt808Message()
         {
             mysql = new MySqlHelper();
-
         }
+
         /// <summary>
         /// 解析RTP原始数据
         /// </summary>
@@ -52,6 +57,7 @@ namespace DigitalMineServer
                 }
             }
         }
+
         /// <summary>
         /// 处理RTP数据
         /// </summary>
@@ -78,24 +84,31 @@ namespace DigitalMineServer
                     case JT808Cmd.RSP_0102:
                         new REP0102().R0102(msg, pConvert, Session);
                         break;
+
                     case JT808Cmd.RSP_0100:
                         new REP0100().R0100(msg, pConvert, Session);
                         break;
+
                     case JT808Cmd.RSP_0200:
                         new REP0200().R0200(msg, pConvert, Session);
                         break;
+
                     case JT808Cmd.RSP_0002:
                         new REP0002().R0002(msg, pConvert, Session);
                         break;
+
                     case JT808Cmd.RSP_0702:
                         new REP0702().R0702(msg, pConvert, Session);
                         break;
+
                     case JT808Cmd.RSP_0704:
                         new REP0704().R0704(msg, pConvert, Session);
                         break;
+
                     case JT1078Cmd.REQ_1003:
                         new REPDefault().Default(msg, pConvert, Session);
                         break;
+
                     case JT1078Cmd.REQ_1205:
                         new REPDefault().Default(msg, pConvert, Session);
                         PB1205 PB1205 = new REP_1205().Decode(msg.pmMessageBody);
@@ -119,17 +132,18 @@ namespace DigitalMineServer
                             Resource.msgSerialnumberDic.TryRemove(PB1205.serialNumber, out _);
                         }
                         break;
+
                     default:
                         new REPDefault().Default(msg, pConvert, Session);
                         break;
                 }
-
             }
             catch (Exception e)
             {
                 LogHelper.WriteLog("RTP数据处理错误----", e);
             }
         }
+
         /// <summary>
         /// 数据库存储
         /// </summary>
@@ -221,24 +235,7 @@ namespace DigitalMineServer
                         }
                     }
                     //附加消息体
-                    for (int i = 0; i < bodyinfo.AttachItems.Count; i++)
-                    {
-                        //获取油量
-                        if (bodyinfo.AttachItems[i].Value == 0xEB)
-                        {
-                            Dictionary<int, byte[]> dic = new DecodeBSJ().decode(bodyinfo.AttachItems[i].BytesValue);
-                            if (dic.ContainsKey(0x23))
-                            {
-                                sql = "INSERT INTO `fuel_orig`( `VEHICLE_ID`, `DRIVE_NAME`, `ORIG_FUEL`, `REC_STATE`, `COMPANY`, `ADD_TIME`) VALUES ('" + vehicleInfo.Item5 + "', '" + vehicleInfo.Item6 + "', '" + Encoding.ASCII.GetString(dic[0x23]) + "', 'NO', '" + vehicleInfo.Item3 + "', '" + time + "')";
-                                mysql.UpdOrInsOrdel(sql);
-                            }
-                        }
-                        if (bodyinfo.AttachItems[i].Value == 0x02)
-                        {
-                            sql = "INSERT INTO `fuel_orig`( `VEHICLE_ID`, `DRIVE_NAME`, `ORIG_FUEL`, `REC_STATE`, `COMPANY`, `ADD_TIME`) VALUES ('" + vehicleInfo.Item5 + "', '" + vehicleInfo.Item6 + "', '" + (bodyinfo.AttachItems[i].BytesValue.ToUInt16(0) / 10) + "', 'NO', '" + vehicleInfo.Item3 + "', '" + time + "')";
-                            mysql.UpdOrInsOrdel(sql);
-                        }
-                    }
+                    ManageAttachItems(bodyinfo, vehicleInfo, time);
                     if (Resource.isVehicleUpdate)
                     {
                         continue;
@@ -257,7 +254,6 @@ namespace DigitalMineServer
                             }
                         }
                     }
-
                     //判断禁出围栏
                     if (Resource.fenceFanbidOutInfo.ContainsKey(Sim))
                     {
@@ -279,6 +275,7 @@ namespace DigitalMineServer
                 }
             }
         }
+
         //给指定终端下发消息
         private void SendMessage(string sim, byte[] info)
         {
@@ -291,6 +288,10 @@ namespace DigitalMineServer
             }
         }
 
+        /// <summary>
+        /// 输出指定SIM车辆
+        /// </summary>
+        /// <param name="obj"></param>
         private void OutMessage(object obj)
         {
             byte[] buffer = (byte[])obj;
@@ -431,6 +432,64 @@ namespace DigitalMineServer
             if (warn[30] == 1)
             {
                 implement.Util.AppendText(JtServerForm.JtForm.infoBox, "侧翻报警");
+            }
+        }
+
+        /// <summary>
+        /// 处理附加信息
+        /// </summary>
+        /// <param name="bodyinfo"></param>
+        /// <param name="vehicleInfo"></param>
+        /// <param name="time"></param>
+        private void ManageAttachItems(PB0200 bodyinfo, ValueTuple<string, string, string, string, string, string> vehicleInfo, DateTime time)
+        {
+            string sql = null;
+            //附加消息体
+            for (int i = 0; i < bodyinfo.AttachItems.Count; i++)
+            {
+                switch (bodyinfo.AttachItems[i].Value)
+                {
+                    case 0xEB:
+                        //获取油量
+                        Dictionary<int, byte[]> dic = new DecodeBSJ().decode(bodyinfo.AttachItems[i].BytesValue);
+                        if (dic.ContainsKey(0x23))
+                        {
+                            sql = "INSERT INTO `fuel_orig`( `VEHICLE_ID`, `DRIVE_NAME`, `ORIG_FUEL`, `REC_STATE`, `COMPANY`, `ADD_TIME`) VALUES ('" + vehicleInfo.Item5 + "', '" + vehicleInfo.Item6 + "', '" + Encoding.ASCII.GetString(dic[0x23]) + "', 'NO', '" + vehicleInfo.Item3 + "', '" + time + "')";
+                            mysql.UpdOrInsOrdel(sql);
+                        }
+                        break;
+
+                    case 0x02:
+                        sql = "INSERT INTO `fuel_orig`( `VEHICLE_ID`, `DRIVE_NAME`, `ORIG_FUEL`, `REC_STATE`, `COMPANY`, `ADD_TIME`) VALUES ('" + vehicleInfo.Item5 + "', '" + vehicleInfo.Item6 + "', '" + (bodyinfo.AttachItems[i].BytesValue.ToUInt16(0) / 10) + "', 'NO', '" + vehicleInfo.Item3 + "', '" + time + "')";
+                        mysql.UpdOrInsOrdel(sql);
+                        break;
+
+                    case 0x64:
+                        DriveHelpWarnBody DriveHelp = new DecodeDrivrHelpWarnBody().DecodeDrivrHelpWarn(bodyinfo.AttachItems[i].BytesValue);
+                        if (DriveHelp.WarnState == 0x01)
+                        {
+                            //经纬度转换2000坐标
+                            List<double> xy = WGS84ToCS2000.WGS84ToXY(Convert.ToDouble(DriveHelp.latitude) / 1000000, Convert.ToDouble(DriveHelp.longitude) / 1000000, 3);
+                            string info = "纬度：" + Convert.ToDouble(DriveHelp.latitude) / 1000000 + "，经度：" + Convert.ToDouble(DriveHelp.longitude) / 1000000;
+                            sql = "INSERT INTO `rec_unu_acsafe`(`VEHICLE_ID`, `DRIVER`, `VEHICLE_TYPE`, `POSI_SPEED`,`WARN_TYPE`, `EVENT_TYPE`, `LEVEL`, `POSI_X`, `POSI_Y`, `WARN_INFO`, `ATTACHMENT_URL`, `COMPANY`, `ADD_TIME`, `TEMP1`, `TEMP2`, `TEMP3`, `TEMP4`) VALUES ('" + vehicleInfo.Item5 + "', '" + vehicleInfo.Item6 + "', '" + vehicleInfo.Item2 + "', '" + DriveHelp.VehicleSpeed + "', 'warnDriveHelp','" + new DriveHelpWarn().GetDriveHelpWarnType(DriveHelp.WarnType) + "', '" + new WarnLevel().GetWarnLevel(DriveHelp.WarnLevel) + "', '" + xy[0] + "','" + xy[1] + "', '" + info + "', '无', '" + vehicleInfo.Item3 + "', '" + Extension.BCDToTimeFormat(DriveHelp.Time) + "', NULL, NULL, NULL, NULL)";
+                            mysql.UpdOrInsOrdel(sql);
+                        }
+                        break;
+
+                    case 0x65:
+                        DriverStateWarnBody DriverState = new DecodeDriverStateWarnBody().DecodeDriverStateWarn(bodyinfo.AttachItems[i].BytesValue);
+                        if (DriverState.WarnState == 0x01)
+                        {
+                            List<double> xy = WGS84ToCS2000.WGS84ToXY(Convert.ToDouble(DriverState.latitude) / 1000000, Convert.ToDouble(DriverState.longitude) / 1000000, 3);
+                            string info = "纬度：" + Convert.ToDouble(DriverState.latitude) / 1000000 + "，经度：" + Convert.ToDouble(DriverState.longitude) / 1000000;
+                            sql = "INSERT INTO `rec_unu_acsafe`( `VEHICLE_ID`, `DRIVER`, `VEHICLE_TYPE`, `POSI_SPEED`,`WARN_TYPE`,`EVENT_TYPE`, `LEVEL`, `POSI_X`, `POSI_Y`, `WARN_INFO`, `ATTACHMENT_URL`, `COMPANY`, `ADD_TIME`, `TEMP1`, `TEMP2`, `TEMP3`, `TEMP4`) VALUES ('" + vehicleInfo.Item5 + "', '" + vehicleInfo.Item6 + "', '" + vehicleInfo.Item2 + "','" + DriverState.VehicleSpeed + "', 'warnDriverState','" + new DriverStateWarn().GetDriverStateWarnType(DriverState.WarnType) + "', '" + new WarnLevel().GetWarnLevel(DriverState.WarnLevel) + "', '" + xy[0] + "', '" + xy[1] + "', '" + info + "', '无', '" + vehicleInfo.Item3 + "', '" + Extension.BCDToTimeFormat(DriverState.Time) + "', NULL, NULL, NULL, NULL)";
+                            mysql.UpdOrInsOrdel(sql);
+                        }
+                        break;
+
+                    default:
+                        break;
+                }
             }
         }
     }

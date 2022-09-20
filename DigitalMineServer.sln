@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DigitalMineServer", "Digita
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JtLibrary", "Jt808Library\JtLibrary.csproj", "{94C8025D-4D31-42FF-82BF-5842524B3641}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ActionSafe", "ActionSafe\ActionSafe.csproj", "{108F4E29-D92B-49FD-8F8A-363BEBCCFF69}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{94C8025D-4D31-42FF-82BF-5842524B3641}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{94C8025D-4D31-42FF-82BF-5842524B3641}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{94C8025D-4D31-42FF-82BF-5842524B3641}.Release|Any CPU.Build.0 = Release|Any CPU
+		{108F4E29-D92B-49FD-8F8A-363BEBCCFF69}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{108F4E29-D92B-49FD-8F8A-363BEBCCFF69}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{108F4E29-D92B-49FD-8F8A-363BEBCCFF69}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{108F4E29-D92B-49FD-8F8A-363BEBCCFF69}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
