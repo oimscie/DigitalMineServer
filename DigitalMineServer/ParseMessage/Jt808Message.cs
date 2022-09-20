@@ -235,7 +235,7 @@ namespace DigitalMineServer
                         }
                     }
                     //附加消息体
-                    ManageAttachItems(bodyinfo, vehicleInfo, time);
+                    ManageAttachItems(Sim, bodyinfo, vehicleInfo, time);
                     if (Resource.isVehicleUpdate)
                     {
                         continue;
@@ -439,9 +439,10 @@ namespace DigitalMineServer
         /// 处理附加信息
         /// </summary>
         /// <param name="bodyinfo"></param>
+        /// <param name="sim"></param>
         /// <param name="vehicleInfo"></param>
         /// <param name="time"></param>
-        private void ManageAttachItems(PB0200 bodyinfo, ValueTuple<string, string, string, string, string, string> vehicleInfo, DateTime time)
+        private void ManageAttachItems(string sim, PB0200 bodyinfo, ValueTuple<string, string, string, string, string, string> vehicleInfo, DateTime time)
         {
             string sql = null;
             //附加消息体
@@ -473,6 +474,8 @@ namespace DigitalMineServer
                             string info = "纬度：" + Convert.ToDouble(DriveHelp.latitude) / 1000000 + "，经度：" + Convert.ToDouble(DriveHelp.longitude) / 1000000;
                             sql = "INSERT INTO `rec_unu_acsafe`(`VEHICLE_ID`, `DRIVER`, `VEHICLE_TYPE`, `POSI_SPEED`,`WARN_TYPE`, `EVENT_TYPE`, `LEVEL`, `POSI_X`, `POSI_Y`, `WARN_INFO`, `ATTACHMENT_URL`, `COMPANY`, `ADD_TIME`, `TEMP1`, `TEMP2`, `TEMP3`, `TEMP4`) VALUES ('" + vehicleInfo.Item5 + "', '" + vehicleInfo.Item6 + "', '" + vehicleInfo.Item2 + "', '" + DriveHelp.VehicleSpeed + "', 'warnDriveHelp','" + new DriveHelpWarn().GetDriveHelpWarnType(DriveHelp.WarnType) + "', '" + new WarnLevel().GetWarnLevel(DriveHelp.WarnLevel) + "', '" + xy[0] + "','" + xy[1] + "', '" + info + "', '无', '" + vehicleInfo.Item3 + "', '" + Extension.BCDToTimeFormat(DriveHelp.Time) + "', NULL, NULL, NULL, NULL)";
                             mysql.UpdOrInsOrdel(sql);
+                            //给车辆发送超速警告，语音播报
+                            SendMessage(sim, new REQ8300().R8300(sim, "请注意，检测到" + new DriveHelpWarn().GetDriveHelpWarnType(DriveHelp.WarnType)));
                         }
                         break;
 
@@ -484,6 +487,7 @@ namespace DigitalMineServer
                             string info = "纬度：" + Convert.ToDouble(DriverState.latitude) / 1000000 + "，经度：" + Convert.ToDouble(DriverState.longitude) / 1000000;
                             sql = "INSERT INTO `rec_unu_acsafe`( `VEHICLE_ID`, `DRIVER`, `VEHICLE_TYPE`, `POSI_SPEED`,`WARN_TYPE`,`EVENT_TYPE`, `LEVEL`, `POSI_X`, `POSI_Y`, `WARN_INFO`, `ATTACHMENT_URL`, `COMPANY`, `ADD_TIME`, `TEMP1`, `TEMP2`, `TEMP3`, `TEMP4`) VALUES ('" + vehicleInfo.Item5 + "', '" + vehicleInfo.Item6 + "', '" + vehicleInfo.Item2 + "','" + DriverState.VehicleSpeed + "', 'warnDriverState','" + new DriverStateWarn().GetDriverStateWarnType(DriverState.WarnType) + "', '" + new WarnLevel().GetWarnLevel(DriverState.WarnLevel) + "', '" + xy[0] + "', '" + xy[1] + "', '" + info + "', '无', '" + vehicleInfo.Item3 + "', '" + Extension.BCDToTimeFormat(DriverState.Time) + "', NULL, NULL, NULL, NULL)";
                             mysql.UpdOrInsOrdel(sql);
+                            SendMessage(sim, new REQ8300().R8300(sim, "请注意，检测到" + new DriveHelpWarn().GetDriveHelpWarnType(DriverState.WarnType)));
                         }
                         break;
 
