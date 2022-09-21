@@ -569,7 +569,7 @@ namespace ActionSafe.AcSafe_Su.PacketBody
             /// <summary>
             /// 附件信息列表
             /// </summary>
-            public attachmentInfoStructure list;
+            public List<attachmentInfoStructure> list;
         }
 
         /// <summary>
@@ -703,6 +703,16 @@ namespace ActionSafe.AcSafe_Su.PacketBody
         public string fileName;
 
         /// <summary>
+        /// 文件类型
+        /// 0x00：图片
+        /// 0x01：音频
+        /// 0x02：视频
+        /// 0x03：文本
+        /// 0x04：其他
+        /// </summary>
+        public byte type;
+
+        /// <summary>
         /// 上传结构
         /// 0x00：完成
         /// 0x01：需要补传
@@ -717,13 +727,13 @@ namespace ActionSafe.AcSafe_Su.PacketBody
         /// <summary>
         /// 补传数据包列表
         /// </summary>
-        public fillStructure fillStructureList;
+        public List<FillStructure> fillStructureList;
     }
 
     /// <summary>
     /// 补传数据包结构
     /// </summary>
-    public struct fillStructure
+    public struct FillStructure
     {
         /// <summary>
         /// 数据偏移量

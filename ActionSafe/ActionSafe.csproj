@@ -42,6 +42,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AcSafe_Su\Reauest_Su_2013\REQ_9208.cs" />
+    <Compile Include="AcSafe_Su\Reauest_Su_2013\REQ_9212.cs" />
     <Compile Include="AcSafe_Su\Reponse_Su_2013\REP_0X67.cs" />
     <Compile Include="AcSafe_Su\Reponse_Su_2013\REP_0X65.cs" />
     <Compile Include="AcSafe_Su\Reponse_Su_2013\REP_0X64.cs" />
