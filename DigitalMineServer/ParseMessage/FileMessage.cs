@@ -26,7 +26,7 @@ namespace DigitalMineServer.ParseMessage
         private readonly string FilePath = ConfigurationManager.AppSettings["FilePath"];
         //文件对外虚拟路径
         private readonly string VritualPath = ConfigurationManager.AppSettings["VritualPath"];
-        public void ParseOrder(FileSession Session, byte[] buffer)
+        public void ParseOrder(MonitorFileSession Session, byte[] buffer)
         {
             //判断是否接受了下位机上传的文件信息
             if (!Session.HasHeader)

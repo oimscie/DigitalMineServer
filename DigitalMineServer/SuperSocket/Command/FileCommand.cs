@@ -15,9 +15,9 @@ using System.Windows.Forms;
 
 namespace DigitalMineServer.SuperSocket
 {
-    public class FileCommand : CommandBase<FileSession, BinaryRequestInfo>
+    public class FileCommand : CommandBase<MonitorFileSession, BinaryRequestInfo>
     {
-        public override void ExecuteCommand(FileSession session, BinaryRequestInfo requestInfo)
+        public override void ExecuteCommand(MonitorFileSession session, BinaryRequestInfo requestInfo)
         {
             new FileMessage().ParseOrder(session, requestInfo.Body);
         }

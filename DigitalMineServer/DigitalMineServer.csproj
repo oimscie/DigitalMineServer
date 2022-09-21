@@ -188,7 +188,7 @@
     <Compile Include="SuperSocket\SocketServer\VehicleVideoServer.cs" />
     <Compile Include="SuperSocket\SocketServer\ClientServer.cs" />
     <Compile Include="SuperSocket\SocketServer\WebSocketServer.cs" />
-    <Compile Include="SuperSocket\SocketSession\FileSession.cs" />
+    <Compile Include="SuperSocket\SocketSession\MonitorFileSession.cs" />
     <Compile Include="SuperSocket\SocketSession\ClientAudioSession.cs" />
     <Compile Include="SuperSocket\SocketSession\ClientHistoryAudioSession.cs" />
     <Compile Include="SuperSocket\SocketSession\ClientHistoryVideoSession.cs" />

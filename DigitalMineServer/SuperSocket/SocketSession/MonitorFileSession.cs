@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace DigitalMineServer.SuperSocket
 {
-    public class FileSession : AppSession<FileSession, BinaryRequestInfo>
+    public class MonitorFileSession : AppSession<MonitorFileSession, BinaryRequestInfo>
     {
         /// <summary>
         /// 是否存在文件信息头

@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 
 namespace DigitalMineServer.SuperSocket.SocketServer
 {
-   public class FileServer : AppServer<FileSession, BinaryRequestInfo>
+   public class FileServer : AppServer<MonitorFileSession, BinaryRequestInfo>
     {
         public FileServer() : base(new DefaultReceiveFilterFactory<FileReceiveFilter, BinaryRequestInfo>()) { }
         protected override bool Setup(IRootConfig rootConfig, IServerConfig config)
@@ -30,11 +30,11 @@ namespace DigitalMineServer.SuperSocket.SocketServer
             implement.Util.AppendText(JtServerForm.JtForm.infoBox, Config.Name + "监听服务已停止");
             base.OnStopped();
         }
-        protected override void OnNewSessionConnected(FileSession session)
+        protected override void OnNewSessionConnected(MonitorFileSession session)
         {
             base.OnNewSessionConnected(session);
         }
-        protected override void OnSessionClosed(FileSession session, CloseReason reason)
+        protected override void OnSessionClosed(MonitorFileSession session, CloseReason reason)
         {
             base.OnSessionClosed(session, reason);
         }
