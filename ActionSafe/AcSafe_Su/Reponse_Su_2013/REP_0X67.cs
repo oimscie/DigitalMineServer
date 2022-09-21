@@ -6,27 +6,27 @@ using System.Text;
 using System.Threading.Tasks;
 using static ActionSafe.AcSafe_Su.PacketBody.PacketBody;
 
-namespace ActionSafe.AcSafe_Su.DecodeDriverStateWarnBody
+namespace ActionSafe.AcSafe_Su.Reponse_Su_2013
 {
-    public class DecodeDriverStateWarnBody
+    /// <summary>
+    /// 盲区监测报警
+    /// </summary>
+    public class REP_0X67
     {
         /// <summary>
-        /// 解码驾驶员状态监测系统报警
+        /// 盲区监测报警
         /// </summary>
         /// <param name="buffer"></param>
         /// <returns></returns>
-        public DriverStateWarnBody DecodeDriverStateWarn(byte[] buffer)
+        public PB0X67 DecodeBlindAreaWarn(byte[] buffer)
         {
             int index = 0;
-            DriverStateWarnBody item = new DriverStateWarnBody
+            PB0X67 item = new PB0X67
             {
                 ID = buffer.ToUInt32(index),
-                WarnState = buffer[index += 4],
-                WarnType = buffer[index += 1],
-                WarnLevel = buffer[index += 1],
-                FatigueLevel = buffer[index += 1],
-                Reserved = buffer.Copy(index += 1, 4),
-                VehicleSpeed = buffer[index += 4],
+                WarnState = buffer[index += 1],
+                EventType = buffer[index += 1],
+                VehicleSpeed = buffer[index += 1],
                 High = buffer.ToUInt16(index += 1),
                 latitude = buffer.ToUInt32(index += 2),
                 longitude = buffer.ToUInt32(index += 4),

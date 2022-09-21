@@ -1,5 +1,5 @@
-﻿using ActionSafe.AcSafe_Su.DecodeDriverStateWarnBody;
-using ActionSafe.AcSafe_Su.DecodeWarnBody;
+﻿using ActionSafe.AcSafe_Su.REP_0X65;
+using ActionSafe.AcSafe_Su.Reponse_Su_2013;
 using ActionSafe.AcSafe_Su.WarnInfo;
 using DigitalMineServer.Mysql;
 using DigitalMineServer.PacketReponse;
@@ -466,7 +466,7 @@ namespace DigitalMineServer
                         break;
 
                     case 0x64:
-                        DriveHelpWarnBody DriveHelp = new DecodeDrivrHelpWarnBody().DecodeDrivrHelpWarn(bodyinfo.AttachItems[i].BytesValue);
+                        PB0X64 DriveHelp = new REP_0X64().Decode(bodyinfo.AttachItems[i].BytesValue);
                         if (DriveHelp.WarnState == 0x01)
                         {
                             //经纬度转换2000坐标
@@ -480,7 +480,7 @@ namespace DigitalMineServer
                         break;
 
                     case 0x65:
-                        DriverStateWarnBody DriverState = new DecodeDriverStateWarnBody().DecodeDriverStateWarn(bodyinfo.AttachItems[i].BytesValue);
+                        PB0X65 DriverState = new REP_0X65().Decode(bodyinfo.AttachItems[i].BytesValue);
                         if (DriverState.WarnState == 0x01)
                         {
                             List<double> xy = WGS84ToCS2000.WGS84ToXY(Convert.ToDouble(DriverState.latitude) / 1000000, Convert.ToDouble(DriverState.longitude) / 1000000, 3);

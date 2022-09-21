@@ -6,22 +6,22 @@ using System.Text;
 using System.Threading.Tasks;
 using static ActionSafe.AcSafe_Su.PacketBody.PacketBody;
 
-namespace ActionSafe.AcSafe_Su.DecodeWarnBody
+namespace ActionSafe.AcSafe_Su.Reponse_Su_2013
 {
     /// <summary>
     /// 胎压监测系统报警
     /// </summary>
-    public class DecodeTirePressureWarnBody
+    public class REP_0X66
     {
         /// <summary>
         /// 胎压监测系统报警
         /// </summary>
         /// <param name="buffer"></param>
         /// <returns></returns>
-        public TirePressureBody DecodeTirePressureWarn(byte[] buffer)
+        public PB0X66 DecodeTirePressureWarn(byte[] buffer)
         {
             int index = 0;
-            TirePressureBody item = new TirePressureBody
+            PB0X66 item = new PB0X66
             {
                 ID = buffer.ToUInt32(index),
                 WarnState = buffer[index += 4],
@@ -43,13 +43,14 @@ namespace ActionSafe.AcSafe_Su.DecodeWarnBody
         /// </summary>
         /// <param name="buffer"></param>
         /// <returns></returns>
-        private List<TirePressureEventlistBody> DecodeTirePressureEventlist(byte[] buffer,int count)
+        private List<PB0X66Eventlist> DecodeTirePressureEventlist(byte[] buffer, int count)
         {
             int index = 0;
             int temp = 0;
-            List<TirePressureEventlistBody> list = new List<TirePressureEventlistBody>();
-            while (temp<count) {
-                TirePressureEventlistBody item = new TirePressureEventlistBody
+            List<PB0X66Eventlist> list = new List<PB0X66Eventlist>();
+            while (temp < count)
+            {
+                PB0X66Eventlist item = new PB0X66Eventlist
                 {
                     Number = buffer[index],
                     EventType = buffer.ToUInt16(index += 2),

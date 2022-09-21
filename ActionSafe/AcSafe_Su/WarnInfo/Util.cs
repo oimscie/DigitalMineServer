@@ -18,9 +18,9 @@ namespace ActionSafe.AcSafe_Su.WarnInfo
         /// </summary>
         /// <param name="buffer"></param>
         /// <returns></returns>
-        public WarnNumberBody DecodeWarnNumber(byte[] buffer) {
+        public WarnNumber DecodeWarnNumber(byte[] buffer) {
             int index = 0;
-            WarnNumberBody item = new WarnNumberBody
+            WarnNumber item = new WarnNumber
             {
                 ID = buffer.Copy(index, 7),
                 Time = buffer.Copy(index += 7, 6),

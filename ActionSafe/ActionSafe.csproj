@@ -41,10 +41,11 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AcSafe_Su\DecodeWarnBody\DecodeBlindAreaWarnBody.cs" />
-    <Compile Include="AcSafe_Su\DecodeWarnBody\DecodeDriverStateWarnBody.cs" />
-    <Compile Include="AcSafe_Su\DecodeWarnBody\DecodeDrivrHelpWarnBody.cs" />
-    <Compile Include="AcSafe_Su\DecodeWarnBody\DecodeTirePressureWarnBody.cs" />
+    <Compile Include="AcSafe_Su\Reauest_Su_2013\REQ_9208.cs" />
+    <Compile Include="AcSafe_Su\Reponse_Su_2013\REP_0X67.cs" />
+    <Compile Include="AcSafe_Su\Reponse_Su_2013\REP_0X65.cs" />
+    <Compile Include="AcSafe_Su\Reponse_Su_2013\REP_0X64.cs" />
+    <Compile Include="AcSafe_Su\Reponse_Su_2013\REP_0X66.cs" />
     <Compile Include="AcSafe_Su\PacketBody\PacketBody.cs" />
     <Compile Include="AcSafe_Su\WarnInfo\BlindAreaWarn.cs" />
     <Compile Include="AcSafe_Su\WarnInfo\DriverStateWarn.cs" />
@@ -60,5 +61,6 @@
       <Name>JtLibrary</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
