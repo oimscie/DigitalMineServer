@@ -136,7 +136,7 @@
     <Compile Include="PacketReponse\REQ9102.cs" />
     <Compile Include="PacketReponse\REQ9201.cs" />
     <Compile Include="PacketReponse\REPDefault.cs" />
-    <Compile Include="ParseMessage\FileMessage.cs" />
+    <Compile Include="ParseMessage\MonitorFileMessage.cs" />
     <Compile Include="ParseMessage\MontorMessage.cs" />
     <Compile Include="ParseMessage\DataMessage.cs" />
     <Compile Include="ParseMessage\ClientAudioMessage.cs" />
@@ -150,7 +150,7 @@
     <Compile Include="ParseMessage\VehicleHistoryVideoMessage.cs" />
     <Compile Include="ParseMessage\VehicleVideoMessage.cs" />
     <Compile Include="OrderMessage\OrderMessageType.cs" />
-    <Compile Include="SuperSocket\Command\FileCommand.cs" />
+    <Compile Include="SuperSocket\Command\MonitorFileCommand.cs" />
     <Compile Include="SuperSocket\Command\MontorCommand.cs" />
     <Compile Include="SuperSocket\Command\DataCommand.cs" />
     <Compile Include="SuperSocket\Command\ClientAudioCommand.cs" />
@@ -163,7 +163,7 @@
     <Compile Include="SuperSocket\Command\VehicleVideoCommand.cs" />
     <Compile Include="SuperSocket\Command\ClientCommand.cs" />
     <Compile Include="SuperSocket\Command\WebOrder.cs" />
-    <Compile Include="SuperSocket\ReceiveFilter\FileReceiveFilter.cs" />
+    <Compile Include="SuperSocket\ReceiveFilter\MonitorFileReceiveFilter.cs" />
     <Compile Include="SuperSocket\ReceiveFilter\MontorReceiveFilter.cs" />
     <Compile Include="SuperSocket\ReceiveFilter\DataReceiveFilter.cs" />
     <Compile Include="SuperSocket\ReceiveFilter\ClientAudioReceiveFilter.cs" />
@@ -179,7 +179,7 @@
     <Compile Include="SuperSocket\SocketServer\ClientHistoryAudioServer.cs" />
     <Compile Include="SuperSocket\SocketServer\ClientHistoryVideoServer.cs" />
     <Compile Include="SuperSocket\SocketServer\ClientVideoServer.cs" />
-    <Compile Include="SuperSocket\SocketServer\FileServer.cs" />
+    <Compile Include="SuperSocket\SocketServer\MonitorFileServer.cs" />
     <Compile Include="SuperSocket\SocketServer\MontorServer.cs" />
     <Compile Include="SuperSocket\SocketServer\DataServer.cs" />
     <Compile Include="SuperSocket\SocketServer\VehicleHistoryAudioServer.cs" />

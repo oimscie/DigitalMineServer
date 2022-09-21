@@ -15,11 +15,11 @@ using System.Windows.Forms;
 
 namespace DigitalMineServer.SuperSocket
 {
-    public class FileCommand : CommandBase<MonitorFileSession, BinaryRequestInfo>
+    public class MonitorFileCommand : CommandBase<MonitorFileSession, BinaryRequestInfo>
     {
         public override void ExecuteCommand(MonitorFileSession session, BinaryRequestInfo requestInfo)
         {
-            new FileMessage().ParseOrder(session, requestInfo.Body);
+            new MonitorFileMessage().ParseOrder(session, requestInfo.Body);
         }
     }
 }

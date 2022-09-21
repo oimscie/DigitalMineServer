@@ -12,9 +12,9 @@ using System.Threading.Tasks;
 
 namespace DigitalMineServer.SuperSocket.SocketServer
 {
-   public class FileServer : AppServer<MonitorFileSession, BinaryRequestInfo>
+   public class MonitorFileServer : AppServer<MonitorFileSession, BinaryRequestInfo>
     {
-        public FileServer() : base(new DefaultReceiveFilterFactory<FileReceiveFilter, BinaryRequestInfo>()) { }
+        public MonitorFileServer() : base(new DefaultReceiveFilterFactory<MonitorFileReceiveFilter, BinaryRequestInfo>()) { }
         protected override bool Setup(IRootConfig rootConfig, IServerConfig config)
         {
             implement.Util.AppendText(JtServerForm.JtForm.infoBox, "正在准备" + Config.Name + "配置文件");
