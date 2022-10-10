@@ -1,4 +1,4 @@
-﻿using DigitalMineServer.implement;
+﻿using DigitalMineServer.Utils;
 using SuperSocket.Common;
 using SuperSocket.Facility.Protocol;
 using SuperSocket.SocketBase.Protocol;
@@ -12,10 +12,13 @@ namespace DigitalMineServer.SuperSocket.ReceiveFilter
 {
     public class MonitorFileReceiveFilter : TerminatorReceiveFilter<BinaryRequestInfo>
     {
-        public MonitorFileReceiveFilter() : base(new byte[] {11,22,33,44}) { }
+        public MonitorFileReceiveFilter() : base(new byte[] { 11, 22, 33, 44 })
+        {
+        }
+
         protected override BinaryRequestInfo ProcessMatchedRequest(byte[] readBuffer, int offset, int length)
         {
-            return new BinaryRequestInfo("FileCommand", readBuffer.CloneRange(offset, length));
+            return new BinaryRequestInfo("MonitorFileCommand", readBuffer.CloneRange(offset, length));
         }
     }
 }

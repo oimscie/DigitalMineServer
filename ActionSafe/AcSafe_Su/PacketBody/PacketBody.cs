@@ -559,7 +559,7 @@ namespace ActionSafe.AcSafe_Su.PacketBody
             /// 0x00:正常报警文件信息
             /// 0x01:补传报警信息文件
             /// </summary>
-            public byte[] type;
+            public byte type;
 
             /// <summary>
             /// 附加数量

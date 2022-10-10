@@ -11,7 +11,7 @@ namespace DigitalMineServer.PacketReponse
     /// <summary>
     /// 弃用
     /// </summary>
-    public class REQ8604
+    public class REQ_8604
     {
         public byte[] R8604(string sim, List<UInt32UInt32> polygonItemsInfo)
         {

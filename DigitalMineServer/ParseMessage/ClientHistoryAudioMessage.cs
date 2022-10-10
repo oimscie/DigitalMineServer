@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using DigitalMineServer.SuperSocket.SocketServer;
-using DigitalMineServer.implement;
+using DigitalMineServer.Utils;
 using DigitalMineServer.PacketReponse;
 
 namespace DigitalMineServer.ParseMessage

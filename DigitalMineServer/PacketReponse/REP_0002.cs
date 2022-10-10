@@ -6,47 +6,22 @@ using JtLibrary.Jt808_2019.Request_2019;
 using JtLibrary.PacketBody;
 using JtLibrary.Providers;
 using JtLibrary.Structures;
-using JtLibrary.Utils;
-using System;
 using static JtLibrary.Structures.EquipVersion;
 
 namespace DigitalMineServer.PacketReponse
 {
-    class REP0100
+    class REP_0002
     {
-        public void R0100(PacketMessage msg, IPacketProvider pConvert, Jt808Session Session)
+        public void R0002(PacketMessage msg, IPacketProvider pConvert, Jt808Session Session)
         {
-            string sim = Extension.BCDToString(msg.pmPacketHead.hSimNumber);
-            //判断808版本
-            string Version808 = VersionCheck.Get808Version(msg.pmPacketHead.phPacketHeadAttribute.IdentifiersVersion);
-            if (Version808 == Version_808.Ver_808_null)
-            {
-                return;
-            }
-            ValueTuple<string, string, string, int> val = new ValueTuple<string, string, string, int>
-            {
-                Item1 = Version808,
-                Item2 = Version_1078.Ver_1078_null,
-                Item3 = Version_AcSafe.Ver_AcSafe_null,
-                Item4 = msg.pmPacketHead.protocolVersion
-            };
-            //存入字典
-            if (Resource.equipVersion.ContainsKey(sim))
-            {
-                Resource.equipVersion[sim] = val;
-            }
-            else
-            {
-                Resource.equipVersion.TryAdd(sim, val);
-            }
-            switch (Version808)
+            switch (Resource.equipVersion[Extension.BCDToString(msg.pmPacketHead.hSimNumber)].Item1)
             {
                 case Version_808.Ver_808_2013:
-                    byte[] buffer_2013 = Packet_0100_2013(msg, pConvert);
+                    byte[] buffer_2013 = Packet_0002_2013(msg, pConvert);
                     Session.Send(buffer_2013, 0, buffer_2013.Length);
                     break;
                 case Version_808.Ver_808_2019:
-                    byte[] buffer_2019 = Packet_0100_2019(msg, pConvert);
+                    byte[] buffer_2019 = Packet_0002_2019(msg, pConvert);
                     Session.Send(buffer_2019, 0, buffer_2019.Length);
                     break;
             }
@@ -57,18 +32,17 @@ namespace DigitalMineServer.PacketReponse
         /// <param name="msg"></param>
         /// <param name="pConvert"></param>
         /// <returns></returns>
-        private byte[] Packet_0100_2013(PacketMessage msg, IPacketProvider pConvert)
-        {
-            byte[] body_0100 = new REQ_8100_2013().Encode(new PB8100()
+        private byte[]Packet_0002_2013(PacketMessage msg, IPacketProvider pConvert) {
+            byte[] body_0002 = new REQ_8001_2013().Encode(new PB8001()
             {
                 Serialnumber = msg.pmPacketHead.phSerialnumber,
+                MessageId = msg.pmPacketHead.phMessageId,
                 Result = 0,
-                AuthenticationCode = "111111"
             });
             byte[] buffer = pConvert.Encode_2013(new PacketFrom()
             {
-                msgBody = body_0100,
-                msgId = JT808Cmd.REQ_8100,
+                msgBody = body_0002,
+                msgId = JT808Cmd.REQ_8001,
                 msgSerialnumber = msg.pmPacketHead.phSerialnumber,
                 pEncryptFlag = 0,
                 pSerialnumber = 1,
@@ -78,25 +52,24 @@ namespace DigitalMineServer.PacketReponse
             });
             return buffer;
         }
-
         /// <summary>
         /// 2019消息打包
         /// </summary>
         /// <param name="msg"></param>
         /// <param name="pConvert"></param>
         /// <returns></returns>
-        private byte[] Packet_0100_2019(PacketMessage msg, IPacketProvider pConvert)
+        private byte[] Packet_0002_2019(PacketMessage msg, IPacketProvider pConvert)
         {
-            byte[] body_0100 = new REQ_8100_2019().Encode(new PB8100()
+            byte[] body_0002 = new REQ_8001_2019().Encode(new PB8001()
             {
                 Serialnumber = msg.pmPacketHead.phSerialnumber,
+                MessageId = msg.pmPacketHead.phMessageId,
                 Result = 0,
-                AuthenticationCode = "111111"
             });
             byte[] buffer = pConvert.Encode_2019(new PacketFrom()
             {
-                msgBody = body_0100,
-                msgId = JT808Cmd.REQ_8100,
+                msgBody = body_0002,
+                msgId = JT808Cmd.REQ_8001,
                 msgSerialnumber = msg.pmPacketHead.phSerialnumber,
                 pEncryptFlag = 0,
                 pSerialnumber = 1,

@@ -1,4 +1,4 @@
-﻿using DigitalMineServer.implement;
+﻿using DigitalMineServer.Utils;
 using DigitalMineServer.Mysql;
 using DigitalMineServer.PacketReponse;
 using DigitalMineServer.SuperSocket;
@@ -21,13 +21,12 @@ namespace DigitalMineServer.ParseMessage
     internal class MonitorFileMessage
     {
         private readonly MySqlHelper mysql = new MySqlHelper();
-        private readonly MD5 md5 = MD5.Create();
 
         //文件真实路径
-        private readonly string FilePath = ConfigurationManager.AppSettings["FilePath"];
+        private readonly string FilePath = ConfigurationManager.AppSettings["FilePath"] + "Monitor/";
 
         //文件对外虚拟路径
-        private readonly string VritualPath = ConfigurationManager.AppSettings["VritualPath"];
+        private readonly string VritualPath = ConfigurationManager.AppSettings["VritualPath"] + "Monitor/";
 
         public void ParseOrder(MonitorFileSession Session, byte[] buffer)
         {
@@ -37,15 +36,15 @@ namespace DigitalMineServer.ParseMessage
                 string[] info = Encoding.UTF8.GetString(buffer).Split('!');
                 Session.Company = info[0];
                 Session.FileName = info[1];
-                Session.md5Name = GetMd5(info[1].Split('.')[0]);
-                Session.RealFilePath = FilePath + implement.Util.GetChsSpell(info[0]);
-                Session.VritualPath = VritualPath + implement.Util.GetChsSpell(info[0]) + '/';
+                Session.md5Name = Utils.Util.GetMd5(info[1].Split('.')[0]);
+                Session.RealFilePath = FilePath + Utils.Util.GetChsSpell(info[0]);
+                Session.VritualPath = VritualPath + Utils.Util.GetChsSpell(info[0]) + '/';
                 Session.TotalSize = int.Parse(info[2]);
                 Session.ReceSize = 0;
                 Session.FileType = "pic";
-                if (implement.Util.DirExit(Session.RealFilePath, true))
+                if (Utils.Util.DirExit(Session.RealFilePath, true))
                 {
-                    Session.fs = implement.Util.FileCreat(Session.RealFilePath + '/' + Session.md5Name + ".jpg");
+                    Session.fs = Utils.Util.FileCreat(Session.RealFilePath + '/' + Session.md5Name + ".jpg");
                     Session.HasHeader = true;
                 }
                 else
@@ -70,6 +69,7 @@ namespace DigitalMineServer.ParseMessage
                             {
                                 Session.fs.Write(iten, 0, iten.Length);
                             }
+                            Session.fs.Close();
                             string md5Name = Session.md5Name + ".jpg";
                             //真实完整路径
                             string path = Session.RealFilePath + "/" + md5Name;
@@ -116,19 +116,6 @@ namespace DigitalMineServer.ParseMessage
                     Session.Close();
                 }
             }
-        }
-
-        private string GetMd5(string info)
-        {
-            byte[] buffer = Encoding.Default.GetBytes(info);
-            byte[] md5buffer = md5.ComputeHash(buffer);
-            string str = null;
-            // 通过使用循环，将字节类型的数组转换为字符串，此字符串是常规字符格式化所得
-            foreach (byte b in md5buffer)
-            {
-                str += b.ToString("x2");
-            }
-            return str;
         }
     }
 }

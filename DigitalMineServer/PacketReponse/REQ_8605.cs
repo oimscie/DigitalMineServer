@@ -10,7 +10,7 @@ namespace DigitalMineServer.PacketReponse
     /// <summary>
     /// 弃用
     /// </summary>
-    public class REQ8605
+    public class REQ_8605
     {
         public byte[] R8605(string sim)
         {

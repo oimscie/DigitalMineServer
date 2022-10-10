@@ -1,4 +1,4 @@
-﻿using DigitalMineServer.implement;
+﻿using DigitalMineServer.Utils;
 using SuperSocket.SocketBase;
 using SuperSocket.SocketBase.Protocol;
 using System;
@@ -32,7 +32,7 @@ namespace DigitalMineServer.SuperSocket
         }
         protected override void HandleUnknownRequest(BinaryRequestInfo requestInfo)
         {
-            implement.Util.AppendText(JtServerForm.JtForm.infoBox, "未知请求");
+            Utils.Util.AppendText(JtServerForm.JtForm.infoBox, "未知请求");
             base.HandleUnknownRequest(requestInfo);
         }
     }

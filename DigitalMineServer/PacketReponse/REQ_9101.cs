@@ -9,7 +9,7 @@ using static JtLibrary.Structures.EquipVersion;
 
 namespace DigitalMineServer.PacketReponse
 {
-    class REQ9101
+    internal class REQ_9101
     {
         public byte[] R9101(AudioAndVideo AudioAndVideo)
         {
@@ -18,10 +18,12 @@ namespace DigitalMineServer.PacketReponse
             {
                 case Version_808.Ver_808_2019:
                     return decode_9101_2019(AudioAndVideo, port);
+
                 default:
                     return decode_9101_2013(AudioAndVideo, port);
             }
         }
+
         /// <summary>
         /// 2013版9101编码
         /// </summary>
@@ -30,11 +32,10 @@ namespace DigitalMineServer.PacketReponse
         /// <returns></returns>
         private byte[] decode_9101_2013(AudioAndVideo AudioAndVideo, int port)
         {
-
             byte[] body_9101 = new REQ_9101_2016().Encode(new PB9101()
             {
-                length = 12,
-                ip = "120.27.8.104",
+                length = (byte)Resource.ServerIp.Length,
+                ip = Resource.ServerIp,
                 port = (ushort)port,
                 ports = 0000,
                 id = byte.Parse(AudioAndVideo.id),
@@ -54,6 +55,7 @@ namespace DigitalMineServer.PacketReponse
             });
             return buffer;
         }
+
         /// <summary>
         ///  2019版9101编码
         /// </summary>
@@ -64,8 +66,8 @@ namespace DigitalMineServer.PacketReponse
         {
             byte[] body_9101 = new REQ_9101_2016().Encode(new PB9101()
             {
-                length = 12,
-                ip = "120.27.8.104",
+                length = (byte)Resource.ServerIp.Length,
+                ip = Resource.ServerIp,
                 port = (ushort)port,
                 ports = 0000,
                 id = byte.Parse(AudioAndVideo.id),

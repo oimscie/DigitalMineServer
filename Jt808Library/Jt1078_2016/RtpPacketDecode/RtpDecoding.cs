@@ -21,7 +21,7 @@ namespace JtLibrary.Jt1078_2016.RtpPacketDecode
             item.M_PT = msgBody[indexOffset += 1];
             item.num = msgBody.ToUInt16(indexOffset += 1);
             //兼容粤标10位
-            if (type_1078 == Version_1078.Ver_1078_2019)
+            if (type_1078 == Version_1078.Ver_1078_yue_2019)
             {
                 item.SIM = msgBody.Copy(indexOffset += 2, 10);
                 item.ID = msgBody[indexOffset += 10];
@@ -52,8 +52,9 @@ namespace JtLibrary.Jt1078_2016.RtpPacketDecode
             }
             return item;
         }
+
         /// <summary>
-        /// 判断1078版本，粤标SIM码10位
+        /// 判断1078版本，粤标SIM码10字节
         /// </summary>
         /// <param name="buffer"></param>
         /// <returns></returns>
@@ -61,7 +62,7 @@ namespace JtLibrary.Jt1078_2016.RtpPacketDecode
         {
             if (buffer[8] == 0)
             {
-                return Version_1078.Ver_1078_2019;
+                return Version_1078.Ver_1078_yue_2019;
             }
             else
             {

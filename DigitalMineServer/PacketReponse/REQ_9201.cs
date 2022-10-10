@@ -1,5 +1,4 @@
-﻿
-using DigitalMineServer.OrderMessage;
+﻿using DigitalMineServer.OrderMessage;
 using DigitalMineServer.Static;
 using JtLibrary;
 using JtLibrary.Jt1078_2016.Request_2016;
@@ -11,12 +10,15 @@ using static JtLibrary.Structures.EquipVersion;
 
 namespace DigitalMineServer.PacketReponse
 {
-    class REQ9201
+    internal class REQ_9201
     {
         private readonly ushort msgSerialnumber;
-        public REQ9201() {
+
+        public REQ_9201()
+        {
             msgSerialnumber = (ushort)Resource.msgSerialnumberDic.Count;
         }
+
         public byte[] R9201(HisVideoAndAudio HisVideoAndAudio)
         {
             int port = HisVideoAndAudio.datatype == "1" ? 8088 : 8089;
@@ -24,16 +26,18 @@ namespace DigitalMineServer.PacketReponse
             {
                 case Version_808.Ver_808_2019:
                     return decode_9201_2019(HisVideoAndAudio, port);
+
                 default:
                     return decode_9201_2013(HisVideoAndAudio, port);
             }
         }
 
-        private byte[] decode_9201_2013(HisVideoAndAudio HisVideoAndAudio, int port) {
+        private byte[] decode_9201_2013(HisVideoAndAudio HisVideoAndAudio, int port)
+        {
             byte[] body_9201 = new REQ_9201_2016().Encode(new PB9201()
             {
-                length = 12,
-                ip = "120.27.8.104",
+                length = (byte)Resource.ServerIp.Length,
+                ip = Resource.ServerIp,
                 port = (ushort)port,
                 ports = 0,
                 id = byte.Parse(HisVideoAndAudio.id),
@@ -59,12 +63,13 @@ namespace DigitalMineServer.PacketReponse
             Resource.msgSerialnumberDic.TryAdd(msgSerialnumber, HisVideoAndAudio.sim);
             return buffer;
         }
+
         private byte[] decode_9201_2019(HisVideoAndAudio HisVideoAndAudio, int port)
         {
             byte[] body_9201 = new REQ_9201_2016().Encode(new PB9201()
             {
-                length = 12,
-                ip = "120.27.8.104",
+                length = (byte)Resource.ServerIp.Length,
+                ip = Resource.ServerIp,
                 port = (ushort)port,
                 ports = 0,
                 id = byte.Parse(HisVideoAndAudio.id),

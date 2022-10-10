@@ -9,7 +9,7 @@ using static JtLibrary.Structures.EquipVersion;
 
 namespace DigitalMineServer.PacketReponse
 {
-    class REQ8300
+    class REQ_8300
     {
         public byte[] R8300(string sim, string info)
         {

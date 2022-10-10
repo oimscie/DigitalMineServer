@@ -13,7 +13,7 @@ namespace ActionSafe.AcSafe_Su.Reauest_Su_2013
     /// </summary>
     public class REQ_9212
     {
-        public byte[] Decode(PB9212 info)
+        public byte[] Encoder(PB9212 info)
         {
             List<byte> list = new List<byte>
             {
@@ -27,7 +27,6 @@ namespace ActionSafe.AcSafe_Su.Reauest_Su_2013
             list.Add(info.result);
 
             list.Add(info.fillCount);
-
             for (int i = 0; i < info.fillStructureList.Count; i++)
             {
                 list.AddRange(info.fillStructureList[i].offset.ToBytes());

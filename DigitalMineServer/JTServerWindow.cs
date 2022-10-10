@@ -1,4 +1,4 @@
-﻿using DigitalMineServer.implement;
+﻿using DigitalMineServer.Utils;
 using DigitalMineServer.Mysql;
 using DigitalMineServer.Static;
 using DigitalMineServer.Util;
@@ -100,7 +100,7 @@ namespace DigitalMineServer
             #endregion
 
             #region 初始化存储服务
-            Thread InDB = new Thread(Jt808Message.InsertDB)
+            Thread InDB = new Thread(Jt808Message.DealWith0200)
             {
                 IsBackground = true
             };
@@ -156,7 +156,7 @@ namespace DigitalMineServer
                 "(select ID,VEHICLE_ID,VEHICLE_SIM,VEHICLE_TYPE,VEHICLE_DRIVER from LIST_VEHICLE " + sqlCompany + ")b " +
                 "on FID=ID";
             List<vehicleStateEntity> data = MySqlHelper.MultipleSelect(sql);
-            implement.Util.UpdataSource(dataGridView1, data);
+            Utils.Util.UpdataSource(dataGridView1, data);
         }
         /// <summary>
         /// 单元格内容居中

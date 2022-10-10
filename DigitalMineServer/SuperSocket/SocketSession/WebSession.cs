@@ -1,4 +1,4 @@
-﻿using DigitalMineServer.implement;
+﻿using DigitalMineServer.Utils;
 using SuperSocket.SocketBase;
 using SuperSocket.SocketBase.Protocol;
 using SuperSocket.WebSocket;
@@ -18,7 +18,7 @@ namespace DigitalMineServer.SuperSocket.SocketSession
             Uuid = Path.Trim('/');
         }
         protected override void OnSessionClosed(CloseReason reason) {
-            implement.Util.ModifyLable(JtServerForm.JtForm.webSocket, JtServerForm.bootstrap.GetServerByName("WebSocketServer").SessionCount.ToString());
+            Utils.Util.ModifyLable(JtServerForm.JtForm.webSocket, JtServerForm.bootstrap.GetServerByName("WebSocketServer").SessionCount.ToString());
         }
     }
  

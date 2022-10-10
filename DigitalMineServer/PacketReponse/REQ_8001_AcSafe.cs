@@ -1,53 +1,43 @@
 ﻿using DigitalMineServer.Static;
 using DigitalMineServer.SuperSocket;
 using JtLibrary;
-using JtLibrary.Jt808_2013.Reponse_2013;
 using JtLibrary.Jt808_2013.Request_2013;
-using JtLibrary.Jt808_2019.Reponse_2019;
 using JtLibrary.Jt808_2019.Request_2019;
 using JtLibrary.PacketBody;
 using JtLibrary.Providers;
 using JtLibrary.Structures;
-using System;
 using static JtLibrary.Structures.EquipVersion;
 
 namespace DigitalMineServer.PacketReponse
 {
-    class REP0200
+    //默认回复
+    public class REQ_8001_AcSafe
     {
-        public void R0200(PacketMessage msg, IPacketProvider pConvert, Jt808Session Session)
+        public void Default(PacketMessage msg, IPacketProvider pConvert, AcSafeFileSession Session)
         {
-
             switch (Resource.equipVersion[Extension.BCDToString(msg.pmPacketHead.hSimNumber)].Item1)
             {
                 case Version_808.Ver_808_2013:
-                    byte[] buffer_2013 = Packet_0200_2013(msg, pConvert);
+                    byte[] buffer_2013 = Packet_default_2013(msg, pConvert);
                     Session.Send(buffer_2013, 0, buffer_2013.Length);
-                    Resource.InsertQueues.Enqueue(new ValueTuple<string, PB0200>
-                    {
-                        Item1 = Extension.BCDToString(msg.pmPacketHead.hSimNumber),
-                        Item2 = new REP_0200_2013().Decode(msg.pmMessageBody)
-                    });
                     break;
+
                 case Version_808.Ver_808_2019:
-                    byte[] buffer_2019 = Packet_0200_2019(msg, pConvert);
+                    byte[] buffer_2019 = Packet_default_2019(msg, pConvert);
                     Session.Send(buffer_2019, 0, buffer_2019.Length);
-                    Resource.InsertQueues.Enqueue(new ValueTuple<string, PB0200>
-                    {
-                        Item1 = Extension.BCDToString(msg.pmPacketHead.hSimNumber),
-                        Item2 = new REP_0200_2019().Decode(msg.pmMessageBody)
-                    });
                     break;
             }
         }
+
         /// <summary>
         /// 2013消息打包
         /// </summary>
         /// <param name="msg"></param>
         /// <param name="pConvert"></param>
         /// <returns></returns>
-        private byte[] Packet_0200_2013(PacketMessage msg, IPacketProvider pConvert) {
-            byte[] body_0200 = new REQ_8001_2013().Encode(new PB8001()
+        private byte[] Packet_default_2013(PacketMessage msg, IPacketProvider pConvert)
+        {
+            byte[] body_default = new REQ_8001_2013().Encode(new PB8001()
             {
                 Serialnumber = msg.pmPacketHead.phSerialnumber,
                 MessageId = msg.pmPacketHead.phMessageId,
@@ -55,7 +45,7 @@ namespace DigitalMineServer.PacketReponse
             });
             byte[] buffer = pConvert.Encode_2013(new PacketFrom()
             {
-                msgBody = body_0200,
+                msgBody = body_default,
                 msgId = JT808Cmd.REQ_8001,
                 msgSerialnumber = msg.pmPacketHead.phSerialnumber,
                 pEncryptFlag = 0,
@@ -66,14 +56,16 @@ namespace DigitalMineServer.PacketReponse
             });
             return buffer;
         }
+
         /// <summary>
         /// 2019消息打包
         /// </summary>
         /// <param name="msg"></param>
         /// <param name="pConvert"></param>
         /// <returns></returns>
-        private byte[] Packet_0200_2019(PacketMessage msg, IPacketProvider pConvert) {
-            byte[] body_0200 = new REQ_8001_2019().Encode(new PB8001()
+        private byte[] Packet_default_2019(PacketMessage msg, IPacketProvider pConvert)
+        {
+            byte[] body_default = new REQ_8001_2019().Encode(new PB8001()
             {
                 Serialnumber = msg.pmPacketHead.phSerialnumber,
                 MessageId = msg.pmPacketHead.phMessageId,
@@ -81,7 +73,7 @@ namespace DigitalMineServer.PacketReponse
             });
             byte[] buffer = pConvert.Encode_2019(new PacketFrom()
             {
-                msgBody = body_0200,
+                msgBody = body_default,
                 msgId = JT808Cmd.REQ_8001,
                 msgSerialnumber = msg.pmPacketHead.phSerialnumber,
                 pEncryptFlag = 0,

@@ -41,6 +41,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AcSafe_Su\Decode\Decode.cs" />
     <Compile Include="AcSafe_Su\Reauest_Su_2013\REQ_9208.cs" />
     <Compile Include="AcSafe_Su\Reauest_Su_2013\REQ_9212.cs" />
     <Compile Include="AcSafe_Su\Reponse_Su_2013\REP_0X67.cs" />
@@ -48,12 +49,9 @@
     <Compile Include="AcSafe_Su\Reponse_Su_2013\REP_0X64.cs" />
     <Compile Include="AcSafe_Su\Reponse_Su_2013\REP_0X66.cs" />
     <Compile Include="AcSafe_Su\PacketBody\PacketBody.cs" />
-    <Compile Include="AcSafe_Su\WarnInfo\BlindAreaWarn.cs" />
-    <Compile Include="AcSafe_Su\WarnInfo\DriverStateWarn.cs" />
-    <Compile Include="AcSafe_Su\WarnInfo\DriveHelpWarn.cs" />
-    <Compile Include="AcSafe_Su\WarnInfo\TirePressureWarn.cs" />
-    <Compile Include="AcSafe_Su\WarnInfo\Util.cs" />
-    <Compile Include="AcSafe_Su\WarnInfo\WarnLeve.cs" />
+    <Compile Include="AcSafe_Su\Reponse_Su_2013\REP_1210.cs" />
+    <Compile Include="AcSafe_Su\Reponse_Su_2013\REP_1211.cs" />
+    <Compile Include="AcSafe_Su\Reponse_Su_2013\REP_1212.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

@@ -11,7 +11,7 @@ namespace DigitalMineServer.PacketReponse
     /// <summary>
     /// 电子围栏弃用，改由服务器判定是否越界
     /// </summary>
-    public class REQ8600
+    public class REQ_8600
     {
         public byte[] R8600(string sim)
         {

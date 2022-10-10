@@ -6,7 +6,7 @@ using JtLibrary.Structures;
 
 namespace DigitalMineServer.PacketReponse
 {
-    class REQ9202
+    class REQ_9202
     {
         public byte[] R9202(string[] data)
         {

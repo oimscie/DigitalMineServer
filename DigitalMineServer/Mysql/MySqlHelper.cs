@@ -1,4 +1,4 @@
-﻿using DigitalMineServer.implement;
+﻿using DigitalMineServer.Utils;
 using DigitalMineServer.Util;
 using MySql.Data.MySqlClient;
 using System;
@@ -68,7 +68,7 @@ namespace DigitalMineServer.Mysql
             }
             catch (Exception e)
             {
-                implement.Util.AppendText(JtServerForm.JtForm.infoBox, e.Message);
+                Utils.Util.AppendText(JtServerForm.JtForm.infoBox, e.Message);
                 LogHelper.WriteLog("数据库打开错误", e);
                 return false;
             }

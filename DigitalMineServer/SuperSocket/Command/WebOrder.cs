@@ -1,4 +1,4 @@
-﻿using DigitalMineServer.implement;
+﻿using DigitalMineServer.Utils;
 using DigitalMineServer.OrderMessage;
 using DigitalMineServer.PacketReponse;
 using DigitalMineServer.Static;
@@ -37,7 +37,7 @@ namespace DigitalMineServer.SuperSocket.Command
                     break;
                 case OrderMessageType.WebText:
                     WebText WebText = Decode.WebText(requestInfo.Body);
-                    SendMessage(new REQ8300().R8300(WebText.sim, WebText.text), WebText.sim, session);
+                    SendMessage(new REQ_8300().R8300(WebText.sim, WebText.text), WebText.sim, session);
                     break;
                 case OrderMessageType.deleteFence:
                     DeleteFence deleteFence = Decode.DeleteFence(requestInfo.Body);

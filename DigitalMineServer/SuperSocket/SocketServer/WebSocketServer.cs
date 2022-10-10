@@ -1,4 +1,4 @@
-﻿using DigitalMineServer.implement;
+﻿using DigitalMineServer.Utils;
 using DigitalMineServer.SuperSocket.Command;
 using DigitalMineServer.SuperSocket.ReceiveFilter;
 using DigitalMineServer.SuperSocket.SocketSession;
@@ -24,7 +24,7 @@ namespace DigitalMineServer.SuperSocket.SocketServer
         protected override void OnNewSessionConnected(WebSession session) {
 
             base.OnNewSessionConnected(session);
-            implement.Util.ModifyLable(JtServerForm.JtForm.webSocket, JtServerForm.bootstrap.GetServerByName("WebSocketServer").SessionCount.ToString());
+            Utils.Util.ModifyLable(JtServerForm.JtForm.webSocket, JtServerForm.bootstrap.GetServerByName("WebSocketServer").SessionCount.ToString());
         }
     
     }

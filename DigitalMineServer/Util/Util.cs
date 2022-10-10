@@ -4,20 +4,50 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Security.Cryptography;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using static ActionSafe.AcSafe_Su.PacketBody.PacketBody;
+using FileStream = System.IO.FileStream;
 
-namespace DigitalMineServer.implement
+namespace DigitalMineServer.Utils
 {
     public class Util
     {
-        delegate void lableShowDelegate(Label lable, string strshow);
+        private static readonly MD5 md5 = MD5.Create();
 
-        delegate void TextBoxShowDelegate(TextBox TextBox, string strshow);
+        private delegate void lableShowDelegate(Label lable, string strshow);
 
-        delegate void UpdataSourceDelegate(DataGridView view, List<vehicleStateEntity> list);
+        private delegate void TextBoxShowDelegate(TextBox TextBox, string strshow);
+
+        private delegate void UpdataSourceDelegate(DataGridView view, List<vehicleStateEntity> list);
+
+        public static string GetMd5(string info)
+        {
+            byte[] buffer = Encoding.Default.GetBytes(info);
+            byte[] md5buffer = md5.ComputeHash(buffer);
+            string str = null;
+            // 通过使用循环，将字节类型的数组转换为字符串，此字符串是常规字符格式化所得
+            foreach (byte b in md5buffer)
+            {
+                str += b.ToString("x2");
+            }
+            return str;
+        }
+
+        /// <summary>
+        /// 计算时间差
+        /// </summary>
+        /// <param name="dt1"></param>
+        /// <param name="dt2"></param>
+        /// <returns>相差秒数</returns>
+        public static double GetTimeDifference(DateTime dt1, DateTime dt2)
+        {
+            return (dt2 - dt1).TotalSeconds;
+        }
+
         /// <summary>
         /// 修改界面提示文字
         /// </summary>
@@ -34,6 +64,7 @@ namespace DigitalMineServer.implement
                 lable.Text = strshow;
             }
         }
+
         /// <summary>
         /// 添加文本
         /// </summary>
@@ -103,6 +134,7 @@ namespace DigitalMineServer.implement
             }
             else return cnChar;
         }
+
         /// <summary>
         /// 判断文件夹是否存在
         /// </summary>
@@ -136,6 +168,7 @@ namespace DigitalMineServer.implement
                 return true;
             }
         }
+
         /// <summary>
         /// 创建文件，如果存在就覆盖
         /// </summary>
@@ -146,7 +179,7 @@ namespace DigitalMineServer.implement
             FileStream fs;
             try
             {
-                fs=File.Create(path);
+                fs = File.Create(path);
                 return fs;
             }
             catch (Exception e)
@@ -156,10 +189,12 @@ namespace DigitalMineServer.implement
             }
         }
 
-        public static FileStream GetFileStream(string path) {
+        public static FileStream GetFileStream(string path)
+        {
             FileStream fs;
             int Count = 0;
-            while (true) {
+            while (true)
+            {
                 try
                 {
                     fs = new FileStream(path, FileMode.Append, FileAccess.Write);
@@ -167,17 +202,42 @@ namespace DigitalMineServer.implement
                 }
                 catch (Exception e)
                 {
-                    if (Count <500)
+                    if (Count < 500)
                     {
                         Count++;
                         Thread.Sleep(20);
                     }
-                    else {
+                    else
+                    {
                         LogHelper.WriteLog("文件流打开失败", e);
                         return null;
                     }
                 }
             }
+        }
+
+        /// <summary>
+        /// 获取精确到微秒的时间
+        /// </summary>
+        /// <returns></returns>
+        public static string getTime()
+        {
+            return DateTime.Now.ToString("00yyyy-MM-dd HH:mm:ss:fff:ffffff");
+        }
+
+        /// <summary>
+        /// 数组拼接十六进制字符串
+        /// </summary>
+        /// <param name="buffer"></param>
+        /// <returns></returns>
+        public static string GetStringHex(byte[] buffer)
+        {
+            string str = "";
+            foreach (var item in buffer)
+            {
+                str += item.ToString("X2");
+            }
+            return str;
         }
     }
 }

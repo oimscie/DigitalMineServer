@@ -1,4 +1,4 @@
-﻿using DigitalMineServer.implement;
+﻿using DigitalMineServer.Utils;
 using DigitalMineServer.OrderMessage;
 using DigitalMineServer.PacketReponse;
 using DigitalMineServer.SuperSocket;
@@ -33,7 +33,7 @@ namespace DigitalMineServer.ParseMessage
                     var sessions = Server.GetSessions(s => s.Sim == video.sim && s.Id == byte.Parse(video.id));
                     if (sessions.Count() == 0)
                     {
-                        SendMessage(new REQ9101().R9101(video), video.sim, session);                
+                        SendMessage(new REQ_9101().R9101(video), video.sim, session);                
                     }
                     break;
                 //视频控制请求

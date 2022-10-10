@@ -14,10 +14,10 @@ using static JtLibrary.Structures.EquipVersion;
 
 namespace DigitalMineServer.PacketReponse
 {
-    class REP0102
+    class REP_0102
     {
         readonly MySqlHelper mysql;
-        public REP0102()
+        public REP_0102()
         {
             mysql = new MySqlHelper();
         }
