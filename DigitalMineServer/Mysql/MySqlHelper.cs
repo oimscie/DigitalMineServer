@@ -261,8 +261,9 @@ namespace DigitalMineServer.Mysql
                 Command.CommandText = sql;
                 return Command.ExecuteNonQuery();
             }
-            catch
+            catch (Exception e)
             {
+                LogHelper.WriteLog("sql查询错误----" + sql, e);
                 return 0;
             }
             finally
@@ -291,8 +292,9 @@ namespace DigitalMineServer.Mysql
                 Reader.Close();
                 return back;
             }
-            catch
+            catch (Exception e)
             {
+                LogHelper.WriteLog("sql查询错误----" + sql, e);
                 return 0;
             }
             finally

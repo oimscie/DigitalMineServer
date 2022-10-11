@@ -167,7 +167,7 @@ namespace DigitalMineServer.ParseMessage
                 //对外虚拟完整路径
                 string vritualPath = fileInfo.VritualPath + md5Name;
                 //更新信息写入数据库
-                string sql = "INSERT INTO `list_acsafe_file`( `WARN_NUMBER`, `UUID`, `FILE_NAME`, `PATHS`, `COMPANY`, `ADD_TIME`, `TEMP1`, `TEMP2`, `TEMP3`, `TEMP4`) VALUES ('" + fileInfo.WarnId + "', '" + fileInfo.md5Name + "', '" + fileInfo.FileName + "', '" + vritualPath + "', '" + fileInfo.Company + "', '" + DateTime.Now.ToLongDateString() + "', NULL, NULL, NULL, NULL);";
+                string sql = "INSERT INTO `list_acsafe_file`( `WARN_NUMBER`, `UUID`, `FILE_NAME`, `PATHS`, `COMPANY`, `ADD_TIME`, `TEMP1`, `TEMP2`, `TEMP3`, `TEMP4`) VALUES ('" + fileInfo.WarnId + "', '" + fileInfo.md5Name + "', '" + fileInfo.FileName + "', '" + vritualPath + "', '" + fileInfo.Company + "', '" + DateTime.Now.ToString() + "', NULL, NULL, NULL, NULL);";
                 if (mysql.UpdOrInsOrdel(sql) == 0)
                 {
                     File.Delete(path);
