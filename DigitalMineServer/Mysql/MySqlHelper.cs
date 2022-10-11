@@ -11,24 +11,28 @@ using System.Threading.Tasks;
 
 namespace DigitalMineServer.Mysql
 {
-    class MySqlHelper
+    internal class MySqlHelper
     {
         /// <summary>
         /// 数据库连接头
         /// </summary>
         private MySqlConnection Conn;
+
         /// <summary>
         /// 数据库连接句柄
         /// </summary>
         private MySqlCommand Command;
+
         /// <summary>
         /// 读取头
         /// </summary>
         private MySqlDataReader Reader;
+
         /// <summary>
         /// 连接字符串
         /// </summary>
         private readonly string ConnStr = "server=127.0.0.1;database=product;user=root;password=qwertyuiop;charset=utf8;SslMode=None";
+
         public MySqlHelper()
         {
             Conn = new MySqlConnection(ConnStr);
@@ -37,6 +41,7 @@ namespace DigitalMineServer.Mysql
                 Connection = Conn
             };
         }
+
         /// <summary>
         /// 关闭连接
         /// </summary>
@@ -51,6 +56,7 @@ namespace DigitalMineServer.Mysql
                 LogHelper.WriteLog("mysql关闭错误", e);
             }
         }
+
         /// <summary>
         /// 打开连接
         /// </summary>
@@ -73,6 +79,7 @@ namespace DigitalMineServer.Mysql
                 return false;
             }
         }
+
         //检查连接头并打开，打开返回true，关闭未false
         public bool CheckConn()
         {
@@ -95,6 +102,7 @@ namespace DigitalMineServer.Mysql
             }
             return true;
         }
+
         /// <summary>
         /// 多行查询，查询失败或结果为空均返回null
         /// </summary>
@@ -168,7 +176,6 @@ namespace DigitalMineServer.Mysql
                         COMPANY = Reader.GetString("COMPANY"),
                         ADD_TIME = Reader.GetString("ADD_TIME"),
                     }); ;
-
                 }
                 Reader.Close();
                 if (back.Count == 0) { return null; };
@@ -184,6 +191,7 @@ namespace DigitalMineServer.Mysql
                 Close();
             }
         }
+
         /// <summary>
         /// 单字段多行查询，查询失败或结果为空均返回null
         /// </summary>
@@ -216,6 +224,7 @@ namespace DigitalMineServer.Mysql
                 Close();
             }
         }
+
         /// <summary>
         /// 单字段多行查询，查询失败或结果为空均返回null
         /// </summary>
@@ -248,6 +257,7 @@ namespace DigitalMineServer.Mysql
                 Close();
             }
         }
+
         /// <summary>
         /// 插入、修改、删除
         /// </summary>
@@ -270,8 +280,8 @@ namespace DigitalMineServer.Mysql
             {
                 Close();
             }
-
         }
+
         /// <summary>
         /// 查找目标是否存在，必须是select count（ID） as Count.....
         /// </summary>
