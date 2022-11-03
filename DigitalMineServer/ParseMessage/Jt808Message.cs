@@ -28,11 +28,20 @@ namespace DigitalMineServer
 {
     public class Jt808Message
     {
-        private readonly MySqlHelper mysql;
+        /// <summary>
+        /// 车辆Mysql连接头
+        /// </summary>
+        private readonly MySqlHelper VehicleMysql;
+
+        /// <summary>
+        /// 人员Mysql连接头
+        /// </summary>
+        private readonly MySqlHelper PersonMysql;
 
         public Jt808Message()
         {
-            mysql = new MySqlHelper();
+            VehicleMysql = new MySqlHelper();
+            PersonMysql = new MySqlHelper();
         }
 
         /// <summary>
@@ -167,7 +176,7 @@ namespace DigitalMineServer
                     string ACC = state[0] == 0 ? ACC = "关" : ACC = "开";
                     string IsStop = state[1] == 0 ? IsStop = "未定位" : IsStop = "已定位";
                     //检查车辆在状态表中是否存在
-                    if (mysql.GetCount("select count(ID) as Count from vehicle_state where FID='" + vehicleInfo.Item1 + "'") == 0)
+                    if (VehicleMysql.GetCount("select count(ID) as Count from vehicle_state where FID='" + vehicleInfo.Item1 + "'") == 0)
                     {
                         sql = "INSERT INTO `vehicle_state`" +
                              "(`FID`, `POSI_STATE`, `POSI_X`, `POSI_Y`, `POSI_SPEED`," +
@@ -180,19 +189,19 @@ namespace DigitalMineServer
                     }
                     else
                     {
-                        Dictionary<string, string> dic = mysql.SingleSelect("select POSI_NUM from vehicle_state where FID='" + vehicleInfo.Item1 + "' ", "POSI_NUM");
+                        Dictionary<string, string> dic = VehicleMysql.SingleSelect("select POSI_NUM from vehicle_state where FID='" + vehicleInfo.Item1 + "' ", "POSI_NUM");
                         //获取定位更新次数
                         dic.TryGetValue("POSI_NUM", out string num);
                         sql = "UPDATE `vehicle_state` SET " +
                             " `POSI_STATE` = '" + IsStop + "', `POSI_X` = '" + xy[0] + "', `POSI_Y` = '" + xy[1] + "', `POSI_SPEED` ='" + bodyinfo.Speed * 0.1 + "', `ACC` = '" + ACC + "', `POSI_NUM` = '" + (int.Parse(num) + 1) + "',`ADD_TIME`='" + time + "' WHERE FID='" + vehicleInfo.Item1 + "' ";
                     }
-                    mysql.UpdOrInsOrdel(sql);
+                    VehicleMysql.UpdOrInsOrdel(sql);
                     //定位信息插入临时表
                     sql = "INSERT INTO `temp_posi`( `VEHICLE_ID`, `VEHICLE_TYPE`, `POSI_X`, `POSI_Y`, `POSI_SPEED`, `COMPANY`, `ADD_TIME`, `TEMP1`, `TEMP2`, `TEMP3`, `TEMP4`) VALUES ( '" + vehicleInfo.Item5 + "', '" + vehicleInfo.Item2 + "'," + xy[0] + ", " + xy[1] + ", '" + bodyinfo.Speed * 0.1 + "', '" + vehicleInfo.Item3 + "', '" + time + "', NULL, NULL, NULL, NULL)";
-                    mysql.UpdOrInsOrdel(sql);
+                    VehicleMysql.UpdOrInsOrdel(sql);
                     //定位信息插入永久表
                     sql = "INSERT INTO `posi_vehicle`( `VEHICLE_ID`, `VEHICLE_TYPE`, `POSI_X`, `POSI_Y`, `POSI_SPEED`, `COMPANY`, `ADD_TIME`, `TEMP1`, `TEMP2`, `TEMP3`, `TEMP4`) VALUES ( '" + vehicleInfo.Item5 + "', '" + vehicleInfo.Item2 + "'," + xy[0] + ", " + xy[1] + ", '" + bodyinfo.Speed * 0.1 + "', '" + vehicleInfo.Item3 + "', '" + time + "', NULL, NULL, NULL, NULL)";
-                    mysql.UpdOrInsOrdel(sql);
+                    VehicleMysql.UpdOrInsOrdel(sql);
                     //检查超速
                     CheckSpeed(Sim, time, vehicleInfo, bodyinfo, xy);
                     //处理附加消息体
@@ -250,7 +259,7 @@ namespace DigitalMineServer
                     string ACC = state[0] == 0 ? ACC = "关" : ACC = "开";
                     string IsStop = state[1] == 0 ? IsStop = "未定位" : IsStop = "已定位";
                     //检查人员状态表中是否存在
-                    if (mysql.GetCount("select count(ID) as Count from person_state where FID='" + PersonInfo.Item1 + "'") == 0)
+                    if (PersonMysql.GetCount("select count(ID) as Count from person_state where FID='" + PersonInfo.Item1 + "'") == 0)
                     {
                         sql = "INSERT INTO `person_state`" +
                              "(`FID`, `POSI_STATE`, `POSI_X`, `POSI_Y`, " +
@@ -263,13 +272,13 @@ namespace DigitalMineServer
                     }
                     else
                     {
-                        Dictionary<string, string> dic = mysql.SingleSelect("select POSI_NUM from person_state where FID='" + PersonInfo.Item1 + "' ", "POSI_NUM");
+                        Dictionary<string, string> dic = PersonMysql.SingleSelect("select POSI_NUM from person_state where FID='" + PersonInfo.Item1 + "' ", "POSI_NUM");
                         //获取定位更新次数
                         dic.TryGetValue("POSI_NUM", out string num);
                         sql = "UPDATE `person_state` SET " +
                             " `POSI_STATE` = '" + IsStop + "', `POSI_X` = '" + xy[0] + "', `POSI_Y` = '" + xy[1] + "', `ACC` = '" + ACC + "', `POSI_NUM` = '" + (int.Parse(num) + 1) + "',`ADD_TIME`='" + time + "' WHERE FID='" + PersonInfo.Item1 + "' ";
                     }
-                    mysql.UpdOrInsOrdel(sql);
+                    PersonMysql.UpdOrInsOrdel(sql);
                     //围栏检查
                     CheckPersonFence(Sim, xy);
                 }
@@ -320,7 +329,7 @@ namespace DigitalMineServer
             if (bodyinfo.Speed * 0.1 > int.Parse(vehicleInfo.Item4))
             {
                 //检查1min内是否已上报超度记录，有则跳过
-                if (mysql.GetCount("select COUNT(ID) as Count from rec_unu_speed where VEHICLE_ID='" + vehicleInfo.Item5 + "'" +
+                if (VehicleMysql.GetCount("select COUNT(ID) as Count from rec_unu_speed where VEHICLE_ID='" + vehicleInfo.Item5 + "'" +
                     "and Company='" + vehicleInfo.Item3 + "' and ADD_TIME>=DATE_SUB(NOW(),INTERVAL 1 MINUTE)") == 0)
                 {
                     //给车辆发送超速警告，语音播报
@@ -331,7 +340,7 @@ namespace DigitalMineServer
                          "VALUES ( " +
                          "'" + vehicleInfo.Item5 + "', '" + vehicleInfo.Item6 + "', '" + vehicleInfo.Item2 + "','" + bodyinfo.Speed * 0.1 + "', '" + xy[0] + "', '" + xy[1] + "', '" + vehicleInfo.Item3 + "', '" + time + "', NULL, NULL, NULL, NULL" +
                          ")";
-                    mysql.UpdOrInsOrdel(sql);
+                    VehicleMysql.UpdOrInsOrdel(sql);
                 }
             }
         }
@@ -350,10 +359,10 @@ namespace DigitalMineServer
                 if (Polygon.IsInPolygon(new Point(xy[0], xy[1]), temp.Item6))
                 {
                     string sql = "select COUNT(ID) as Count from rec_unu_info where COMPANY='" + temp.Item2 + "' and WARN_USER_ID='" + temp.Item4 + "' and WARNTYPE='" + WarnType.Forbid_In + "' and ADD_TIME>=DATE_SUB(NOW(),INTERVAL 2 MINUTE)";
-                    if (mysql.GetCount(sql) == 0)
+                    if (VehicleMysql.GetCount(sql) == 0)
                     {
                         sql = "INSERT INTO `product`.`rec_unu_info`( `WARN_USER_ID`, `WARN_USER_TYPE`, `WARNTYPE`, `INFO`, `DRIVER`, `COMPANY`, `ADD_TIME`, `TEMP1`, `TEMP2`, `TEMP3`, `TEMP4`) VALUES ('" + temp.Item4 + "','" + temp.Item3 + "', '" + WarnType.Forbid_In + "', '围栏名称：" + temp.Item1 + "', '" + temp.Item5 + "', '" + temp.Item2 + "', '" + DateTime.Now + "', NULL, NULL, NULL, NULL)";
-                        mysql.UpdOrInsOrdel(sql);
+                        VehicleMysql.UpdOrInsOrdel(sql);
                     }
                 }
             }
@@ -364,10 +373,10 @@ namespace DigitalMineServer
                 if (!Polygon.IsInPolygon(new Point(xy[0], xy[1]), temp.Item6))
                 {
                     string sql = "select COUNT(ID) as Count from rec_unu_info where COMPANY='" + temp.Item2 + "' and WARN_USER_ID='" + temp.Item4 + "' and WARNTYPE='" + WarnType.Forbid_Out + "' and ADD_TIME>=DATE_SUB(NOW(),INTERVAL 2 MINUTE)";
-                    if (mysql.GetCount(sql) == 0)
+                    if (VehicleMysql.GetCount(sql) == 0)
                     {
                         sql = "INSERT INTO `product`.`rec_unu_info`( `WARN_USER_ID`, `WARN_USER_TYPE`, `WARNTYPE`, `INFO`, `DRIVER`, `COMPANY`, `ADD_TIME`, `TEMP1`, `TEMP2`, `TEMP3`, `TEMP4`) VALUES ('" + temp.Item4 + "','" + temp.Item3 + "', '" + WarnType.Forbid_Out + "', '围栏名称：" + temp.Item1 + "', '" + temp.Item5 + "', '" + temp.Item2 + "', '" + DateTime.Now + "', NULL, NULL, NULL, NULL)";
-                        mysql.UpdOrInsOrdel(sql);
+                        VehicleMysql.UpdOrInsOrdel(sql);
                     }
                 }
             }
@@ -387,10 +396,10 @@ namespace DigitalMineServer
                 if (Polygon.IsInPolygon(new Point(xy[0], xy[1]), temp.Item5))
                 {
                     string sql = "select COUNT(ID) as Count from rec_unu_info where COMPANY='" + temp.Item2 + "' and WARN_USER_ID='" + temp.Item4 + "' and WARNTYPE='" + WarnType.Forbid_In + "' and ADD_TIME>=DATE_SUB(NOW(),INTERVAL 2 MINUTE)";
-                    if (mysql.GetCount(sql) == 0)
+                    if (PersonMysql.GetCount(sql) == 0)
                     {
                         sql = "INSERT INTO `product`.`rec_unu_info`( `WARN_USER_ID`, `WARN_USER_TYPE`, `WARNTYPE`, `INFO`, `DRIVER`, `COMPANY`, `ADD_TIME`, `TEMP1`, `TEMP2`, `TEMP3`, `TEMP4`) VALUES ('" + temp.Item4 + "','" + temp.Item3 + "', '" + WarnType.Forbid_In + "', '围栏名称：" + temp.Item1 + "', '', '" + temp.Item2 + "', '" + DateTime.Now + "', NULL, NULL, NULL, NULL)";
-                        mysql.UpdOrInsOrdel(sql);
+                        PersonMysql.UpdOrInsOrdel(sql);
                     }
                 }
             }
@@ -401,10 +410,10 @@ namespace DigitalMineServer
                 if (!Polygon.IsInPolygon(new Point(xy[0], xy[1]), temp.Item5))
                 {
                     string sql = "select COUNT(ID) as Count from rec_unu_info where COMPANY='" + temp.Item2 + "' and WARN_USER_ID='" + temp.Item4 + "' and WARNTYPE='" + WarnType.Forbid_Out + "' and ADD_TIME>=DATE_SUB(NOW(),INTERVAL 2 MINUTE)";
-                    if (mysql.GetCount(sql) == 0)
+                    if (PersonMysql.GetCount(sql) == 0)
                     {
                         sql = "INSERT INTO `product`.`rec_unu_info`( `WARN_USER_ID`, `WARN_USER_TYPE`, `WARNTYPE`, `INFO`, `DRIVER`, `COMPANY`, `ADD_TIME`, `TEMP1`, `TEMP2`, `TEMP3`, `TEMP4`) VALUES ('" + temp.Item4 + "','" + temp.Item3 + "', '" + WarnType.Forbid_Out + "', '围栏名称：" + temp.Item1 + "', '', '" + temp.Item2 + "', '" + DateTime.Now + "', NULL, NULL, NULL, NULL)";
-                        mysql.UpdOrInsOrdel(sql);
+                        PersonMysql.UpdOrInsOrdel(sql);
                     }
                 }
             }
@@ -640,7 +649,7 @@ namespace DigitalMineServer
             if (dic.ContainsKey(0x23))
             {
                 string sql = "INSERT INTO `fuel_orig`( `VEHICLE_ID`, `DRIVE_NAME`, `ORIG_FUEL`, `REC_STATE`, `COMPANY`, `ADD_TIME`) VALUES ('" + vehicleInfo.Item5 + "', '" + vehicleInfo.Item6 + "', '" + Encoding.ASCII.GetString(dic[0x23]) + "', 'NO', '" + vehicleInfo.Item3 + "', '" + time + "')";
-                mysql.UpdOrInsOrdel(sql);
+                VehicleMysql.UpdOrInsOrdel(sql);
             }
         }
 
@@ -653,7 +662,7 @@ namespace DigitalMineServer
         private void AttachItems0X02(ValueTuple<string, string, string, string, string, string> vehicleInfo, DateTime time, byte[] BytesValue)
         {
             string sql = "INSERT INTO `fuel_orig`( `VEHICLE_ID`, `DRIVE_NAME`, `ORIG_FUEL`, `REC_STATE`, `COMPANY`, `ADD_TIME`) VALUES ('" + vehicleInfo.Item5 + "', '" + vehicleInfo.Item6 + "', '" + (BytesValue.ToUInt16(0) / 10) + "', 'NO', '" + vehicleInfo.Item3 + "', '" + time + "')";
-            mysql.UpdOrInsOrdel(sql);
+            VehicleMysql.UpdOrInsOrdel(sql);
         }
 
         /// <summary>
@@ -673,7 +682,7 @@ namespace DigitalMineServer
                 List<double> xy = WGS84ToCS2000.WGS84ToXY(Convert.ToDouble(DriveHelp.latitude) / 1000000, Convert.ToDouble(DriveHelp.longitude) / 1000000, 3);
                 string info = "纬度：" + Convert.ToDouble(DriveHelp.latitude) / 1000000 + "，经度：" + Convert.ToDouble(DriveHelp.longitude) / 1000000;
                 string sql = "INSERT INTO `rec_unu_acsafe`(`VEHICLE_ID`, `DRIVER`, `VEHICLE_TYPE`, `POSI_SPEED`,`WARN_TYPE`, `EVENT_TYPE`, `LEVEL`, `POSI_X`, `POSI_Y`, `WARN_INFO`, `WARN_NUMBER`, `COMPANY`, `ADD_TIME`, `TEMP1`, `TEMP2`, `TEMP3`, `TEMP4`) VALUES ('" + vehicleInfo.Item5 + "', '" + vehicleInfo.Item6 + "', '" + vehicleInfo.Item2 + "', '" + DriveHelp.VehicleSpeed + "', 'warnDriveHelp','" + new Decode().GetDriveHelpWarnType(DriveHelp.WarnType) + "', '" + new Decode().GetWarnLevel(DriveHelp.WarnLevel) + "', '" + xy[0] + "','" + xy[1] + "', '" + info + "', '" + Utils.Util.GetMd5(Utils.Util.GetStringHex(WarnId)) + "', '" + vehicleInfo.Item3 + "', '" + Extension.BCDToTimeFormat(DriveHelp.Time) + "', NULL, NULL, NULL, NULL)";
-                mysql.UpdOrInsOrdel(sql);
+                VehicleMysql.UpdOrInsOrdel(sql);
                 //给车辆发送超速警告，语音播报
                 SendMessage(sim, new REQ_8300().R8300(sim, "请注意，检测到" + new Decode().GetDriveHelpWarnType(DriveHelp.WarnType)));
                 //检查报警附件
@@ -709,7 +718,7 @@ namespace DigitalMineServer
                 List<double> xy = WGS84ToCS2000.WGS84ToXY(Convert.ToDouble(DriverState.latitude) / 1000000, Convert.ToDouble(DriverState.longitude) / 1000000, 3);
                 string info = "纬度：" + Convert.ToDouble(DriverState.latitude) / 1000000 + "，经度：" + Convert.ToDouble(DriverState.longitude) / 1000000;
                 string sql = "INSERT INTO `rec_unu_acsafe`( `VEHICLE_ID`, `DRIVER`, `VEHICLE_TYPE`, `POSI_SPEED`,`WARN_TYPE`,`EVENT_TYPE`, `LEVEL`, `POSI_X`, `POSI_Y`, `WARN_INFO`, `WARN_NUMBER`, `COMPANY`, `ADD_TIME`, `TEMP1`, `TEMP2`, `TEMP3`, `TEMP4`) VALUES ('" + vehicleInfo.Item5 + "', '" + vehicleInfo.Item6 + "', '" + vehicleInfo.Item2 + "','" + DriverState.VehicleSpeed + "', 'warnDriverState','" + new Decode().GetDriverStateWarnType(DriverState.WarnType) + "', '" + new Decode().GetWarnLevel(DriverState.WarnLevel) + "', '" + xy[0] + "', '" + xy[1] + "', '" + info + "', '" + Utils.Util.GetMd5(Utils.Util.GetStringHex(WarnId)) + "', '" + vehicleInfo.Item3 + "', '" + Extension.BCDToTimeFormat(DriverState.Time) + "', NULL, NULL, NULL, NULL)";
-                mysql.UpdOrInsOrdel(sql);
+                VehicleMysql.UpdOrInsOrdel(sql);
                 SendMessage(sim, new REQ_8300().R8300(sim, "请注意，检测到" + new Decode().GetDriveHelpWarnType(DriverState.WarnType)));
                 //检查报警附件
                 WarnNumber WarnNumber = new Decode().DecodeWarnNumber(DriverState.WarnNumber);
