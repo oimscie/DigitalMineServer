@@ -8,6 +8,7 @@ using System.Data;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Configuration;
 
 namespace DigitalMineServer.Mysql
 {
@@ -31,7 +32,7 @@ namespace DigitalMineServer.Mysql
         /// <summary>
         /// 连接字符串
         /// </summary>
-        private readonly string ConnStr = "server=127.0.0.1;database=product;user=root;password=qwertyuiop;charset=utf8;SslMode=None";
+        private readonly string ConnStr = "server=" + ConfigurationManager.AppSettings["ServerIp"] + ";database=product;user=root;password=qwertyuiop;charset=utf8;SslMode=None";
 
         public MySqlHelper()
         {
@@ -150,17 +151,17 @@ namespace DigitalMineServer.Mysql
         /// <param name="sql">SQL语句</param>
         /// <param name="fieldName">List<vehicleStateEntity>datagridView数据源</param>
         /// <returns>List<vehicleStateEntity></returns>
-        public List<vehicleStateEntity> MultipleSelect(string sql)
+        public List<VehicleStateEntity> MultipleSelect_v(string sql)
         {
             if (!CheckConn()) { return null; }
             Command.CommandText = sql;
             Reader = Command.ExecuteReader();
-            List<vehicleStateEntity> back = new List<vehicleStateEntity>();
+            List<VehicleStateEntity> back = new List<VehicleStateEntity>();
             try
             {
                 while (Reader.Read())
                 {
-                    back.Add(new vehicleStateEntity()
+                    back.Add(new VehicleStateEntity()
                     {
                         VEHICLE_ID = Reader.GetString("VEHICLE_ID"),
                         VEHICLE_SIM = Reader.GetString("VEHICLE_SIM"),
@@ -171,6 +172,51 @@ namespace DigitalMineServer.Mysql
                         POSI_Y = Reader.GetString("POSI_Y"),
                         POSI_SPEED = Reader.GetString("POSI_SPEED"),
                         REAl_FUEL = Reader.GetString("REAl_FUEL"),
+                        ACC = Reader.GetString("ACC"),
+                        POSI_NUM = Reader.GetString("POSI_NUM"),
+                        COMPANY = Reader.GetString("COMPANY"),
+                        ADD_TIME = Reader.GetString("ADD_TIME"),
+                    }); ;
+                }
+                Reader.Close();
+                if (back.Count == 0) { return null; };
+                return back;
+            }
+            catch (Exception e)
+            {
+                LogHelper.WriteLog("数据源查询错误----" + sql, e);
+                return null;
+            }
+            finally
+            {
+                Close();
+            }
+        }
+
+        /// <summary>
+        /// datagridView数据源更新，查询失败或结果为空均返回null
+        /// </summary>
+        /// <param name="sql">SQL语句</param>
+        /// <param name="fieldName">List<vehicleStateEntity>datagridView数据源</param>
+        /// <returns>List<vehicleStateEntity></returns>
+        public List<PersonStateEntity> MultipleSelect_p(string sql)
+        {
+            if (!CheckConn()) { return null; }
+            Command.CommandText = sql;
+            Reader = Command.ExecuteReader();
+            List<PersonStateEntity> back = new List<PersonStateEntity>();
+            try
+            {
+                while (Reader.Read())
+                {
+                    back.Add(new PersonStateEntity()
+                    {
+                        PERSON_ID = Reader.GetString("PERSON_ID"),
+                        PERSON_SIM = Reader.GetString("PERSON_SIM"),
+                        PERSON_TYPE = Reader.GetString("PERSON_TYPE"),
+                        POSI_STATE = Reader.GetString("POSI_STATE"),
+                        POSI_X = Reader.GetString("POSI_X"),
+                        POSI_Y = Reader.GetString("POSI_Y"),
                         ACC = Reader.GetString("ACC"),
                         POSI_NUM = Reader.GetString("POSI_NUM"),
                         COMPANY = Reader.GetString("COMPANY"),

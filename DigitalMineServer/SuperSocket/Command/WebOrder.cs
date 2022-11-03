@@ -41,7 +41,6 @@ namespace DigitalMineServer.SuperSocket.Command
                     break;
 
                 case OrderMessageType.MonitorOpen:
-                    LogHelper.WriteLog("order--------------" + requestInfo.Body);
                     SendMessage(requestInfo.Body, session);
                     break;
 
@@ -52,13 +51,18 @@ namespace DigitalMineServer.SuperSocket.Command
 
                 case OrderMessageType.deleteFence:
                     DeleteFence deleteFence = Decode.DeleteFence(requestInfo.Body);
-                    Resource.fenceFanbidInInfo.TryRemove(deleteFence.sim, out _);
-                    Resource.fenceFanbidOutInfo.TryRemove(deleteFence.sim, out _);
+                    Resource.VehicleFenceFanbidInInfo.TryRemove(deleteFence.sim, out _);
+                    Resource.VehicleFenceFanbidOutInfo.TryRemove(deleteFence.sim, out _);
                     break;
 
                 case OrderMessageType.deleteVehicle:
                     DeleteVehicle deleteVehicle = Decode.DeleteVehicle(requestInfo.Body);
                     Resource.VehicleList.TryRemove(deleteVehicle.sim, out _);
+                    break;
+
+                case OrderMessageType.deletePerson:
+                    DeletePerson DeletePerson = Decode.DeletePerson(requestInfo.Body);
+                    Resource.PersonList.TryRemove(DeletePerson.sim, out _);
                     break;
 
                 default:

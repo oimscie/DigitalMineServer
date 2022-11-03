@@ -109,6 +109,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="InfoInit\Person.cs" />
     <Compile Include="JTServerWindow.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -116,7 +117,8 @@
       <DependentUpon>JTServerWindow.cs</DependentUpon>
     </Compile>
     <Compile Include="Mysql\MySqlHelper.cs" />
-    <Compile Include="Mysql\vehicleStateEntity.cs" />
+    <Compile Include="Mysql\PersonStateEntity.cs" />
+    <Compile Include="Mysql\VehicleStateEntity.cs" />
     <Compile Include="OrderMessage\OrderMessageBody.cs" />
     <Compile Include="OrderMessage\OrderMessageDecode.cs" />
     <Compile Include="OrderMessage\PacketForm.cs" />

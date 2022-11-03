@@ -22,7 +22,9 @@ namespace DigitalMineServer.Utils
 
         private delegate void TextBoxShowDelegate(TextBox TextBox, string strshow);
 
-        private delegate void UpdataSourceDelegate(DataGridView view, List<vehicleStateEntity> list);
+        private delegate void UpdataSourceDelegate_v(DataGridView view, List<VehicleStateEntity> list);
+
+        private delegate void UpdataSourceDelegate_p(DataGridView view, List<PersonStateEntity> list);
 
         public static string GetMd5(string info)
         {
@@ -82,11 +84,23 @@ namespace DigitalMineServer.Utils
             }
         }
 
-        public static void UpdataSource(DataGridView view, List<vehicleStateEntity> list)
+        public static void UpdataSource_v(DataGridView view, List<VehicleStateEntity> list)
         {
             if (view.InvokeRequired)
             {
-                view.Invoke(new UpdataSourceDelegate(UpdataSource), new object[] { view, list });
+                view.Invoke(new UpdataSourceDelegate_v(UpdataSource_v), new object[] { view, list });
+            }
+            else
+            {
+                view.DataSource = list;
+            }
+        }
+
+        public static void UpdataSource_p(DataGridView view, List<PersonStateEntity> list)
+        {
+            if (view.InvokeRequired)
+            {
+                view.Invoke(new UpdataSourceDelegate_p(UpdataSource_p), new object[] { view, list });
             }
             else
             {

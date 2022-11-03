@@ -17,17 +17,27 @@ namespace DigitalMineServer.Static
         {
             isVehicleUpdate = false;
 
+            isPersonUpdate = false;
+
             OriginalDataQueues = new ConcurrentQueue<(byte[], Jt808Session)>();
 
             Body0200Queues = new ConcurrentQueue<PacketMessage>();
 
-            InsertQueues = new ConcurrentQueue<ValueTuple<string, PB0200>>();
+            Vehicle0200DataQueues = new ConcurrentQueue<ValueTuple<string, PB0200>>();
+
+            Person0200DataQueues = new ConcurrentQueue<ValueTuple<string, PB0200>>();
 
             VehicleList = new ConcurrentDictionary<string, (string, string, string, string, string, string)>();
 
-            fenceFanbidInInfo = new ConcurrentDictionary<string, (string, string, string, string, string, List<Point>)>();
+            PersonList = new ConcurrentDictionary<string, (string, string, string, string)>();
 
-            fenceFanbidOutInfo = new ConcurrentDictionary<string, (string, string, string, string, string, List<Point>)>();
+            VehicleFenceFanbidInInfo = new ConcurrentDictionary<string, (string, string, string, string, string, List<Point>)>();
+
+            VehicleFenceFanbidOutInfo = new ConcurrentDictionary<string, (string, string, string, string, string, List<Point>)>();
+
+            PersonFenceFanbidInInfo = new ConcurrentDictionary<string, (string, string, string, string, List<Point>)>();
+
+            PersonFenceFanbidOutInfo = new ConcurrentDictionary<string, (string, string, string, string, List<Point>)>();
 
             equipVersion = new ConcurrentDictionary<string, (string, string, string, int)>();
 
@@ -49,9 +59,14 @@ namespace DigitalMineServer.Static
         public static ConcurrentQueue<PacketMessage> Body0200Queues;
 
         /// <summary>
-        /// 解析后将入库的0200队列
+        /// 车辆数据解析后将入库的0200数据队列
         /// </summary>
-        public static ConcurrentQueue<ValueTuple<string, PB0200>> InsertQueues;
+        public static ConcurrentQueue<ValueTuple<string, PB0200>> Vehicle0200DataQueues;
+
+        /// <summary>
+        /// 人员数据解析后将入库的0200数据队列
+        /// </summary>
+        public static ConcurrentQueue<ValueTuple<string, PB0200>> Person0200DataQueues;
 
         /// <summary>
         /// 服务器存储的车辆消息
@@ -64,11 +79,23 @@ namespace DigitalMineServer.Static
         /// </summary>
         public static ConcurrentDictionary<string, ValueTuple<string, string, string, string, string, string>> VehicleList;
 
+        /// <summary>
+        /// 服务器存储的人员信息
+        /// item1：人员编号外键
+        /// item2：人员类型
+        /// item3：所属公司
+        /// item5：人员姓名或编号
+        /// </summary>
+        public static ConcurrentDictionary<string, ValueTuple<string, string, string, string>> PersonList;
+
         //是否正在更新车辆信息
         public static bool isVehicleUpdate;
 
+        //是否正在更新人员信息
+        public static bool isPersonUpdate;
+
         /// <summary>
-        /// 禁止驶入围栏信息，sim为key
+        /// 车辆禁止驶入围栏信息，sim为key
         /// item1:围栏名称
         /// item2:所属公司
         /// item3:车辆类型
@@ -76,7 +103,7 @@ namespace DigitalMineServer.Static
         /// item5:司机
         /// item6:点集
         /// </summary>
-        public static ConcurrentDictionary<string, ValueTuple<string, string, string, string, string, List<Point>>> fenceFanbidInInfo;
+        public static ConcurrentDictionary<string, ValueTuple<string, string, string, string, string, List<Point>>> VehicleFenceFanbidInInfo;
 
         /// <summary>
         /// 禁止驶出围栏信息，sim为key
@@ -87,7 +114,27 @@ namespace DigitalMineServer.Static
         /// item5:司机
         /// item6:点集
         /// </summary>
-        public static ConcurrentDictionary<string, ValueTuple<string, string, string, string, string, List<Point>>> fenceFanbidOutInfo;
+        public static ConcurrentDictionary<string, ValueTuple<string, string, string, string, string, List<Point>>> VehicleFenceFanbidOutInfo;
+
+        /// <summary>
+        /// 人员禁入围栏信息，sim为key
+        /// item1:围栏名称
+        /// item2:所属公司
+        /// item3:人员类型
+        /// item4:人员编号
+        /// item5:点集
+        /// </summary>
+        public static ConcurrentDictionary<string, ValueTuple<string, string, string, string, List<Point>>> PersonFenceFanbidInInfo;
+
+        /// <summary>
+        /// 人员禁出围栏信息，sim为key
+        /// item1:围栏名称
+        /// item2:所属公司
+        /// item3:人员类型
+        /// item4:人员编号
+        /// item5:点集
+        /// </summary>
+        public static ConcurrentDictionary<string, ValueTuple<string, string, string, string, List<Point>>> PersonFenceFanbidOutInfo;
 
         /// <summary>
         /// 终端版本字典，sim为key

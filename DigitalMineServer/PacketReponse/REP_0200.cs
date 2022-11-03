@@ -9,44 +9,70 @@ using JtLibrary.PacketBody;
 using JtLibrary.Providers;
 using JtLibrary.Structures;
 using System;
+using System.Drawing;
 using static JtLibrary.Structures.EquipVersion;
 
 namespace DigitalMineServer.PacketReponse
 {
-    class REP_0200
+    internal class REP_0200
     {
         public void R0200(PacketMessage msg, IPacketProvider pConvert, Jt808Session Session)
         {
-
-            switch (Resource.equipVersion[Extension.BCDToString(msg.pmPacketHead.hSimNumber)].Item1)
+            string sim = Extension.BCDToString(msg.pmPacketHead.hSimNumber);
+            switch (Resource.equipVersion[sim].Item1)
             {
                 case Version_808.Ver_808_2013:
                     byte[] buffer_2013 = Packet_0200_2013(msg, pConvert);
                     Session.Send(buffer_2013, 0, buffer_2013.Length);
-                    Resource.InsertQueues.Enqueue(new ValueTuple<string, PB0200>
+                    if (Resource.VehicleList.ContainsKey(sim))
                     {
-                        Item1 = Extension.BCDToString(msg.pmPacketHead.hSimNumber),
-                        Item2 = new REP_0200_2013().Decode(msg.pmMessageBody)
-                    });
+                        Resource.Vehicle0200DataQueues.Enqueue(new ValueTuple<string, PB0200>
+                        {
+                            Item1 = sim,
+                            Item2 = new REP_0200_2013().Decode(msg.pmMessageBody)
+                        });
+                    }
+                    else if (Resource.PersonList.ContainsKey(sim))
+                    {
+                        Resource.Person0200DataQueues.Enqueue(new ValueTuple<string, PB0200>
+                        {
+                            Item1 = sim,
+                            Item2 = new REP_0200_2013().Decode(msg.pmMessageBody)
+                        });
+                    }
                     break;
+
                 case Version_808.Ver_808_2019:
                     byte[] buffer_2019 = Packet_0200_2019(msg, pConvert);
                     Session.Send(buffer_2019, 0, buffer_2019.Length);
-                    Resource.InsertQueues.Enqueue(new ValueTuple<string, PB0200>
+                    if (Resource.VehicleList.ContainsKey(sim))
                     {
-                        Item1 = Extension.BCDToString(msg.pmPacketHead.hSimNumber),
-                        Item2 = new REP_0200_2019().Decode(msg.pmMessageBody)
-                    });
+                        Resource.Vehicle0200DataQueues.Enqueue(new ValueTuple<string, PB0200>
+                        {
+                            Item1 = Extension.BCDToString(msg.pmPacketHead.hSimNumber),
+                            Item2 = new REP_0200_2019().Decode(msg.pmMessageBody)
+                        });
+                    }
+                    else if (Resource.PersonList.ContainsKey(sim))
+                    {
+                        Resource.Person0200DataQueues.Enqueue(new ValueTuple<string, PB0200>
+                        {
+                            Item1 = Extension.BCDToString(msg.pmPacketHead.hSimNumber),
+                            Item2 = new REP_0200_2019().Decode(msg.pmMessageBody)
+                        });
+                    }
                     break;
             }
         }
+
         /// <summary>
         /// 2013消息打包
         /// </summary>
         /// <param name="msg"></param>
         /// <param name="pConvert"></param>
         /// <returns></returns>
-        private byte[] Packet_0200_2013(PacketMessage msg, IPacketProvider pConvert) {
+        private byte[] Packet_0200_2013(PacketMessage msg, IPacketProvider pConvert)
+        {
             byte[] body_0200 = new REQ_8001_2013().Encode(new PB8001()
             {
                 Serialnumber = msg.pmPacketHead.phSerialnumber,
@@ -66,13 +92,15 @@ namespace DigitalMineServer.PacketReponse
             });
             return buffer;
         }
+
         /// <summary>
         /// 2019消息打包
         /// </summary>
         /// <param name="msg"></param>
         /// <param name="pConvert"></param>
         /// <returns></returns>
-        private byte[] Packet_0200_2019(PacketMessage msg, IPacketProvider pConvert) {
+        private byte[] Packet_0200_2019(PacketMessage msg, IPacketProvider pConvert)
+        {
             byte[] body_0200 = new REQ_8001_2019().Encode(new PB8001()
             {
                 Serialnumber = msg.pmPacketHead.phSerialnumber,

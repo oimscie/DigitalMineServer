@@ -12,10 +12,12 @@ namespace DigitalMineServer.OrderMessage
     public class OrderMessageDecode
     {
         private readonly Encoding encoding;
+
         public OrderMessageDecode()
         {
             encoding = Encoding.UTF8;
         }
+
         /// <summary>
         /// 获取消息头
         /// </summary>
@@ -25,6 +27,7 @@ namespace DigitalMineServer.OrderMessage
         {
             return encoding.GetString(buffer).Trim('$').Split('!')[0];
         }
+
         /// <summary>
         /// 获取消息头
         /// </summary>
@@ -34,6 +37,7 @@ namespace DigitalMineServer.OrderMessage
         {
             return order.Split('!')[0];
         }
+
         /// <summary>
         /// 音视频请求解包
         /// </summary>
@@ -52,6 +56,7 @@ namespace DigitalMineServer.OrderMessage
                 version1078 = array[5]
             };
         }
+
         /// <summary>
         /// 车载历史音视频请求解包
         /// </summary>
@@ -74,6 +79,7 @@ namespace DigitalMineServer.OrderMessage
                 FastOrSlow = array[9]
             };
         }
+
         /// <summary>
         /// 客户端登录解包
         /// </summary>
@@ -89,6 +95,7 @@ namespace DigitalMineServer.OrderMessage
                 type = array[2]
             };
         }
+
         /// <summary>
         /// 客户端心跳解包
         /// </summary>
@@ -101,6 +108,7 @@ namespace DigitalMineServer.OrderMessage
                 messageType = OrderMessageType.ClientHeart,
             };
         }
+
         /// <summary>
         /// 用户本地数据终端心跳解包
         /// </summary>
@@ -113,6 +121,7 @@ namespace DigitalMineServer.OrderMessage
                 messageType = OrderMessageType.LocalHeart,
             };
         }
+
         /// <summary>
         /// 本地数据终端上报所属公司解包
         /// </summary>
@@ -127,6 +136,7 @@ namespace DigitalMineServer.OrderMessage
                 Company = array[1]
             };
         }
+
         /// <summary>
         /// 客户端打开监控请求解包
         /// </summary>
@@ -146,6 +156,7 @@ namespace DigitalMineServer.OrderMessage
                 Brand = array[6]
             };
         }
+
         /// <summary>
         /// 客户端监控视频控制指令解包
         /// </summary>
@@ -161,6 +172,7 @@ namespace DigitalMineServer.OrderMessage
                 StartOrStop = array[2]
             };
         }
+
         /// <summary>
         /// 本地数据终端监控视频上传请求解包
         /// </summary>
@@ -178,6 +190,7 @@ namespace DigitalMineServer.OrderMessage
                 Brand = array[4]
             };
         }
+
         /// <summary>
         /// 浏览器端心跳解包
         /// </summary>
@@ -190,6 +203,7 @@ namespace DigitalMineServer.OrderMessage
                 messageType = OrderMessageType.WebOrderHeart
             };
         }
+
         /// <summary>
         /// 8300指令文字解包
         /// </summary>
@@ -206,6 +220,7 @@ namespace DigitalMineServer.OrderMessage
                 text = array[3],
             };
         }
+
         /// <summary>
         /// 删除电子围栏解包
         /// </summary>
@@ -220,6 +235,7 @@ namespace DigitalMineServer.OrderMessage
                 sim = array[1],
             };
         }
+
         /// <summary>
         /// 删除车辆解包
         /// </summary>
@@ -229,6 +245,21 @@ namespace DigitalMineServer.OrderMessage
         {
             string[] array = order.Split('!');
             return new DeleteVehicle()
+            {
+                messageType = OrderMessageType.deleteFence,
+                sim = array[1],
+            };
+        }
+
+        /// <summary>
+        /// 删除人员解包
+        /// </summary>
+        /// <param name="order"></param>
+        /// <returns></returns>
+        public DeletePerson DeletePerson(string order)
+        {
+            string[] array = order.Split('!');
+            return new DeletePerson()
             {
                 messageType = OrderMessageType.deleteFence,
                 sim = array[1],

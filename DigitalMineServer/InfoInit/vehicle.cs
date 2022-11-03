@@ -9,11 +9,12 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace DigitalMineServer.VehicleInfo
+namespace DigitalMineServer.InfoInit
 {
     public class Vehicle
     {
         private readonly MySqlHelper mySql;
+
         public Vehicle()
         {
             mySql = new MySqlHelper();
@@ -97,7 +98,8 @@ namespace DigitalMineServer.VehicleInfo
                                     ValueTuple<string, string, string, string, string, List<Point>> val = new ValueTuple<string, string, string, string, string, List<Point>>(name, company, vType, vid, driver, new List<Point>() { new Point(double.Parse(x), double.Parse(y)) });
                                     tempDicIn[sim].Item6.Add(new Point(double.Parse(x), double.Parse(y)));
                                 }
-                                else {
+                                else
+                                {
                                     tempDicIn.Add(sim, new ValueTuple<string, string, string, string, string, List<Point>>(name, company, vType, vid, driver, new List<Point>() { new Point(double.Parse(x), double.Parse(y)) }));
                                 }
                                 break;
@@ -116,38 +118,39 @@ namespace DigitalMineServer.VehicleInfo
                         }
                     }
                     //更新车辆禁止驶出围栏信息
-                    foreach (var item in tempDicOut) {
-                        if (Resource.fenceFanbidOutInfo.ContainsKey(item.Key))
+                    foreach (var item in tempDicOut)
+                    {
+                        if (Resource.VehicleFenceFanbidOutInfo.ContainsKey(item.Key))
                         {
-                            Resource.fenceFanbidOutInfo[item.Key] = item.Value;
+                            Resource.VehicleFenceFanbidOutInfo[item.Key] = item.Value;
                         }
                         else
                         {
-                            Resource.fenceFanbidOutInfo.TryAdd(item.Key, item.Value);
+                            Resource.VehicleFenceFanbidOutInfo.TryAdd(item.Key, item.Value);
                         }
                     }
                     //更新车辆禁止驶入围栏信息
                     foreach (var item in tempDicIn)
                     {
-                        if (Resource.fenceFanbidInInfo.ContainsKey(item.Key))
+                        if (Resource.VehicleFenceFanbidInInfo.ContainsKey(item.Key))
                         {
-                            Resource.fenceFanbidInInfo[item.Key] = item.Value;
+                            Resource.VehicleFenceFanbidInInfo[item.Key] = item.Value;
                         }
                         else
                         {
-                            Resource.fenceFanbidInInfo.TryAdd(item.Key, item.Value);
+                            Resource.VehicleFenceFanbidInInfo.TryAdd(item.Key, item.Value);
                         }
                     }
                 }
                 else
                 {
-                    Resource.fenceFanbidOutInfo.Clear();
-                    Resource.fenceFanbidInInfo.Clear();
+                    Resource.VehicleFenceFanbidOutInfo.Clear();
+                    Resource.VehicleFenceFanbidInInfo.Clear();
                 }
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
-                LogHelper.WriteLog("车辆信息更新错误",ex);
+                LogHelper.WriteLog("车辆信息更新错误", ex);
             }
             finally
             {

@@ -50,7 +50,7 @@ namespace DigitalMineServer
                         continue;
                     }
                     Resource.OriginalDataQueues.TryDequeue(out ValueTuple<byte[], Jt808Session> value);
-                    ThreadPool.QueueUserWorkItem(OriDadaParse, value);
+                    ThreadPool.QueueUserWorkItem(OriRtpDadaParse, value);
                     Utils.Util.ModifyLable(JtServerForm.JtForm.Message, Resource.OriginalDataQueues.Count.ToString());
                 }
                 catch
@@ -64,7 +64,7 @@ namespace DigitalMineServer
         /// 处理RTP数据
         /// </summary>
         /// <param name="obj"></param>
-        private void OriDadaParse(object obj)
+        private void OriRtpDadaParse(object obj)
         {
             try
             {
@@ -129,20 +129,20 @@ namespace DigitalMineServer
         }
 
         /// <summary>
-        /// 0200数据体循环处理
+        /// 车辆0200数据体循环处理
         /// </summary>
-        public void DealWith0200()
+        public void ParseVehicle0200()
         {
             while (true)
             {
                 try
                 {
-                    if (Resource.InsertQueues.Count < 1)
+                    if (Resource.Vehicle0200DataQueues.Count < 1)
                     {
                         Thread.Sleep(200);
                         continue;
                     }
-                    Resource.InsertQueues.TryDequeue(out ValueTuple<string, PB0200> value);
+                    Resource.Vehicle0200DataQueues.TryDequeue(out ValueTuple<string, PB0200> value);
                     PB0200 bodyinfo = value.Item2;
                     string Sim = value.Item1;
                     DateTime time = bodyinfo.LocationTime.BCDToTimeFormat();
@@ -202,7 +202,76 @@ namespace DigitalMineServer
                         continue;
                     }
                     //围栏检查
-                    CheckFence(Sim, xy);
+                    CheckVehicleFence(Sim, xy);
+                }
+                catch (Exception e)
+                {
+                    LogHelper.WriteLog("数据存储----", e);
+                }
+            }
+        }
+
+        /// <summary>
+        /// 人员0200数据体循环处理
+        /// </summary>
+        public void ParsePerson0200()
+        {
+            while (true)
+            {
+                try
+                {
+                    if (Resource.Person0200DataQueues.Count < 1)
+                    {
+                        Thread.Sleep(200);
+                        continue;
+                    }
+                    Resource.Person0200DataQueues.TryDequeue(out ValueTuple<string, PB0200> value);
+                    PB0200 bodyinfo = value.Item2;
+                    string Sim = value.Item1;
+                    DateTime time = bodyinfo.LocationTime.BCDToTimeFormat();
+                    //检查终端数据的时间是否在合理范围，终端可能上传错误时间
+                    if ((time - DateTime.Now).TotalMinutes > 10)
+                    {
+                        Utils.Util.AppendText(JtServerForm.JtForm.infoBox, Sim + "--时间异常--" + time.ToString());
+                        continue;
+                    }
+                    //检查人员信息List中是否存在此人员，不存在就返回
+                    if (!Resource.PersonList.ContainsKey(Sim))
+                    {
+                        Utils.Util.AppendText(JtServerForm.JtForm.infoBox, Sim + "--未知人员--" + time.ToString());
+                        continue;
+                    }
+                    //经纬度转换2000坐标
+                    List<double> xy = WGS84ToCS2000.WGS84ToXY(Convert.ToDouble(bodyinfo.Latitude) / 1000000, Convert.ToDouble(bodyinfo.Longitude) / 1000000, 3);
+                    //根据sim获取车辆信息
+                    Resource.PersonList.TryGetValue(Sim, out ValueTuple<string, string, string, string> PersonInfo);
+                    string sql = null;
+                    byte[] state = BitConvert.UInt32ToBit(bodyinfo.StatusIndication);
+                    string ACC = state[0] == 0 ? ACC = "关" : ACC = "开";
+                    string IsStop = state[1] == 0 ? IsStop = "未定位" : IsStop = "已定位";
+                    //检查人员状态表中是否存在
+                    if (mysql.GetCount("select count(ID) as Count from person_state where FID='" + PersonInfo.Item1 + "'") == 0)
+                    {
+                        sql = "INSERT INTO `person_state`" +
+                             "(`FID`, `POSI_STATE`, `POSI_X`, `POSI_Y`, " +
+                             " `ACC`, `POSI_NUM`, `COMPANY`, `ADD_TIME`, " +
+                             "`TEMP1`, `TEMP2`, `TEMP3`, `TEMP4`) " +
+                             "VALUES" +
+                             " ('" + PersonInfo.Item1 + "', '" + IsStop + "', '" + xy[0] + "', '" + xy[1] + "'," +
+                             " '" + ACC + "',0, '" + PersonInfo.Item3 + "', '" + time + "', " +
+                              "NULL, NULL, NULL, NULL)";
+                    }
+                    else
+                    {
+                        Dictionary<string, string> dic = mysql.SingleSelect("select POSI_NUM from person_state where FID='" + PersonInfo.Item1 + "' ", "POSI_NUM");
+                        //获取定位更新次数
+                        dic.TryGetValue("POSI_NUM", out string num);
+                        sql = "UPDATE `person_state` SET " +
+                            " `POSI_STATE` = '" + IsStop + "', `POSI_X` = '" + xy[0] + "', `POSI_Y` = '" + xy[1] + "', `ACC` = '" + ACC + "', `POSI_NUM` = '" + (int.Parse(num) + 1) + "',`ADD_TIME`='" + time + "' WHERE FID='" + PersonInfo.Item1 + "' ";
+                    }
+                    mysql.UpdOrInsOrdel(sql);
+                    //围栏检查
+                    CheckPersonFence(Sim, xy);
                 }
                 catch (Exception e)
                 {
@@ -268,36 +337,73 @@ namespace DigitalMineServer
         }
 
         /// <summary>
-        /// 判断围栏
+        /// 判断车辆围栏
         /// </summary>
         /// <param name="Sim">SIM号</param>
         /// <param name="xy">2000坐标</param>
-        private void CheckFence(string Sim, List<double> xy)
+        private void CheckVehicleFence(string Sim, List<double> xy)
         {
             //判断禁入围栏
-            if (Resource.fenceFanbidInInfo.ContainsKey(Sim))
+            if (Resource.VehicleFenceFanbidInInfo.ContainsKey(Sim))
             {
-                ValueTuple<string, string, string, string, string, List<Point>> temp = Resource.fenceFanbidInInfo[Sim];
+                ValueTuple<string, string, string, string, string, List<Point>> temp = Resource.VehicleFenceFanbidInInfo[Sim];
                 if (Polygon.IsInPolygon(new Point(xy[0], xy[1]), temp.Item6))
                 {
-                    string sql = "select COUNT(ID) as Count from rec_unu_info where COMPANY='" + temp.Item2 + "' and VEHICLE_ID='" + temp.Item4 + "' and WARNTYPE='" + WarnType.Forbid_In + "' and ADD_TIME>=DATE_SUB(NOW(),INTERVAL 2 MINUTE)";
+                    string sql = "select COUNT(ID) as Count from rec_unu_info where COMPANY='" + temp.Item2 + "' and WARN_USER_ID='" + temp.Item4 + "' and WARNTYPE='" + WarnType.Forbid_In + "' and ADD_TIME>=DATE_SUB(NOW(),INTERVAL 2 MINUTE)";
                     if (mysql.GetCount(sql) == 0)
                     {
-                        sql = "INSERT INTO `product`.`rec_unu_info`( `VEHICLE_ID`, `VEHICLE_TYPE`, `WARNTYPE`, `INFO`, `DRIVER`, `COMPANY`, `ADD_TIME`, `TEMP1`, `TEMP2`, `TEMP3`, `TEMP4`) VALUES ('" + temp.Item4 + "','" + temp.Item3 + "', '" + WarnType.Forbid_In + "', '围栏名称：" + temp.Item1 + "', '" + temp.Item5 + "', '" + temp.Item2 + "', '" + DateTime.Now + "', NULL, NULL, NULL, NULL)";
+                        sql = "INSERT INTO `product`.`rec_unu_info`( `WARN_USER_ID`, `WARN_USER_TYPE`, `WARNTYPE`, `INFO`, `DRIVER`, `COMPANY`, `ADD_TIME`, `TEMP1`, `TEMP2`, `TEMP3`, `TEMP4`) VALUES ('" + temp.Item4 + "','" + temp.Item3 + "', '" + WarnType.Forbid_In + "', '围栏名称：" + temp.Item1 + "', '" + temp.Item5 + "', '" + temp.Item2 + "', '" + DateTime.Now + "', NULL, NULL, NULL, NULL)";
                         mysql.UpdOrInsOrdel(sql);
                     }
                 }
             }
             //判断禁出围栏
-            if (Resource.fenceFanbidOutInfo.ContainsKey(Sim))
+            if (Resource.VehicleFenceFanbidOutInfo.ContainsKey(Sim))
             {
-                ValueTuple<string, string, string, string, string, List<Point>> temp = Resource.fenceFanbidOutInfo[Sim];
+                ValueTuple<string, string, string, string, string, List<Point>> temp = Resource.VehicleFenceFanbidOutInfo[Sim];
                 if (!Polygon.IsInPolygon(new Point(xy[0], xy[1]), temp.Item6))
                 {
-                    string sql = "select COUNT(ID) as Count from rec_unu_info where COMPANY='" + temp.Item2 + "' and VEHICLE_ID='" + temp.Item4 + "' and WARNTYPE='" + WarnType.Forbid_Out + "' and ADD_TIME>=DATE_SUB(NOW(),INTERVAL 2 MINUTE)";
+                    string sql = "select COUNT(ID) as Count from rec_unu_info where COMPANY='" + temp.Item2 + "' and WARN_USER_ID='" + temp.Item4 + "' and WARNTYPE='" + WarnType.Forbid_Out + "' and ADD_TIME>=DATE_SUB(NOW(),INTERVAL 2 MINUTE)";
                     if (mysql.GetCount(sql) == 0)
                     {
-                        sql = "INSERT INTO `product`.`rec_unu_info`( `VEHICLE_ID`, `VEHICLE_TYPE`, `WARNTYPE`, `INFO`, `DRIVER`, `COMPANY`, `ADD_TIME`, `TEMP1`, `TEMP2`, `TEMP3`, `TEMP4`) VALUES ('" + temp.Item4 + "','" + temp.Item3 + "', '" + WarnType.Forbid_Out + "', '围栏名称：" + temp.Item1 + "', '" + temp.Item5 + "', '" + temp.Item2 + "', '" + DateTime.Now + "', NULL, NULL, NULL, NULL)";
+                        sql = "INSERT INTO `product`.`rec_unu_info`( `WARN_USER_ID`, `WARN_USER_TYPE`, `WARNTYPE`, `INFO`, `DRIVER`, `COMPANY`, `ADD_TIME`, `TEMP1`, `TEMP2`, `TEMP3`, `TEMP4`) VALUES ('" + temp.Item4 + "','" + temp.Item3 + "', '" + WarnType.Forbid_Out + "', '围栏名称：" + temp.Item1 + "', '" + temp.Item5 + "', '" + temp.Item2 + "', '" + DateTime.Now + "', NULL, NULL, NULL, NULL)";
+                        mysql.UpdOrInsOrdel(sql);
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// 判断人员围栏
+        /// </summary>
+        /// <param name="Sim">SIM号</param>
+        /// <param name="xy">2000坐标</param>
+        private void CheckPersonFence(string Sim, List<double> xy)
+        {
+            //判断禁入围栏
+            if (Resource.PersonFenceFanbidInInfo.ContainsKey(Sim))
+            {
+                ValueTuple<string, string, string, string, List<Point>> temp = Resource.PersonFenceFanbidInInfo[Sim];
+                if (Polygon.IsInPolygon(new Point(xy[0], xy[1]), temp.Item5))
+                {
+                    string sql = "select COUNT(ID) as Count from rec_unu_info where COMPANY='" + temp.Item2 + "' and WARN_USER_ID='" + temp.Item4 + "' and WARNTYPE='" + WarnType.Forbid_In + "' and ADD_TIME>=DATE_SUB(NOW(),INTERVAL 2 MINUTE)";
+                    if (mysql.GetCount(sql) == 0)
+                    {
+                        sql = "INSERT INTO `product`.`rec_unu_info`( `WARN_USER_ID`, `WARN_USER_TYPE`, `WARNTYPE`, `INFO`, `DRIVER`, `COMPANY`, `ADD_TIME`, `TEMP1`, `TEMP2`, `TEMP3`, `TEMP4`) VALUES ('" + temp.Item4 + "','" + temp.Item3 + "', '" + WarnType.Forbid_In + "', '围栏名称：" + temp.Item1 + "', '', '" + temp.Item2 + "', '" + DateTime.Now + "', NULL, NULL, NULL, NULL)";
+                        mysql.UpdOrInsOrdel(sql);
+                    }
+                }
+            }
+            //判断禁出围栏
+            if (Resource.PersonFenceFanbidOutInfo.ContainsKey(Sim))
+            {
+                ValueTuple<string, string, string, string, List<Point>> temp = Resource.PersonFenceFanbidOutInfo[Sim];
+                if (!Polygon.IsInPolygon(new Point(xy[0], xy[1]), temp.Item5))
+                {
+                    string sql = "select COUNT(ID) as Count from rec_unu_info where COMPANY='" + temp.Item2 + "' and WARN_USER_ID='" + temp.Item4 + "' and WARNTYPE='" + WarnType.Forbid_Out + "' and ADD_TIME>=DATE_SUB(NOW(),INTERVAL 2 MINUTE)";
+                    if (mysql.GetCount(sql) == 0)
+                    {
+                        sql = "INSERT INTO `product`.`rec_unu_info`( `WARN_USER_ID`, `WARN_USER_TYPE`, `WARNTYPE`, `INFO`, `DRIVER`, `COMPANY`, `ADD_TIME`, `TEMP1`, `TEMP2`, `TEMP3`, `TEMP4`) VALUES ('" + temp.Item4 + "','" + temp.Item3 + "', '" + WarnType.Forbid_Out + "', '围栏名称：" + temp.Item1 + "', '', '" + temp.Item2 + "', '" + DateTime.Now + "', NULL, NULL, NULL, NULL)";
                         mysql.UpdOrInsOrdel(sql);
                     }
                 }

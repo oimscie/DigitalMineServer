@@ -95,7 +95,7 @@ namespace DigitalMineServer.PacketReponse
         {
             for (int i = 0; i < bodyinfo_0704.PositionInformationItems.Count; i++)
             {
-                Resource.InsertQueues.Enqueue(new ValueTuple<string, PB0200>
+                Resource.Vehicle0200DataQueues.Enqueue(new ValueTuple<string, PB0200>
                 {
                     Item1 = sim,
                     Item2 = bodyinfo_0704.PositionInformationItems[i]

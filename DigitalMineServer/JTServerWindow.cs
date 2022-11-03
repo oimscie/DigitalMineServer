@@ -2,7 +2,7 @@
 using DigitalMineServer.Mysql;
 using DigitalMineServer.Static;
 using DigitalMineServer.Util;
-using DigitalMineServer.VehicleInfo;
+using DigitalMineServer.InfoInit;
 using JtLibrary;
 using SuperSocket.SocketBase;
 using SuperSocket.SocketEngine;
@@ -13,6 +13,7 @@ using System.Configuration;
 using System.Threading;
 using System.Timers;
 using System.Windows.Forms;
+
 namespace DigitalMineServer
 {
     public partial class JtServerForm : Form
@@ -21,29 +22,43 @@ namespace DigitalMineServer
         public static IBootstrap bootstrap;
         private Jt808Message Jt808Message;
         private MySqlHelper MySqlHelper;
+        private List<VehicleStateEntity> VehicleStateEntity;
+        private List<PersonStateEntity> PersonStateEntity;
+
         /// <summary>
         /// view每页行数
         /// </summary>
-        private int count = 20;
+        private readonly int count = 20;
+
         /// <summary>
         /// 页数
         /// </summary>
         private int size = 0;
+
         /// <summary>
         /// 车辆信息更新计时器
         /// </summary>
         private System.Timers.Timer VehicleInfo;
+
+        /// <summary>
+        /// 人员信息更新计时器
+        /// </summary>
+        private System.Timers.Timer PersonInfo;
+
         /// <summary>
         /// 数据源更新计时器
         /// </summary>
         private System.Timers.Timer dataSouth;
+
         private string sqlCompany;
         private string sql;
+
         public JtServerForm()
         {
             JtForm = this;
             InitializeComponent();
         }
+
         private void JtServerForm_Load(object sender, EventArgs e)
         {
             //设置大小端
@@ -57,9 +72,10 @@ namespace DigitalMineServer
 
         private void Start_Click(object sender, EventArgs e)
         {
-
             this.infoBox.AppendText("监听引导启动初始化\r\n");
-            #region 初始化Socket  
+
+            #region 初始化Socket
+
             bootstrap = BootstrapFactory.CreateBootstrap();
             if (!bootstrap.Initialize())
             {
@@ -79,36 +95,59 @@ namespace DigitalMineServer
                     this.infoBox.AppendText(server.Name + "监听引导启动失败\r\n");
                 }
             }
-            #endregion
-            #region 初始化车辆信息
+
+            #endregion 初始化Socket
+
+            #region 初始化车辆人员信息
+
             new Vehicle().VehicleInfo(null, null);
+
+            new Person().PersonInfo(null, null);
             Thread VehicleInfo = new Thread(CarInfoCheckTimers)
             {
                 IsBackground = true
             };
             VehicleInfo.Start();
-            this.infoBox.AppendText("车辆信息初始化完成\r\n");
-            #endregion
+            Thread PersonInfo = new Thread(PersonInfoCheckTimers)
+            {
+                IsBackground = true
+            };
+            PersonInfo.Start();
+            this.infoBox.AppendText("车辆人员信息初始化完成\r\n");
+
+            #endregion 初始化车辆人员信息
 
             #region 初始化解析服务
+
             Thread parsr = new Thread(Jt808Message.ParseMessages)
             {
                 IsBackground = true
             };
             parsr.Start();
             this.infoBox.AppendText("解析服务初始化完成\r\n");
-            #endregion
+
+            #endregion 初始化解析服务
 
             #region 初始化存储服务
-            Thread InDB = new Thread(Jt808Message.DealWith0200)
+
+            Thread InDB = new Thread(Jt808Message.ParseVehicle0200)
             {
                 IsBackground = true
             };
             InDB.Start();
+
+            Thread InDB_P = new Thread(Jt808Message.ParsePerson0200)
+            {
+                IsBackground = true
+            };
+            InDB_P.Start();
+
             this.infoBox.AppendText("存储服务初始化完成\r\n");
-            #endregion
+
+            #endregion 初始化存储服务
 
             #region 初始化数据源
+
             getCompany();
             sqlCompany = "";
             UpdateState(null, null);
@@ -122,8 +161,10 @@ namespace DigitalMineServer
                 IsBackground = true
             };
             dataSource.Start();
-            #endregion
+
+            #endregion 初始化数据源
         }
+
         /// <summary>
         ///  车辆信息更新
         /// </summary>
@@ -134,6 +175,18 @@ namespace DigitalMineServer
             VehicleInfo.AutoReset = true;
             VehicleInfo.Enabled = true;
         }
+
+        /// <summary>
+        ///  人员信息更新
+        /// </summary>
+        public void PersonInfoCheckTimers()
+        {
+            PersonInfo = new System.Timers.Timer(1000 * 10 * 1);
+            PersonInfo.Elapsed += new ElapsedEventHandler(new Person().PersonInfo);
+            PersonInfo.AutoReset = true;
+            PersonInfo.Enabled = true;
+        }
+
         /// <summary>
         ///  数据源更新
         /// </summary>
@@ -144,20 +197,25 @@ namespace DigitalMineServer
             dataSouth.AutoReset = true;
             dataSouth.Enabled = true;
         }
+
         private void UpdateState(object source, ElapsedEventArgs e)
         {
-            sql = "select VEHICLE_ID ,VEHICLE_SIM ,VEHICLE_TYPE ,VEHICLE_DRIVER,POSI_STATE,POSI_X," +
-                "POSI_Y,POSI_SPEED,REAl_FUEL,ACC,POSI_NUM," +
-                "COMPANY,ADD_TIME from" +
-                " (select FID,POSI_STATE,POSI_X," +
-                "POSI_Y,POSI_SPEED,REAl_FUEL,ACC,POSI_NUM," +
-                "COMPANY,ADD_TIME from vehicle_state " + sqlCompany + " order by ADD_TIME desc limit " + size * count + "," + count + ")a " +
-                "inner join" +
-                "(select ID,VEHICLE_ID,VEHICLE_SIM,VEHICLE_TYPE,VEHICLE_DRIVER from LIST_VEHICLE " + sqlCompany + ")b " +
-                "on FID=ID";
-            List<vehicleStateEntity> data = MySqlHelper.MultipleSelect(sql);
-            Utils.Util.UpdataSource(dataGridView1, data);
+            switch (this.equipType.Text)
+            {
+                case "车辆":
+                    sql = "select VEHICLE_ID ,VEHICLE_SIM ,VEHICLE_TYPE ,VEHICLE_DRIVER,POSI_STATE,POSI_X,POSI_Y,POSI_SPEED,REAl_FUEL,ACC,POSI_NUM,COMPANY,ADD_TIME from (select FID,POSI_STATE,POSI_X,POSI_Y,POSI_SPEED,REAl_FUEL,ACC,POSI_NUM,COMPANY,ADD_TIME from vehicle_state " + sqlCompany + " order by ADD_TIME desc limit " + size * count + "," + count + ")a inner join (select ID,VEHICLE_ID,VEHICLE_SIM,VEHICLE_TYPE,VEHICLE_DRIVER from LIST_VEHICLE " + sqlCompany + ")b on FID=ID";
+                    VehicleStateEntity = MySqlHelper.MultipleSelect_v(sql);
+                    Utils.Util.UpdataSource_v(dataGridView1, VehicleStateEntity);
+                    break;
+
+                case "人员":
+                    sql = "select PERSON_ID ,PERSON_SIM ,PERSON_TYPE,POSI_STATE,POSI_X,POSI_Y,ACC,POSI_NUM,COMPANY,ADD_TIME from (select FID,POSI_STATE,POSI_X,POSI_Y,ACC,POSI_NUM,COMPANY,ADD_TIME from person_state " + sqlCompany + " order by ADD_TIME desc limit " + size * count + "," + count + ")a inner join (select ID,PERSON_ID,PERSON_SIM,PERSON_TYPE from LIST_PERSON " + sqlCompany + ")b on FID=ID";
+                    PersonStateEntity = MySqlHelper.MultipleSelect_p(sql);
+                    Utils.Util.UpdataSource_p(dataGridView1, PersonStateEntity);
+                    break;
+            }
         }
+
         /// <summary>
         /// 单元格内容居中
         /// </summary>
@@ -170,7 +228,8 @@ namespace DigitalMineServer
 
         private void previous_MouseClick(object sender, MouseEventArgs e)
         {
-            if (size == 0) {
+            if (size == 0)
+            {
                 MessageBox.Show("已到达第一页");
                 return;
             }
@@ -188,22 +247,31 @@ namespace DigitalMineServer
             size++;
             UpdateState(null, null);
         }
-        private void getCompany() {
+
+        private void getCompany()
+        {
             string sql = "select distinct Company from list_user";
-            ArrayList data=MySqlHelper.MultipleSelect(sql, "Company");
+            ArrayList data = MySqlHelper.MultipleSelect(sql, "Company");
             comboBox1.DataSource = data;
         }
 
-
         private void comboBox1_SelectedIndexChanged(object sender, EventArgs e)
         {
+            size = 0;
             sqlCompany = "where company='" + this.comboBox1.Text + "'";
             UpdateState(null, null);
         }
 
         private void button2_Click(object sender, EventArgs e)
         {
+            size = 0;
             sqlCompany = "";
+            UpdateState(null, null);
+        }
+
+        private void equipType_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            size = 0;
             UpdateState(null, null);
         }
     }
