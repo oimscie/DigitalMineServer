@@ -70,7 +70,7 @@ namespace DigitalMineServer
         }
 
         /// <summary>
-        /// 处理RTP数据
+        /// 处理RTP数据体
         /// </summary>
         /// <param name="obj"></param>
         private void OriRtpDadaParse(object obj)
@@ -319,12 +319,12 @@ namespace DigitalMineServer
         /// <summary>
         /// 超速检查
         /// </summary>
-        /// <param name="Sim">SIM号</param>
+        /// <param name="sim">SIM号</param>
         /// <param name="time">时间</param>
         /// <param name="vehicleInfo">车辆信息</param>
         /// <param name="bodyinfo">0200数据体</param>
         /// <param name="xy">2000坐标</param>
-        private void CheckSpeed(string Sim, DateTime time, ValueTuple<string, string, string, string, string, string> vehicleInfo, PB0200 bodyinfo, List<double> xy)
+        private void CheckSpeed(string sim, DateTime time, ValueTuple<string, string, string, string, string, string> vehicleInfo, PB0200 bodyinfo, List<double> xy)
         {
             if (bodyinfo.Speed * 0.1 > int.Parse(vehicleInfo.Item4))
             {
@@ -333,7 +333,7 @@ namespace DigitalMineServer
                     "and Company='" + vehicleInfo.Item3 + "' and ADD_TIME>=DATE_SUB(NOW(),INTERVAL 1 MINUTE)") == 0)
                 {
                     //给车辆发送超速警告，语音播报
-                    SendMessage(Sim, new REQ_8300().R8300(Sim, "你已超速，限速" + vehicleInfo.Item4));
+                    SendMessage(sim, new REQ_8300().R8300(sim, "你已超速，限速" + vehicleInfo.Item4));
                     string sql = "INSERT INTO `rec_unu_speed`" +
                          "(`VEHICLE_ID`, `DRIVER`, `VEHICLE_TYPE`, `POSI_SPEED`, `POSI_X`, `POSI_Y`, `COMPANY`, `ADD_TIME`, `TEMP1`, `TEMP2`, `TEMP3`, `TEMP4`" +
                          ") " +
@@ -348,14 +348,14 @@ namespace DigitalMineServer
         /// <summary>
         /// 判断车辆围栏
         /// </summary>
-        /// <param name="Sim">SIM号</param>
+        /// <param name="sim">SIM号</param>
         /// <param name="xy">2000坐标</param>
-        private void CheckVehicleFence(string Sim, List<double> xy)
+        private void CheckVehicleFence(string sim, List<double> xy)
         {
             //判断禁入围栏
-            if (Resource.VehicleFenceFanbidInInfo.ContainsKey(Sim))
+            if (Resource.VehicleFenceFanbidInInfo.ContainsKey(sim))
             {
-                ValueTuple<string, string, string, string, string, List<Point>> temp = Resource.VehicleFenceFanbidInInfo[Sim];
+                ValueTuple<string, string, string, string, string, List<Point>> temp = Resource.VehicleFenceFanbidInInfo[sim];
                 if (Polygon.IsInPolygon(new Point(xy[0], xy[1]), temp.Item6))
                 {
                     string sql = "select COUNT(ID) as Count from rec_unu_info where COMPANY='" + temp.Item2 + "' and WARN_USER_ID='" + temp.Item4 + "' and WARNTYPE='" + WarnType.Forbid_In + "' and ADD_TIME>=DATE_SUB(NOW(),INTERVAL 2 MINUTE)";
@@ -367,9 +367,9 @@ namespace DigitalMineServer
                 }
             }
             //判断禁出围栏
-            if (Resource.VehicleFenceFanbidOutInfo.ContainsKey(Sim))
+            if (Resource.VehicleFenceFanbidOutInfo.ContainsKey(sim))
             {
-                ValueTuple<string, string, string, string, string, List<Point>> temp = Resource.VehicleFenceFanbidOutInfo[Sim];
+                ValueTuple<string, string, string, string, string, List<Point>> temp = Resource.VehicleFenceFanbidOutInfo[sim];
                 if (!Polygon.IsInPolygon(new Point(xy[0], xy[1]), temp.Item6))
                 {
                     string sql = "select COUNT(ID) as Count from rec_unu_info where COMPANY='" + temp.Item2 + "' and WARN_USER_ID='" + temp.Item4 + "' and WARNTYPE='" + WarnType.Forbid_Out + "' and ADD_TIME>=DATE_SUB(NOW(),INTERVAL 2 MINUTE)";
@@ -385,14 +385,14 @@ namespace DigitalMineServer
         /// <summary>
         /// 判断人员围栏
         /// </summary>
-        /// <param name="Sim">SIM号</param>
+        /// <param name="sim">SIM号</param>
         /// <param name="xy">2000坐标</param>
-        private void CheckPersonFence(string Sim, List<double> xy)
+        private void CheckPersonFence(string sim, List<double> xy)
         {
             //判断禁入围栏
-            if (Resource.PersonFenceFanbidInInfo.ContainsKey(Sim))
+            if (Resource.PersonFenceFanbidInInfo.ContainsKey(sim))
             {
-                ValueTuple<string, string, string, string, List<Point>> temp = Resource.PersonFenceFanbidInInfo[Sim];
+                ValueTuple<string, string, string, string, List<Point>> temp = Resource.PersonFenceFanbidInInfo[sim];
                 if (Polygon.IsInPolygon(new Point(xy[0], xy[1]), temp.Item5))
                 {
                     string sql = "select COUNT(ID) as Count from rec_unu_info where COMPANY='" + temp.Item2 + "' and WARN_USER_ID='" + temp.Item4 + "' and WARNTYPE='" + WarnType.Forbid_In + "' and ADD_TIME>=DATE_SUB(NOW(),INTERVAL 2 MINUTE)";
@@ -404,9 +404,9 @@ namespace DigitalMineServer
                 }
             }
             //判断禁出围栏
-            if (Resource.PersonFenceFanbidOutInfo.ContainsKey(Sim))
+            if (Resource.PersonFenceFanbidOutInfo.ContainsKey(sim))
             {
-                ValueTuple<string, string, string, string, List<Point>> temp = Resource.PersonFenceFanbidOutInfo[Sim];
+                ValueTuple<string, string, string, string, List<Point>> temp = Resource.PersonFenceFanbidOutInfo[sim];
                 if (!Polygon.IsInPolygon(new Point(xy[0], xy[1]), temp.Item5))
                 {
                     string sql = "select COUNT(ID) as Count from rec_unu_info where COMPANY='" + temp.Item2 + "' and WARN_USER_ID='" + temp.Item4 + "' and WARNTYPE='" + WarnType.Forbid_Out + "' and ADD_TIME>=DATE_SUB(NOW(),INTERVAL 2 MINUTE)";

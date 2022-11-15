@@ -8,16 +8,20 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using DigitalMineServer.Redis;
+using static ServiceStack.Script.Lisp;
 
 namespace DigitalMineServer.InfoInit
 {
     public class Vehicle
     {
         private readonly MySqlHelper mySql;
+        private readonly RedisHelper Redis;
 
         public Vehicle()
         {
             mySql = new MySqlHelper();
+            Redis = new RedisHelper();
         }
 
         public void VehicleInfo(object source, System.Timers.ElapsedEventArgs e)

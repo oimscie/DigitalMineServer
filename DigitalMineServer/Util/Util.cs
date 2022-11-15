@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Runtime.Serialization.Formatters.Binary;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading;
@@ -252,6 +253,35 @@ namespace DigitalMineServer.Utils
                 str += item.ToString("X2");
             }
             return str;
+        }
+
+        /// <summary>
+        /// 序列化对象
+        /// </summary>
+        /// <param name="data"></param>
+        /// <returns></returns>
+        public static byte[] ObjectSerializ(object data)
+        {
+            MemoryStream stream = new MemoryStream();
+            BinaryFormatter bf = new BinaryFormatter();
+            bf.Serialize(stream, data);
+            byte[] result = stream.ToArray();
+            stream.Close();
+            return result;
+        }
+
+        /// <summary>
+        /// 反序列化
+        /// </summary>
+        /// <param name="data"></param>
+        /// <returns></returns>
+        public static object Deserialization(byte[] data)
+        {
+            MemoryStream stream = new MemoryStream(data);
+            BinaryFormatter bf = new BinaryFormatter();
+            object result = bf.Deserialize(stream);
+            stream.Close();
+            return result;
         }
     }
 }
