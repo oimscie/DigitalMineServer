@@ -1,20 +1,25 @@
 ﻿using DigitalMineServer.OrderMessage;
+using DigitalMineServer.Redis;
 using DigitalMineServer.Static;
 using JtLibrary;
 using JtLibrary.Jt1078_2016.Request_2016;
 using JtLibrary.PacketBody;
 using JtLibrary.Providers;
 using JtLibrary.Structures;
+using System;
 using static JtLibrary.Structures.EquipVersion;
 
 namespace DigitalMineServer.PacketReponse
 {
     internal class REQ_9101
     {
+        private readonly RedisHelper Redis = new RedisHelper();
+
         public byte[] R9101(AudioAndVideo AudioAndVideo)
         {
             int port = AudioAndVideo.datatype == "2" ? 8086 : 8087;
-            switch (Resource.equipVersion[AudioAndVideo.sim].Item1)
+            ValueTuple<string, string, string, int> equipVersion = Redis.GetEquipVersion(AudioAndVideo.sim);
+            switch (equipVersion.Item1)
             {
                 case Version_808.Ver_808_2019:
                     return decode_9101_2019(AudioAndVideo, port);

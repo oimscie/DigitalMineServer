@@ -383,6 +383,21 @@ namespace DigitalMineServer.OrderMessage
         /// 终端SIM
         /// </summary>
         public string sim;
+
+        /// <summary>
+        /// 围栏类型
+        /// </summary>
+        public string fenchType;
+
+        /// <summary>
+        /// 终端SIM集合
+        /// </summary>
+        public List<string> simList;
+
+        /// <summary>
+        /// 围栏名称
+        /// </summary>
+        public string name;
     }
 
     /// <summary>

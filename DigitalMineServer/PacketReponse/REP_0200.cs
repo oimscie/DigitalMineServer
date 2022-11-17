@@ -1,4 +1,5 @@
-﻿using DigitalMineServer.Static;
+﻿using DigitalMineServer.Redis;
+using DigitalMineServer.Static;
 using DigitalMineServer.SuperSocket;
 using JtLibrary;
 using JtLibrary.Jt808_2013.Reponse_2013;
@@ -10,21 +11,33 @@ using JtLibrary.Providers;
 using JtLibrary.Structures;
 using System;
 using System.Drawing;
+using static DigitalMineServer.Structures.Comprehensive;
 using static JtLibrary.Structures.EquipVersion;
 
 namespace DigitalMineServer.PacketReponse
 {
     internal class REP_0200
     {
+        private readonly RedisHelper Redis = null;
+
+        public REP_0200()
+        {
+            if (Redis is null)
+            {
+                Redis = new RedisHelper();
+            }
+        }
+
         public void R0200(PacketMessage msg, IPacketProvider pConvert, Jt808Session Session)
         {
             string sim = Extension.BCDToString(msg.pmPacketHead.hSimNumber);
-            switch (Resource.equipVersion[sim].Item1)
+            ValueTuple<string, string, string, int> equipVersion = Redis.GetEquipVersion(sim);
+            switch (equipVersion.Item1)
             {
                 case Version_808.Ver_808_2013:
                     byte[] buffer_2013 = Packet_0200_2013(msg, pConvert);
                     Session.Send(buffer_2013, 0, buffer_2013.Length);
-                    if (Resource.VehicleList.ContainsKey(sim))
+                    if (Redis.CheckKeyExist(sim + Redis_key_ext.vehicle))
                     {
                         Resource.Vehicle0200DataQueues.Enqueue(new ValueTuple<string, PB0200>
                         {
@@ -32,7 +45,7 @@ namespace DigitalMineServer.PacketReponse
                             Item2 = new REP_0200_2013().Decode(msg.pmMessageBody)
                         });
                     }
-                    else if (Resource.PersonList.ContainsKey(sim))
+                    else if (Redis.CheckKeyExist(sim + Redis_key_ext.person))
                     {
                         Resource.Person0200DataQueues.Enqueue(new ValueTuple<string, PB0200>
                         {
@@ -45,7 +58,7 @@ namespace DigitalMineServer.PacketReponse
                 case Version_808.Ver_808_2019:
                     byte[] buffer_2019 = Packet_0200_2019(msg, pConvert);
                     Session.Send(buffer_2019, 0, buffer_2019.Length);
-                    if (Resource.VehicleList.ContainsKey(sim))
+                    if (Redis.CheckKeyExist(sim + Redis_key_ext.vehicle))
                     {
                         Resource.Vehicle0200DataQueues.Enqueue(new ValueTuple<string, PB0200>
                         {
@@ -53,7 +66,7 @@ namespace DigitalMineServer.PacketReponse
                             Item2 = new REP_0200_2019().Decode(msg.pmMessageBody)
                         });
                     }
-                    else if (Resource.PersonList.ContainsKey(sim))
+                    else if (Redis.CheckKeyExist(sim + Redis_key_ext.person))
                     {
                         Resource.Person0200DataQueues.Enqueue(new ValueTuple<string, PB0200>
                         {

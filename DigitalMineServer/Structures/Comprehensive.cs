@@ -26,7 +26,7 @@ namespace DigitalMineServer.Structures
             /// <summary>
             /// 车辆信息
             /// </summary>
-            public const string vehicle = "-i";
+            public const string vehicle = "-v";
 
             /// <summary>
             /// 人员信息
@@ -37,6 +37,11 @@ namespace DigitalMineServer.Structures
             /// 主动安全报警
             /// </summary>
             public const string acSafeWarn = "-a-w";
+
+            /// <summary>
+            /// 终端版本号
+            /// </summary>
+            public const string equipVersion = "-e-v";
         }
     }
 }

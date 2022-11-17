@@ -170,7 +170,7 @@ namespace DigitalMineServer
         /// </summary>
         public void CarInfoCheckTimers()
         {
-            VehicleInfo = new System.Timers.Timer(1000 * 10 * 1);
+            VehicleInfo = new System.Timers.Timer(1000 * 30 * 1);
             VehicleInfo.Elapsed += new ElapsedEventHandler(new Vehicle().VehicleInfo);
             VehicleInfo.AutoReset = true;
             VehicleInfo.Enabled = true;
@@ -181,7 +181,7 @@ namespace DigitalMineServer
         /// </summary>
         public void PersonInfoCheckTimers()
         {
-            PersonInfo = new System.Timers.Timer(1000 * 10 * 1);
+            PersonInfo = new System.Timers.Timer(1000 * 30 * 1);
             PersonInfo.Elapsed += new ElapsedEventHandler(new Person().PersonInfo);
             PersonInfo.AutoReset = true;
             PersonInfo.Enabled = true;

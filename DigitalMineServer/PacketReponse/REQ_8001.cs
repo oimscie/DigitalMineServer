@@ -1,4 +1,5 @@
-﻿using DigitalMineServer.Static;
+﻿using DigitalMineServer.Redis;
+using DigitalMineServer.Static;
 using DigitalMineServer.SuperSocket;
 using JtLibrary;
 using JtLibrary.Jt808_2013.Request_2013;
@@ -6,6 +7,7 @@ using JtLibrary.Jt808_2019.Request_2019;
 using JtLibrary.PacketBody;
 using JtLibrary.Providers;
 using JtLibrary.Structures;
+using System;
 using static JtLibrary.Structures.EquipVersion;
 
 namespace DigitalMineServer.PacketReponse
@@ -13,9 +15,12 @@ namespace DigitalMineServer.PacketReponse
     //默认回复
     public class REQ_8001
     {
+        private readonly RedisHelper Redis = new RedisHelper();
+
         public void Default(PacketMessage msg, IPacketProvider pConvert, Jt808Session Session)
         {
-            switch (Resource.equipVersion[Extension.BCDToString(msg.pmPacketHead.hSimNumber)].Item1)
+            ValueTuple<string, string, string, int> equipVersion = Redis.GetEquipVersion(Extension.BCDToString(msg.pmPacketHead.hSimNumber));
+            switch (equipVersion.Item1)
             {
                 case Version_808.Ver_808_2013:
                     byte[] buffer_2013 = Packet_default_2013(msg, pConvert);

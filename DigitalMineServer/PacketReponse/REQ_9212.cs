@@ -1,5 +1,6 @@
 ﻿using ActionSafe.AcSafe_Su.PacketBody;
 using ActionSafe.AcSafe_Su.Reauest_Su_2013;
+using DigitalMineServer.Redis;
 using DigitalMineServer.Static;
 using DigitalMineServer.SuperSocket;
 using JtLibrary;
@@ -20,6 +21,8 @@ namespace DigitalMineServer.PacketReponse
     /// </summary>
     public class REQ_9212
     {
+        private readonly RedisHelper Redis = new RedisHelper();
+
         /// <summary>
         /// 文件上传完成消息应答
         /// </summary>
@@ -29,7 +32,8 @@ namespace DigitalMineServer.PacketReponse
         /// <param name="Session"></param>
         public void Default(PacketMessage msg, IPacketProvider pConvert, PB9212 PB9212, AcSafeFileSession Session)
         {
-            switch (Resource.equipVersion[Extension.BCDToString(msg.pmPacketHead.hSimNumber)].Item3)
+            ValueTuple<string, string, string, int> equipVersion = Redis.GetEquipVersion(Extension.BCDToString(msg.pmPacketHead.hSimNumber));
+            switch (equipVersion.Item3)
             {
                 case Version_AcSafe.Ver_AcSafe_su_2013:
                     byte[] buffer_9212 = Packet_9212_Su_2013(msg, PB9212, pConvert);

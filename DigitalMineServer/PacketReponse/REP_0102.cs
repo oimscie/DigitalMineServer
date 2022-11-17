@@ -1,4 +1,5 @@
 ﻿using DigitalMineServer.Mysql;
+using DigitalMineServer.Redis;
 using DigitalMineServer.Static;
 using DigitalMineServer.SuperSocket;
 using DigitalMineServer.Util;
@@ -11,17 +12,20 @@ using JtLibrary.Structures;
 using JtLibrary.Utils;
 using System;
 using System.Collections.Generic;
+using static DigitalMineServer.Structures.Comprehensive;
 using static JtLibrary.Structures.EquipVersion;
 
 namespace DigitalMineServer.PacketReponse
 {
     internal class REP_0102
     {
+        private readonly RedisHelper redis;
         private readonly MySqlHelper mysql;
 
         public REP_0102()
         {
             mysql = new MySqlHelper();
+            redis = new RedisHelper();
         }
 
         public void R0102(PacketMessage msg, IPacketProvider pConvert, Jt808Session Session)
@@ -61,14 +65,7 @@ namespace DigitalMineServer.PacketReponse
                 Item4 = msg.pmPacketHead.protocolVersion
             };
             //存入字典
-            if (Resource.equipVersion.ContainsKey(sim))
-            {
-                Resource.equipVersion[sim] = val;
-            }
-            else
-            {
-                Resource.equipVersion.TryAdd(sim, val);
-            }
+            redis.Set(sim + Redis_key_ext.equipVersion, Utils.Util.ObjectSerializ(val), -1);
             //回复终端
             switch (msg.pmPacketHead.phPacketHeadAttribute.IdentifiersVersion)
             {

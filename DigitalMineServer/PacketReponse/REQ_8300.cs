@@ -1,35 +1,44 @@
-﻿using DigitalMineServer.Static;
+﻿using DigitalMineServer.Redis;
+using DigitalMineServer.Static;
 using JtLibrary;
 using JtLibrary.Jt808_2013.Request_2013;
 using JtLibrary.Jt808_2019.Request_2019;
 using JtLibrary.PacketBody;
 using JtLibrary.Providers;
 using JtLibrary.Structures;
+using System;
 using static JtLibrary.Structures.EquipVersion;
 
 namespace DigitalMineServer.PacketReponse
 {
-    class REQ_8300
+    internal class REQ_8300
     {
+        private readonly RedisHelper Redis = new RedisHelper();
+
         public byte[] R8300(string sim, string info)
         {
-            switch (Resource.equipVersion[sim].Item1)
+            ValueTuple<string, string, string, int> equipVersion = Redis.GetEquipVersion(sim);
+            switch (equipVersion.Item1)
             {
                 case Version_808.Ver_808_2013:
                     return Packet_8300_2013(sim, info);
+
                 case Version_808.Ver_808_2019:
                     return Packet_8300_2019(sim, info);
+
                 default:
                     return null;
             }
         }
+
         /// <summary>
         /// 2013消息包装
         /// </summary>
         /// <param name="sim">终端SIM号</param>
         /// <param name="info">下发文本</param>
         /// <returns></returns>
-        public byte[] Packet_8300_2013(string sim, string info) {
+        public byte[] Packet_8300_2013(string sim, string info)
+        {
             byte[] body_8300 = new REQ_8300_2013().Encode(new PB8300()
             {
                 EmFlag = 1,
@@ -52,6 +61,7 @@ namespace DigitalMineServer.PacketReponse
             });
             return buffer;
         }
+
         /// <summary>
         /// 2019消息包装
         /// </summary>

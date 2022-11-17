@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -222,17 +223,58 @@ namespace DigitalMineServer.OrderMessage
         }
 
         /// <summary>
-        /// 删除电子围栏解包
+        /// 删除指定SIM所有电子围栏解包
         /// </summary>
         /// <param name="order"></param>
         /// <returns></returns>
-        public DeleteFence DeleteFence(string order)
+        public DeleteFence DeleteFenceBySim(string order)
         {
             string[] array = order.Split('!');
             return new DeleteFence()
             {
-                messageType = OrderMessageType.deleteFence,
+                messageType = OrderMessageType.deleteFenceBySim,
                 sim = array[1],
+                fenchType = array[2]
+            };
+        }
+
+        /// <summary>
+        /// 删除指定name电子围栏解包
+        /// </summary>
+        /// <param name="order"></param>
+        /// <returns></returns>
+        public DeleteFence DeleteFenceByName(string order)
+        {
+            string[] array = order.Split('!');
+            string[] sims = array[2].Split('#');
+            List<string> list = new List<string>();
+            foreach (string sim in sims)
+            {
+                list.Add(sim);
+            }
+            return new DeleteFence()
+            {
+                messageType = OrderMessageType.deleteFenceByNameAndSim,
+                name = array[1],
+                simList = list,
+                fenchType = array[3]
+            };
+        }
+
+        /// <summary>
+        /// 删除指定SIM和name电子围栏解包
+        /// </summary>
+        /// <param name="order"></param>
+        /// <returns></returns>
+        public DeleteFence DeleteFenceByNameAndSim(string order)
+        {
+            string[] array = order.Split('!');
+            return new DeleteFence()
+            {
+                messageType = OrderMessageType.deleteFenceByNameAndSim,
+                name = array[1],
+                sim = array[2],
+                fenchType = array[3]
             };
         }
 
@@ -246,7 +288,7 @@ namespace DigitalMineServer.OrderMessage
             string[] array = order.Split('!');
             return new DeleteVehicle()
             {
-                messageType = OrderMessageType.deleteFence,
+                messageType = OrderMessageType.deleteVehicle,
                 sim = array[1],
             };
         }
@@ -261,7 +303,7 @@ namespace DigitalMineServer.OrderMessage
             string[] array = order.Split('!');
             return new DeletePerson()
             {
-                messageType = OrderMessageType.deleteFence,
+                messageType = OrderMessageType.deletePerson,
                 sim = array[1],
             };
         }

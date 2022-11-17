@@ -1,4 +1,5 @@
-﻿using DigitalMineServer.Static;
+﻿using DigitalMineServer.Redis;
+using DigitalMineServer.Static;
 using DigitalMineServer.SuperSocket;
 using JtLibrary;
 using JtLibrary.Jt808_2013.Request_2013;
@@ -8,12 +9,15 @@ using JtLibrary.Providers;
 using JtLibrary.Structures;
 using JtLibrary.Utils;
 using System;
+using static DigitalMineServer.Structures.Comprehensive;
 using static JtLibrary.Structures.EquipVersion;
 
 namespace DigitalMineServer.PacketReponse
 {
-    class REP_0100
+    internal class REP_0100
     {
+        private readonly RedisHelper Redis = new RedisHelper();
+
         public void R0100(PacketMessage msg, IPacketProvider pConvert, Jt808Session Session)
         {
             string sim = Extension.BCDToString(msg.pmPacketHead.hSimNumber);
@@ -31,26 +35,21 @@ namespace DigitalMineServer.PacketReponse
                 Item4 = msg.pmPacketHead.protocolVersion
             };
             //存入字典
-            if (Resource.equipVersion.ContainsKey(sim))
-            {
-                Resource.equipVersion[sim] = val;
-            }
-            else
-            {
-                Resource.equipVersion.TryAdd(sim, val);
-            }
+            Redis.Set(sim + Redis_key_ext.equipVersion, Utils.Util.ObjectSerializ(val), -1);
             switch (Version808)
             {
                 case Version_808.Ver_808_2013:
                     byte[] buffer_2013 = Packet_0100_2013(msg, pConvert);
                     Session.Send(buffer_2013, 0, buffer_2013.Length);
                     break;
+
                 case Version_808.Ver_808_2019:
                     byte[] buffer_2019 = Packet_0100_2019(msg, pConvert);
                     Session.Send(buffer_2019, 0, buffer_2019.Length);
                     break;
             }
         }
+
         /// <summary>
         /// 2013消息打包
         /// </summary>

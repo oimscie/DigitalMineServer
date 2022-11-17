@@ -23,6 +23,9 @@ using static ActionSafe.AcSafe_Su.PacketBody.PacketBody;
 using DigitalMineServer.Static;
 using ActionSafe.AcSafe_Su.PacketBody;
 using FileStream = System.IO.FileStream;
+using static DigitalMineServer.Structures.Comprehensive;
+using static ServiceStack.Script.Lisp;
+using DigitalMineServer.Redis;
 
 namespace DigitalMineServer.ParseMessage
 {
@@ -31,18 +34,20 @@ namespace DigitalMineServer.ParseMessage
     {
         private readonly MySqlHelper mysql = new MySqlHelper();
 
+        private readonly RedisHelper Redis = new RedisHelper();
+
         //文件真实路径
         private readonly string FilePath = ConfigurationManager.AppSettings["FilePath"] + "AcSafeFile/";
 
         //文件对外虚拟路径
         private readonly string VritualPath = ConfigurationManager.AppSettings["VritualPath"] + "AcSafeFile/";
 
-        private IPacketProvider pConvert = PacketProvider.CreateProvider();
+        private readonly IPacketProvider pConvert = PacketProvider.CreateProvider();
 
         /// <summary>
         /// 可存储文件格式
         /// </summary>
-        private List<string> allowWrite = new List<string>() { ".mp4", ".jpg", ".jpeg", ".h264", ".png" };
+        private readonly List<string> allowWrite = new List<string>() { ".mp4", ".jpg", ".jpeg", ".h264", ".png" };
 
         /// <summary>
         /// 过滤消息数据流
@@ -66,6 +71,11 @@ namespace DigitalMineServer.ParseMessage
             try
             {
                 PacketMessage msg = pConvert.Decode(buffer, 0, buffer.Length);
+                ValueTuple<string, string, string, string, string, string> val = Redis.GetVehicleList(Extension.BCDToString(msg.pmPacketHead.hSimNumber) + Redis_key_ext.vehicle);
+                if (val.Item1 == null)
+                {
+                    return;
+                }
                 switch (msg.pmPacketHead.phMessageId)
                 {
                     case AcSafeCmd.RSP_1210:
@@ -80,7 +90,7 @@ namespace DigitalMineServer.ParseMessage
                         Session.FileName = Pb1211.fileName;
                         Session.FileType = Pb1211.type;
                         Session.md5Name = Utils.Util.GetMd5(Pb1211.fileName);
-                        Session.Company = Resource.VehicleList[Extension.BCDToString(msg.pmPacketHead.hSimNumber)].Item3;
+                        Session.Company = val.Item3;
                         Session.RealFilePath = FilePath + Utils.Util.GetChsSpell(Session.Company);
                         Session.VritualPath = VritualPath + Utils.Util.GetChsSpell(Session.Company) + '/';
                         break;

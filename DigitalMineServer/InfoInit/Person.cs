@@ -8,16 +8,20 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using static DigitalMineServer.Structures.Comprehensive;
+using DigitalMineServer.Redis;
 
 namespace DigitalMineServer.InfoInit
 {
     public class Person
     {
         private readonly MySqlHelper mySql;
+        private readonly RedisHelper Redis;
 
         public Person()
         {
             mySql = new MySqlHelper();
+            Redis = new RedisHelper();
         }
 
         public void PersonInfo(object source, System.Timers.ElapsedEventArgs e)
@@ -43,20 +47,8 @@ namespace DigitalMineServer.InfoInit
                         item.TryGetValue("COMPANY", out string company);
                         item.TryGetValue("PERSON_ID", out string vid);
                         temp.Add(sim, new ValueTuple<string, string>(type, vid));
-                        //检查人员信息List里是否存在此人员，存在则更改，不存在则新增
-                        if (Resource.PersonList.ContainsKey(sim))
-                        {
-                            Resource.PersonList[sim] = new ValueTuple<string, string, string, string>(id, type, company, vid);
-                        }
-                        else
-                        {
-                            Resource.PersonList.TryAdd(sim, new ValueTuple<string, string, string, string>(id, type, company, vid));
-                        }
+                        Redis.Set(sim + Redis_key_ext.person, Utils.Util.ObjectSerializ(new ValueTuple<string, string, string, string>(id, type, company, vid)));
                     }
-                }
-                else
-                {
-                    Resource.PersonList.Clear();
                 }
                 //围栏信息字段List（终端SIM，经度，纬度，围栏名称，围栏类型，归属公司）
                 fileName = new List<string> { "SIM", "X", "Y", "NAME", "TYPES", "COMPANY" };
@@ -66,9 +58,12 @@ namespace DigitalMineServer.InfoInit
                 if (result != null)
                 {
                     //禁止驶出围栏临时存储
-                    Dictionary<string, ValueTuple<string, string, string, string, List<Point>>> tempDicOut = new Dictionary<string, ValueTuple<string, string, string, string, List<Point>>>();
+
+                    Dictionary<string, Dictionary<string, ValueTuple<string, string, string, string, string, List<Point>>>> tempDicOut = new Dictionary<string, Dictionary<string, ValueTuple<string, string, string, string, string, List<Point>>>>();
+
                     //禁止驶入围栏临时存储
-                    Dictionary<string, ValueTuple<string, string, string, string, List<Point>>> tempDicIn = new Dictionary<string, ValueTuple<string, string, string, string, List<Point>>>();
+
+                    Dictionary<string, Dictionary<string, ValueTuple<string, string, string, string, string, List<Point>>>> tempDicIn = new Dictionary<string, Dictionary<string, ValueTuple<string, string, string, string, string, List<Point>>>>();
                     foreach (var item in result)
                     {
                         item.TryGetValue("SIM", out string sim);
@@ -91,24 +86,64 @@ namespace DigitalMineServer.InfoInit
                             case "forbid_in":
                                 if (tempDicIn.ContainsKey(sim))
                                 {
-                                    ValueTuple<string, string, string, string, List<Point>> val = new ValueTuple<string, string, string, string, List<Point>>(name, company, vType, vid, new List<Point>() { new Point(double.Parse(x), double.Parse(y)) });
-                                    tempDicIn[sim].Item5.Add(new Point(double.Parse(x), double.Parse(y)));
+                                    foreach (var item_value in tempDicIn)
+                                    {
+                                        if (item_value.Value.ContainsKey(name))
+                                        {
+                                            item_value.Value[name].Item6.Add(new Point(double.Parse(x), double.Parse(y)));
+                                        }
+                                        else
+                                        {
+                                            item_value.Value.Add(name,
+                                                new ValueTuple<string, string, string, string, string, List<Point>>(
+                                                    name, company, vType, vid, null, new List<Point>() {
+                                                        new Point(double.Parse(x), double.Parse(y)) }
+                                                    )
+                                                );
+                                        }
+                                    }
                                 }
                                 else
                                 {
-                                    tempDicIn.Add(sim, new ValueTuple<string, string, string, string, List<Point>>(name, company, vType, vid, new List<Point>() { new Point(double.Parse(x), double.Parse(y)) }));
+                                    tempDicIn.Add(sim,
+                                        new Dictionary<string, (string, string, string, string, string, List<Point>)>
+                                    {
+                                        { name,new ValueTuple<string, string, string,string, string, List<Point>>(
+                                            name, company, vType, vid,null, new List<Point>() {
+                                                new Point(double.Parse(x), double.Parse(y)) })
+                                        }
+                                    });
                                 }
                                 break;
                             //禁止出围栏
                             case "forbid_out":
                                 if (tempDicOut.ContainsKey(sim))
                                 {
-                                    ValueTuple<string, string, string, string, List<Point>> val = new ValueTuple<string, string, string, string, List<Point>>(name, company, vType, vid, new List<Point>() { new Point(double.Parse(x), double.Parse(y)) });
-                                    tempDicOut[sim].Item5.Add(new Point(double.Parse(x), double.Parse(y)));
+                                    foreach (var item_value in tempDicOut)
+                                    {
+                                        if (item_value.Value.ContainsKey(name))
+                                        {
+                                            item_value.Value[name].Item6.Add(new Point(double.Parse(x), double.Parse(y)));
+                                        }
+                                        else
+                                        {
+                                            item_value.Value.Add(
+                                                name, new ValueTuple<string, string, string, string, string, List<Point>>(
+                                                    name, company, vType, vid, null, new List<Point>() {
+                                                        new Point(double.Parse(x), double.Parse(y)) })
+                                                );
+                                        }
+                                    }
                                 }
                                 else
                                 {
-                                    tempDicOut.Add(sim, new ValueTuple<string, string, string, string, List<Point>>(name, company, vType, vid, new List<Point>() { new Point(double.Parse(x), double.Parse(y)) }));
+                                    tempDicOut.Add(sim, new Dictionary<string, (string, string, string, string, string, List<Point>)>
+                                    {
+                                        { name, new ValueTuple<string, string,string, string, string, List<Point>>(
+                                            name, company, vType, vid, null,new List<Point>() {
+                                                new Point(double.Parse(x), double.Parse(y)) }
+                                            ) }
+                                    });
                                 }
                                 break;
                         }
@@ -116,32 +151,13 @@ namespace DigitalMineServer.InfoInit
                     //更新人员禁止出围栏信息
                     foreach (var item in tempDicOut)
                     {
-                        if (Resource.PersonFenceFanbidOutInfo.ContainsKey(item.Key))
-                        {
-                            Resource.PersonFenceFanbidOutInfo[item.Key] = item.Value;
-                        }
-                        else
-                        {
-                            Resource.PersonFenceFanbidOutInfo.TryAdd(item.Key, item.Value);
-                        }
+                        Redis.Set(item.Key + Redis_key_ext.fench_out, Utils.Util.ObjectSerializ(item.Value));
                     }
                     //更新人员禁止入围栏信息
                     foreach (var item in tempDicIn)
                     {
-                        if (Resource.PersonFenceFanbidInInfo.ContainsKey(item.Key))
-                        {
-                            Resource.PersonFenceFanbidInInfo[item.Key] = item.Value;
-                        }
-                        else
-                        {
-                            Resource.PersonFenceFanbidInInfo.TryAdd(item.Key, item.Value);
-                        }
+                        Redis.Set(item.Key + Redis_key_ext.fench_in, Utils.Util.ObjectSerializ(item.Value));
                     }
-                }
-                else
-                {
-                    Resource.PersonFenceFanbidOutInfo.Clear();
-                    Resource.PersonFenceFanbidInInfo.Clear();
                 }
             }
             catch (Exception ex)

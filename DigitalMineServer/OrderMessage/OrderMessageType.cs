@@ -86,9 +86,19 @@ namespace DigitalMineServer.OrderMessage
         public const string WebText = "6100";
 
         /// <summary>
-        /// 删除电子围栏
+        /// 删除指定SIM所有电子围栏
         /// </summary>
-        public const string deleteFence = "6200";
+        public const string deleteFenceBySim = "6200";
+
+        /// <summary>
+        /// 删除指定名称电子围栏
+        /// </summary>
+        public const string deleteFenceByName = "6201";
+
+        /// <summary>
+        /// 删除指定名称和SIM电子围栏
+        /// </summary>
+        public const string deleteFenceByNameAndSim = "6202";
 
         /// <summary>
         /// 删除车辆

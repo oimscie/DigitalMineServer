@@ -1,4 +1,5 @@
-﻿using DigitalMineServer.Static;
+﻿using DigitalMineServer.Redis;
+using DigitalMineServer.Static;
 using DigitalMineServer.SuperSocket;
 using DigitalMineServer.Util;
 using JtLibrary;
@@ -14,17 +15,21 @@ using static JtLibrary.Structures.EquipVersion;
 
 namespace DigitalMineServer.PacketReponse
 {
-    class REP_0704
+    internal class REP_0704
     {
+        private readonly RedisHelper Redis = new RedisHelper();
+
         public void R0704(PacketMessage msg, IPacketProvider pConvert, Jt808Session Session)
         {
-            switch (Resource.equipVersion[Extension.BCDToString(msg.pmPacketHead.hSimNumber)].Item1)
+            ValueTuple<string, string, string, int> equipVersion = Redis.GetEquipVersion(Extension.BCDToString(msg.pmPacketHead.hSimNumber));
+            switch (equipVersion.Item1)
             {
                 case Version_808.Ver_808_2013:
                     byte[] buffer_2013 = Packet_0704_2013(msg, pConvert);
                     Session.Send(buffer_2013, 0, buffer_2013.Length);
                     GetPB0200(new REP_0704_2013().Decode(msg.pmMessageBody), Extension.BCDToString(msg.pmPacketHead.hSimNumber));
                     break;
+
                 case Version_808.Ver_808_2019:
                     byte[] buffer_2019 = Packet_0704_2019(msg, pConvert);
                     Session.Send(buffer_2019, 0, buffer_2019.Length);
@@ -32,6 +37,7 @@ namespace DigitalMineServer.PacketReponse
                     break;
             }
         }
+
         /// <summary>
         /// 2013消息打包
         /// </summary>
@@ -59,6 +65,7 @@ namespace DigitalMineServer.PacketReponse
             });
             return buffer;
         }
+
         /// <summary>
         /// 2019消息打包
         /// </summary>
@@ -86,6 +93,7 @@ namespace DigitalMineServer.PacketReponse
             });
             return buffer;
         }
+
         /// <summary>
         /// 取出定位消息批量上传数据体里的0200数据
         /// </summary>

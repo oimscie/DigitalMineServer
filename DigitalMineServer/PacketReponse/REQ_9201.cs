@@ -1,4 +1,5 @@
 ﻿using DigitalMineServer.OrderMessage;
+using DigitalMineServer.Redis;
 using DigitalMineServer.Static;
 using JtLibrary;
 using JtLibrary.Jt1078_2016.Request_2016;
@@ -13,16 +14,19 @@ namespace DigitalMineServer.PacketReponse
     internal class REQ_9201
     {
         private readonly ushort msgSerialnumber;
+        private readonly RedisHelper Redis;
 
         public REQ_9201()
         {
             msgSerialnumber = (ushort)Resource.msgSerialnumberDic.Count;
+            Redis = new RedisHelper();
         }
 
         public byte[] R9201(HisVideoAndAudio HisVideoAndAudio)
         {
             int port = HisVideoAndAudio.datatype == "1" ? 8088 : 8089;
-            switch (Resource.equipVersion[HisVideoAndAudio.sim].Item1)
+            ValueTuple<string, string, string, int> equipVersion = Redis.GetEquipVersion(HisVideoAndAudio.sim);
+            switch (equipVersion.Item1)
             {
                 case Version_808.Ver_808_2019:
                     return decode_9201_2019(HisVideoAndAudio, port);

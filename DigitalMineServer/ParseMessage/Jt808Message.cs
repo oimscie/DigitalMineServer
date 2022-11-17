@@ -3,6 +3,7 @@ using ActionSafe.AcSafe_Su.REP_0X65;
 using ActionSafe.AcSafe_Su.Reponse_Su_2013;
 using DigitalMineServer.Mysql;
 using DigitalMineServer.PacketReponse;
+using DigitalMineServer.Redis;
 using DigitalMineServer.Static;
 using DigitalMineServer.SuperSocket;
 using DigitalMineServer.SuperSocket.SocketServer;
@@ -23,6 +24,7 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using static ActionSafe.AcSafe_Su.PacketBody.PacketBody;
+using static DigitalMineServer.Structures.Comprehensive;
 
 namespace DigitalMineServer
 {
@@ -38,10 +40,16 @@ namespace DigitalMineServer
         /// </summary>
         private readonly MySqlHelper PersonMysql;
 
+        private readonly RedisHelper PersonRedis;
+
+        private readonly RedisHelper VehicleRedis;
+
         public Jt808Message()
         {
             VehicleMysql = new MySqlHelper();
             PersonMysql = new MySqlHelper();
+            PersonRedis = new RedisHelper();
+            VehicleRedis = new RedisHelper();
         }
 
         /// <summary>
@@ -161,16 +169,15 @@ namespace DigitalMineServer
                         Utils.Util.AppendText(JtServerForm.JtForm.infoBox, Sim + "--时间异常--" + time.ToString());
                         continue;
                     }
-                    //检查车辆信息List中是否存在此车辆，不存在就返回
-                    if (!Resource.VehicleList.ContainsKey(Sim))
+                    //检查redis中是否存在此车辆，不存在就返回
+                    ValueTuple<string, string, string, string, string, string> vehicleInfo = VehicleRedis.GetVehicleList(Sim);
+                    if (vehicleInfo.Item1 is null)
                     {
                         Utils.Util.AppendText(JtServerForm.JtForm.infoBox, Sim + "--未知车辆--" + time.ToString());
                         continue;
                     }
                     //经纬度转换2000坐标
                     List<double> xy = WGS84ToCS2000.WGS84ToXY(Convert.ToDouble(bodyinfo.Latitude) / 1000000, Convert.ToDouble(bodyinfo.Longitude) / 1000000, 3);
-                    //根据sim获取车辆信息
-                    Resource.VehicleList.TryGetValue(Sim, out ValueTuple<string, string, string, string, string, string> vehicleInfo);
                     string sql = null;
                     byte[] state = BitConvert.UInt32ToBit(bodyinfo.StatusIndication);
                     string ACC = state[0] == 0 ? ACC = "关" : ACC = "开";
@@ -245,15 +252,14 @@ namespace DigitalMineServer
                         continue;
                     }
                     //检查人员信息List中是否存在此人员，不存在就返回
-                    if (!Resource.PersonList.ContainsKey(Sim))
+                    ValueTuple<string, string, string, string> PersonInfo = PersonRedis.GetPersonList(Sim);
+                    if (PersonInfo.Item1 is null)
                     {
                         Utils.Util.AppendText(JtServerForm.JtForm.infoBox, Sim + "--未知人员--" + time.ToString());
                         continue;
                     }
                     //经纬度转换2000坐标
                     List<double> xy = WGS84ToCS2000.WGS84ToXY(Convert.ToDouble(bodyinfo.Latitude) / 1000000, Convert.ToDouble(bodyinfo.Longitude) / 1000000, 3);
-                    //根据sim获取车辆信息
-                    Resource.PersonList.TryGetValue(Sim, out ValueTuple<string, string, string, string> PersonInfo);
                     string sql = null;
                     byte[] state = BitConvert.UInt32ToBit(bodyinfo.StatusIndication);
                     string ACC = state[0] == 0 ? ACC = "关" : ACC = "开";
@@ -353,30 +359,36 @@ namespace DigitalMineServer
         private void CheckVehicleFence(string sim, List<double> xy)
         {
             //判断禁入围栏
-            if (Resource.VehicleFenceFanbidInInfo.ContainsKey(sim))
+            Dictionary<string, ValueTuple<string, string, string, string, string, List<Point>>> dic = VehicleRedis.GetFench(sim, Redis_key_ext.fench_in);
+            if (dic != null)
             {
-                ValueTuple<string, string, string, string, string, List<Point>> temp = Resource.VehicleFenceFanbidInInfo[sim];
-                if (Polygon.IsInPolygon(new Point(xy[0], xy[1]), temp.Item6))
+                foreach (var item in dic)
                 {
-                    string sql = "select COUNT(ID) as Count from rec_unu_info where COMPANY='" + temp.Item2 + "' and WARN_USER_ID='" + temp.Item4 + "' and WARNTYPE='" + WarnType.Forbid_In + "' and ADD_TIME>=DATE_SUB(NOW(),INTERVAL 2 MINUTE)";
-                    if (VehicleMysql.GetCount(sql) == 0)
+                    if (Polygon.IsInPolygon(new Point(xy[0], xy[1]), item.Value.Item6))
                     {
-                        sql = "INSERT INTO `product`.`rec_unu_info`( `WARN_USER_ID`, `WARN_USER_TYPE`, `WARNTYPE`, `INFO`, `DRIVER`, `COMPANY`, `ADD_TIME`, `TEMP1`, `TEMP2`, `TEMP3`, `TEMP4`) VALUES ('" + temp.Item4 + "','" + temp.Item3 + "', '" + WarnType.Forbid_In + "', '围栏名称：" + temp.Item1 + "', '" + temp.Item5 + "', '" + temp.Item2 + "', '" + DateTime.Now + "', NULL, NULL, NULL, NULL)";
-                        VehicleMysql.UpdOrInsOrdel(sql);
+                        string sql = "select COUNT(ID) as Count from rec_unu_info where COMPANY='" + item.Value.Item2 + "' and WARN_USER_ID='" + item.Value.Item4 + "' and WARNTYPE='" + WarnType.Forbid_In + "' and ADD_TIME>=DATE_SUB(NOW(),INTERVAL 2 MINUTE)";
+                        if (VehicleMysql.GetCount(sql) == 0)
+                        {
+                            sql = "INSERT INTO `product`.`rec_unu_info`( `WARN_USER_ID`, `WARN_USER_TYPE`, `WARNTYPE`, `INFO`, `DRIVER`, `COMPANY`, `ADD_TIME`, `TEMP1`, `TEMP2`, `TEMP3`, `TEMP4`) VALUES ('" + item.Value.Item4 + "','" + item.Value.Item3 + "', '" + WarnType.Forbid_In + "', '围栏名称：" + item.Value.Item1 + "', '" + item.Value.Item5 + "', '" + item.Value.Item2 + "', '" + DateTime.Now + "', NULL, NULL, NULL, NULL)";
+                            VehicleMysql.UpdOrInsOrdel(sql);
+                        }
                     }
                 }
             }
             //判断禁出围栏
-            if (Resource.VehicleFenceFanbidOutInfo.ContainsKey(sim))
+            dic = VehicleRedis.GetFench(sim, Redis_key_ext.fench_out);
+            if (dic != null)
             {
-                ValueTuple<string, string, string, string, string, List<Point>> temp = Resource.VehicleFenceFanbidOutInfo[sim];
-                if (!Polygon.IsInPolygon(new Point(xy[0], xy[1]), temp.Item6))
+                foreach (var item in dic)
                 {
-                    string sql = "select COUNT(ID) as Count from rec_unu_info where COMPANY='" + temp.Item2 + "' and WARN_USER_ID='" + temp.Item4 + "' and WARNTYPE='" + WarnType.Forbid_Out + "' and ADD_TIME>=DATE_SUB(NOW(),INTERVAL 2 MINUTE)";
-                    if (VehicleMysql.GetCount(sql) == 0)
+                    if (!Polygon.IsInPolygon(new Point(xy[0], xy[1]), item.Value.Item6))
                     {
-                        sql = "INSERT INTO `product`.`rec_unu_info`( `WARN_USER_ID`, `WARN_USER_TYPE`, `WARNTYPE`, `INFO`, `DRIVER`, `COMPANY`, `ADD_TIME`, `TEMP1`, `TEMP2`, `TEMP3`, `TEMP4`) VALUES ('" + temp.Item4 + "','" + temp.Item3 + "', '" + WarnType.Forbid_Out + "', '围栏名称：" + temp.Item1 + "', '" + temp.Item5 + "', '" + temp.Item2 + "', '" + DateTime.Now + "', NULL, NULL, NULL, NULL)";
-                        VehicleMysql.UpdOrInsOrdel(sql);
+                        string sql = "select COUNT(ID) as Count from rec_unu_info where COMPANY='" + item.Value.Item2 + "' and WARN_USER_ID='" + item.Value.Item4 + "' and WARNTYPE='" + WarnType.Forbid_Out + "' and ADD_TIME>=DATE_SUB(NOW(),INTERVAL 2 MINUTE)";
+                        if (VehicleMysql.GetCount(sql) == 0)
+                        {
+                            sql = "INSERT INTO `product`.`rec_unu_info`( `WARN_USER_ID`, `WARN_USER_TYPE`, `WARNTYPE`, `INFO`, `DRIVER`, `COMPANY`, `ADD_TIME`, `TEMP1`, `TEMP2`, `TEMP3`, `TEMP4`) VALUES ('" + item.Value.Item4 + "','" + item.Value.Item3 + "', '" + WarnType.Forbid_Out + "', '围栏名称：" + item.Value.Item1 + "', '" + item.Value.Item5 + "', '" + item.Value.Item2 + "', '" + DateTime.Now + "', NULL, NULL, NULL, NULL)";
+                            VehicleMysql.UpdOrInsOrdel(sql);
+                        }
                     }
                 }
             }
@@ -390,30 +402,38 @@ namespace DigitalMineServer
         private void CheckPersonFence(string sim, List<double> xy)
         {
             //判断禁入围栏
-            if (Resource.PersonFenceFanbidInInfo.ContainsKey(sim))
+
+            Dictionary<string, ValueTuple<string, string, string, string, string, List<Point>>> dic = PersonRedis.GetFench(sim, Redis_key_ext.fench_in);
+            if (dic != null)
             {
-                ValueTuple<string, string, string, string, List<Point>> temp = Resource.PersonFenceFanbidInInfo[sim];
-                if (Polygon.IsInPolygon(new Point(xy[0], xy[1]), temp.Item5))
+                foreach (var item in dic)
                 {
-                    string sql = "select COUNT(ID) as Count from rec_unu_info where COMPANY='" + temp.Item2 + "' and WARN_USER_ID='" + temp.Item4 + "' and WARNTYPE='" + WarnType.Forbid_In + "' and ADD_TIME>=DATE_SUB(NOW(),INTERVAL 2 MINUTE)";
-                    if (PersonMysql.GetCount(sql) == 0)
+                    if (Polygon.IsInPolygon(new Point(xy[0], xy[1]), item.Value.Item6))
                     {
-                        sql = "INSERT INTO `product`.`rec_unu_info`( `WARN_USER_ID`, `WARN_USER_TYPE`, `WARNTYPE`, `INFO`, `DRIVER`, `COMPANY`, `ADD_TIME`, `TEMP1`, `TEMP2`, `TEMP3`, `TEMP4`) VALUES ('" + temp.Item4 + "','" + temp.Item3 + "', '" + WarnType.Forbid_In + "', '围栏名称：" + temp.Item1 + "', '', '" + temp.Item2 + "', '" + DateTime.Now + "', NULL, NULL, NULL, NULL)";
-                        PersonMysql.UpdOrInsOrdel(sql);
+                        string sql = "select COUNT(ID) as Count from rec_unu_info where COMPANY='" + item.Value.Item2 + "' and WARN_USER_ID='" + item.Value.Item4 + "' and WARNTYPE='" + WarnType.Forbid_In + "' and ADD_TIME>=DATE_SUB(NOW(),INTERVAL 2 MINUTE)";
+                        if (PersonMysql.GetCount(sql) == 0)
+                        {
+                            sql = "INSERT INTO `product`.`rec_unu_info`( `WARN_USER_ID`, `WARN_USER_TYPE`, `WARNTYPE`, `INFO`, `DRIVER`, `COMPANY`, `ADD_TIME`, `TEMP1`, `TEMP2`, `TEMP3`, `TEMP4`) VALUES ('" + item.Value.Item4 + "','" + item.Value.Item3 + "', '" + WarnType.Forbid_In + "', '围栏名称：" + item.Value.Item1 + "', '', '" + item.Value.Item2 + "', '" + DateTime.Now + "', NULL, NULL, NULL, NULL)";
+                            PersonMysql.UpdOrInsOrdel(sql);
+                        }
                     }
                 }
             }
+
             //判断禁出围栏
-            if (Resource.PersonFenceFanbidOutInfo.ContainsKey(sim))
+            dic = PersonRedis.GetFench(sim, Redis_key_ext.fench_out);
+            if (dic != null)
             {
-                ValueTuple<string, string, string, string, List<Point>> temp = Resource.PersonFenceFanbidOutInfo[sim];
-                if (!Polygon.IsInPolygon(new Point(xy[0], xy[1]), temp.Item5))
+                foreach (var item in dic)
                 {
-                    string sql = "select COUNT(ID) as Count from rec_unu_info where COMPANY='" + temp.Item2 + "' and WARN_USER_ID='" + temp.Item4 + "' and WARNTYPE='" + WarnType.Forbid_Out + "' and ADD_TIME>=DATE_SUB(NOW(),INTERVAL 2 MINUTE)";
-                    if (PersonMysql.GetCount(sql) == 0)
+                    if (!Polygon.IsInPolygon(new Point(xy[0], xy[1]), item.Value.Item6))
                     {
-                        sql = "INSERT INTO `product`.`rec_unu_info`( `WARN_USER_ID`, `WARN_USER_TYPE`, `WARNTYPE`, `INFO`, `DRIVER`, `COMPANY`, `ADD_TIME`, `TEMP1`, `TEMP2`, `TEMP3`, `TEMP4`) VALUES ('" + temp.Item4 + "','" + temp.Item3 + "', '" + WarnType.Forbid_Out + "', '围栏名称：" + temp.Item1 + "', '', '" + temp.Item2 + "', '" + DateTime.Now + "', NULL, NULL, NULL, NULL)";
-                        PersonMysql.UpdOrInsOrdel(sql);
+                        string sql = "select COUNT(ID) as Count from rec_unu_info where COMPANY='" + item.Value.Item2 + "' and WARN_USER_ID='" + item.Value.Item4 + "' and WARNTYPE='" + WarnType.Forbid_Out + "' and ADD_TIME>=DATE_SUB(NOW(),INTERVAL 2 MINUTE)";
+                        if (PersonMysql.GetCount(sql) == 0)
+                        {
+                            sql = "INSERT INTO `product`.`rec_unu_info`( `WARN_USER_ID`, `WARN_USER_TYPE`, `WARNTYPE`, `INFO`, `DRIVER`, `COMPANY`, `ADD_TIME`, `TEMP1`, `TEMP2`, `TEMP3`, `TEMP4`) VALUES ('" + item.Value.Item4 + "','" + item.Value.Item3 + "', '" + WarnType.Forbid_Out + "', '围栏名称：" + item.Value.Item1 + "', '', '" + item.Value.Item2 + "', '" + DateTime.Now + "', NULL, NULL, NULL, NULL)";
+                            PersonMysql.UpdOrInsOrdel(sql);
+                        }
                     }
                 }
             }

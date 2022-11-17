@@ -13,6 +13,11 @@ using System.Linq;
 using System.Text;
 using DigitalMineServer.Util;
 using SuperSocket.SocketBase.Protocol;
+using DigitalMineServer.Redis;
+using static DigitalMineServer.Structures.Comprehensive;
+using JtLibrary.Utils;
+using System.ComponentModel.DataAnnotations;
+using static ServiceStack.Script.Lisp;
 
 namespace DigitalMineServer.SuperSocket.Command
 {
@@ -20,9 +25,12 @@ namespace DigitalMineServer.SuperSocket.Command
     {
         private readonly OrderMessageDecode Decode;
 
+        private readonly RedisHelper redis;
+
         public WebOrder()
         {
             Decode = new OrderMessageDecode();
+            redis = new RedisHelper();
         }
 
         public override void ExecuteCommand(WebSession session, SubRequestInfo requestInfo)
@@ -49,20 +57,48 @@ namespace DigitalMineServer.SuperSocket.Command
                     SendMessage(new REQ_8300().R8300(WebText.sim, WebText.text), WebText.sim, session);
                     break;
 
-                case OrderMessageType.deleteFence:
-                    DeleteFence deleteFence = Decode.DeleteFence(requestInfo.Body);
-                    Resource.VehicleFenceFanbidInInfo.TryRemove(deleteFence.sim, out _);
-                    Resource.VehicleFenceFanbidOutInfo.TryRemove(deleteFence.sim, out _);
+                case OrderMessageType.deleteFenceBySim:
+                    DeleteFence deleteFenceBySim = Decode.DeleteFenceBySim(requestInfo.Body);
+                    redis.Delete(deleteFenceBySim.sim + deleteFenceBySim.fenchType);
+                    break;
+
+                case OrderMessageType.deleteFenceByName:
+                    DeleteFence deleteFenceByName = Decode.DeleteFenceByName(requestInfo.Body);
+                    foreach (string sim in deleteFenceByName.simList)
+                    {
+                        Dictionary<string, (string, string, string, string, string, List<Point>)> FenceByName = redis.GetFench(sim, deleteFenceByName.fenchType);
+                        foreach (var val in FenceByName)
+                        {
+                            if (val.Key == deleteFenceByName.name)
+                            {
+                                FenceByName.Remove(val.Key);
+                                break;
+                            }
+                        }
+                    }
+                    break;
+
+                case OrderMessageType.deleteFenceByNameAndSim:
+                    DeleteFence deleteFenceByNameAndSim = Decode.DeleteFenceByNameAndSim(requestInfo.Body);
+                    Dictionary<string, (string, string, string, string, string, List<Point>)> FenceByNameAndSim = redis.GetFench(deleteFenceByNameAndSim.sim, deleteFenceByNameAndSim.fenchType);
+                    foreach (var val in FenceByNameAndSim)
+                    {
+                        if (val.Key == deleteFenceByNameAndSim.name)
+                        {
+                            FenceByNameAndSim.Remove(val.Key);
+                            break;
+                        }
+                    }
                     break;
 
                 case OrderMessageType.deleteVehicle:
                     DeleteVehicle deleteVehicle = Decode.DeleteVehicle(requestInfo.Body);
-                    Resource.VehicleList.TryRemove(deleteVehicle.sim, out _);
+                    redis.Delete(deleteVehicle.sim + Redis_key_ext.vehicle);
                     break;
 
                 case OrderMessageType.deletePerson:
                     DeletePerson DeletePerson = Decode.DeletePerson(requestInfo.Body);
-                    Resource.PersonList.TryRemove(DeletePerson.sim, out _);
+                    redis.Delete(DeletePerson.sim + Redis_key_ext.person);
                     break;
 
                 default:

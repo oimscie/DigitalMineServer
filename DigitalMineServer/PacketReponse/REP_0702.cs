@@ -1,4 +1,5 @@
 ﻿using DigitalMineServer.Mysql;
+using DigitalMineServer.Redis;
 using DigitalMineServer.Static;
 using DigitalMineServer.SuperSocket;
 using JtLibrary;
@@ -9,42 +10,58 @@ using JtLibrary.Jt808_2019.Request_2019;
 using JtLibrary.PacketBody;
 using JtLibrary.Providers;
 using JtLibrary.Structures;
+using System;
+using System.Collections.Generic;
+using static DigitalMineServer.Structures.Comprehensive;
 using static JtLibrary.Structures.EquipVersion;
 
 namespace DigitalMineServer.PacketReponse
 {
-    class REP_0702
+    internal class REP_0702
     {
         private readonly MySqlHelper mySql;
+
+        private readonly RedisHelper Redis;
+
         public REP_0702()
         {
             mySql = new MySqlHelper();
+            Redis = new RedisHelper();
         }
 
         public void R0702(PacketMessage msg, IPacketProvider pConvert, Jt808Session Session)
         {
             string sim = Extension.BCDToString(msg.pmPacketHead.hSimNumber);
-            switch (Resource.equipVersion[Extension.BCDToString(msg.pmPacketHead.hSimNumber)].Item1)
+            ValueTuple<string, string, string, string, string, string> dic = Redis.GetVehicleList(sim + Redis_key_ext.vehicle);
+            if (dic.Item1 is null)
+            {
+                return;
+            }
+            ValueTuple<string, string, string, int> equipVersion = Redis.GetEquipVersion(Extension.BCDToString(msg.pmPacketHead.hSimNumber));
+            switch (equipVersion.Item1)
             {
                 case Version_808.Ver_808_2013:
                     byte[] buffer_2013 = Packet_0702_2013(msg, pConvert);
                     Session.Send(buffer_2013, 0, buffer_2013.Length);
-                    InsertDriver(sim, new REP_0702_2013().Decode(msg.pmMessageBody), Resource.VehicleList[sim].Item3);
+                    InsertDriver(sim, new REP_0702_2013().Decode(msg.pmMessageBody), dic.Item3);
                     break;
+
                 case Version_808.Ver_808_2019:
                     byte[] buffer_2019 = Packet_0702_2019(msg, pConvert);
                     Session.Send(buffer_2019, 0, buffer_2019.Length);
-                    InsertDriver(sim, new REP_0702_2019().Decode(msg.pmMessageBody), Resource.VehicleList[sim].Item3);
+                    InsertDriver(sim, new REP_0702_2019().Decode(msg.pmMessageBody), dic.Item3);
                     break;
             }
         }
+
         /// <summary>
         /// 2013消息打包
         /// </summary>
         /// <param name="msg"></param>
         /// <param name="pConvert"></param>
         /// <returns></returns>
-        private byte[] Packet_0702_2013(PacketMessage msg, IPacketProvider pConvert) {
+        private byte[] Packet_0702_2013(PacketMessage msg, IPacketProvider pConvert)
+        {
             byte[] body_0702 = new REQ_8001_2013().Encode(new PB8001()
             {
                 Serialnumber = msg.pmPacketHead.phSerialnumber,
@@ -64,13 +81,15 @@ namespace DigitalMineServer.PacketReponse
             });
             return buffer;
         }
+
         /// <summary>
         /// 2013消息打包
         /// </summary>
         /// <param name="msg"></param>
         /// <param name="pConvert"></param>
         /// <returns></returns>
-        private byte[] Packet_0702_2019(PacketMessage msg, IPacketProvider pConvert) {
+        private byte[] Packet_0702_2019(PacketMessage msg, IPacketProvider pConvert)
+        {
             byte[] body_0702 = new REQ_8001_2019().Encode(new PB8001()
             {
                 Serialnumber = msg.pmPacketHead.phSerialnumber,
@@ -90,23 +109,22 @@ namespace DigitalMineServer.PacketReponse
             });
             return buffer;
         }
+
         /// <summary>
         /// 司机签登存入数据库
         /// </summary>
         /// <param name="sim"></param>
         /// <param name="bodyinfo"></param>
         /// <param name="company"></param>
-        private void InsertDriver(string sim, PB0702 bodyinfo, string company) {
-            if (Resource.VehicleList.ContainsKey(sim))
+        private void InsertDriver(string sim, PB0702 bodyinfo, string company)
+        {
+            if (bodyinfo.Status == 0x01)
             {
-                if (bodyinfo.Status == 0x01)
-                {
-                    mySql.UpdOrInsOrdel("UPDATE `list_vehicle` SET `VEHICLE_DRIVER` = '" + bodyinfo.DriverName + "' where  COMPANY='" + company + "' and  VEHICLE_SIM='" + sim + "' ");
-                }
-                else
-                {
-                    mySql.UpdOrInsOrdel("UPDATE `list_vehicle` SET `VEHICLE_DRIVER` = '退签' where  COMPANY='" + company + "' and  VEHICLE_SIM='" + sim + "' ");
-                }
+                mySql.UpdOrInsOrdel("UPDATE `list_vehicle` SET `VEHICLE_DRIVER` = '" + bodyinfo.DriverName + "' where  COMPANY='" + company + "' and  VEHICLE_SIM='" + sim + "' ");
+            }
+            else
+            {
+                mySql.UpdOrInsOrdel("UPDATE `list_vehicle` SET `VEHICLE_DRIVER` = '退签' where  COMPANY='" + company + "' and  VEHICLE_SIM='" + sim + "' ");
             }
         }
     }
