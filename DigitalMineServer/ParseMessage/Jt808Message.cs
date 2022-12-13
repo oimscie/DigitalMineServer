@@ -23,6 +23,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading;
+using System.Xml.Linq;
 using static ActionSafe.AcSafe_Su.PacketBody.PacketBody;
 using static DigitalMineServer.Structures.Comprehensive;
 
@@ -364,12 +365,15 @@ namespace DigitalMineServer
             {
                 foreach (var item in dic)
                 {
+                    LogHelper.WriteLog(item.Value.Item1 + "----" + item.Value.Item2 + "----" + item.Value.Item3 + "----" + item.Value.Item4 + "----" + item.Value.Item5 + "----");
                     if (Polygon.IsInPolygon(new Point(xy[0], xy[1]), item.Value.Item6))
                     {
                         string sql = "select COUNT(ID) as Count from rec_unu_info where COMPANY='" + item.Value.Item2 + "' and WARN_USER_ID='" + item.Value.Item4 + "' and WARNTYPE='" + WarnType.Forbid_In + "' and ADD_TIME>=DATE_SUB(NOW(),INTERVAL 2 MINUTE)";
+                        LogHelper.WriteLog(sql);
                         if (VehicleMysql.GetCount(sql) == 0)
                         {
                             sql = "INSERT INTO `product`.`rec_unu_info`( `WARN_USER_ID`, `WARN_USER_TYPE`, `WARNTYPE`, `INFO`, `DRIVER`, `COMPANY`, `ADD_TIME`, `TEMP1`, `TEMP2`, `TEMP3`, `TEMP4`) VALUES ('" + item.Value.Item4 + "','" + item.Value.Item3 + "', '" + WarnType.Forbid_In + "', '围栏名称：" + item.Value.Item1 + "', '" + item.Value.Item5 + "', '" + item.Value.Item2 + "', '" + DateTime.Now + "', NULL, NULL, NULL, NULL)";
+                            LogHelper.WriteLog(sql);
                             VehicleMysql.UpdOrInsOrdel(sql);
                         }
                     }

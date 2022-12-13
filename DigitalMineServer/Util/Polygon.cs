@@ -1,10 +1,12 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace JtLibrary.Utils
 {
     /// <summary>
     /// 点实体
     /// </summary>
+    [Serializable]
     public class Point
     {
         public Point(double x, double y)
@@ -12,13 +14,13 @@ namespace JtLibrary.Utils
             X = x;
             Y = y;
         }
+
         public double X { get; set; }
         public double Y { get; set; }
     }
 
     public class Polygon
     {
-
         /// <summary>
         /// 判断点是否在多边形内.
         /// ----------原理----------

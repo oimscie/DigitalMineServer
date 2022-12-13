@@ -71,7 +71,7 @@ namespace DigitalMineServer.ParseMessage
             try
             {
                 PacketMessage msg = pConvert.Decode(buffer, 0, buffer.Length);
-                ValueTuple<string, string, string, string, string, string> val = Redis.GetVehicleList(Extension.BCDToString(msg.pmPacketHead.hSimNumber) + Redis_key_ext.vehicle);
+                ValueTuple<string, string, string, string, string, string> val = Redis.GetVehicleList(Extension.BCDToString(msg.pmPacketHead.hSimNumber));
                 if (val.Item1 == null)
                 {
                     return;
@@ -121,8 +121,9 @@ namespace DigitalMineServer.ParseMessage
                         break;
                 }
             }
-            catch
+            catch (Exception e)
             {
+                LogHelper.WriteLog("主动安全消息解析错误" + e.ToString());
             }
         }
 

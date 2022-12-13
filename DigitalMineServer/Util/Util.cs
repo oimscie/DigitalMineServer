@@ -1,6 +1,7 @@
 ﻿using DigitalMineServer.Mysql;
 using DigitalMineServer.Redis;
 using DigitalMineServer.Util;
+using JtLibrary.Utils;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -285,6 +286,23 @@ namespace DigitalMineServer.Utils
             object result = bf.Deserialize(stream);
             stream.Close();
             return result;
+        }
+
+        /// <summary>
+        /// 格式化围栏
+        /// </summary>
+        /// <param name="str"></param>
+        /// <returns></returns>
+        public static List<Point> SerializationPoint(string str)
+        {
+            List<Point> list = new List<Point>();
+            string[] xAndy = str.Split('!');
+            foreach (string xyitem in xAndy)
+            {
+                string[] x_y = xyitem.Split('@');
+                list.Add(new Point(double.Parse(x_y[0]), double.Parse(x_y[1])));
+            }
+            return list;
         }
     }
 }

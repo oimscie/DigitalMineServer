@@ -157,14 +157,14 @@ namespace DigitalMineServer.Redis
         /// item5:司机，人员围栏为null
         /// item6:点集
         /// </returns>
-        public Dictionary<string, (string, string, string, string, string, List<Point>)> GetFench(string sim, string fenchType)
+        public Dictionary<string, ValueTuple<string, string, string, string, string, List<Point>>> GetFench(string sim, string fenchType)
         {
             byte[] buffer = ReadBytes(sim + fenchType);
             if (buffer is null)
             {
                 return null;
             }
-            return (Dictionary<string, (string, string, string, string, string, List<Point>)>)Utils.Util.Deserialization(buffer);
+            return (Dictionary<string, ValueTuple<string, string, string, string, string, List<Point>>>)Utils.Util.Deserialization(buffer);
         }
 
         /// <summary>

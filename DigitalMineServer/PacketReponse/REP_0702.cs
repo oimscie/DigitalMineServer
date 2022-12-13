@@ -32,7 +32,7 @@ namespace DigitalMineServer.PacketReponse
         public void R0702(PacketMessage msg, IPacketProvider pConvert, Jt808Session Session)
         {
             string sim = Extension.BCDToString(msg.pmPacketHead.hSimNumber);
-            ValueTuple<string, string, string, string, string, string> dic = Redis.GetVehicleList(sim + Redis_key_ext.vehicle);
+            ValueTuple<string, string, string, string, string, string> dic = Redis.GetVehicleList(sim);
             if (dic.Item1 is null)
             {
                 return;
