@@ -32,7 +32,7 @@ namespace DigitalMineServer.Mysql
         /// <summary>
         /// 连接字符串
         /// </summary>
-        private readonly string ConnStr = "server=" + ConfigurationManager.AppSettings["ServerIp"] + ";database=product;user=root;password=qwertyuiop;charset=utf8;SslMode=None";
+        private readonly string ConnStr = "server=" + ConfigurationManager.AppSettings["ServerIp"] + ";database=product;user=server;password=$qwertyuiop$.;charset=utf8;SslMode=None";
 
         public MySqlHelper()
         {

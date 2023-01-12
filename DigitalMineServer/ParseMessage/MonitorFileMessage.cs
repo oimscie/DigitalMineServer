@@ -32,25 +32,32 @@ namespace DigitalMineServer.ParseMessage
         {
             //判断是否接受了下位机上传的文件信息
             if (!Session.HasHeader)
-            {
-                string[] info = Encoding.UTF8.GetString(buffer).Split('!');
-                Session.Company = info[0];
-                Session.FileName = info[1];
-                Session.md5Name = Utils.Util.GetMd5(info[1].Split('.')[0]);
-                Session.RealFilePath = FilePath + Utils.Util.GetChsSpell(info[0]);
-                Session.VritualPath = VritualPath + Utils.Util.GetChsSpell(info[0]) + '/';
-                Session.TotalSize = int.Parse(info[2]);
-                Session.ReceSize = 0;
-                Session.FileType = "pic";
-                if (Utils.Util.DirExit(Session.RealFilePath, true))
+            {   
+                try
                 {
-                    Session.fs = Utils.Util.FileCreat(Session.RealFilePath + '/' + Session.md5Name + ".jpg");
-                    Session.HasHeader = true;
+                    string[] info = Encoding.UTF8.GetString(buffer).Split('!');
+                    Session.Company = info[0];
+                    Session.FileName = info[1];
+                    Session.md5Name = Utils.Util.GetMd5(info[1].Split('.')[0]);
+                    Session.RealFilePath = FilePath + Utils.Util.GetChsSpell(info[0]);
+                    Session.VritualPath = VritualPath + Utils.Util.GetChsSpell(info[0]) + '/';
+                    Session.TotalSize = int.Parse(info[2]);
+                    Session.ReceSize = 0;
+                    Session.FileType = "pic";
+                    if (Utils.Util.DirExit(Session.RealFilePath, true))
+                    {
+                        Session.fs = Utils.Util.FileCreat(Session.RealFilePath + '/' + Session.md5Name + ".jpg");
+                        Session.HasHeader = true;
+                    }
+                    else
+                    {
+                        Session.Close();
+                    }
                 }
-                else
+                catch
                 {
                     Session.Close();
-                }
+                }             
             }
             else
             {

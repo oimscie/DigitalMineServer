@@ -365,7 +365,6 @@ namespace DigitalMineServer
             {
                 foreach (var item in dic)
                 {
-                    LogHelper.WriteLog(item.Value.Item1 + "----" + item.Value.Item2 + "----" + item.Value.Item3 + "----" + item.Value.Item4 + "----" + item.Value.Item5 + "----");
                     if (Polygon.IsInPolygon(new Point(xy[0], xy[1]), item.Value.Item6))
                     {
                         string sql = "select COUNT(ID) as Count from rec_unu_info where COMPANY='" + item.Value.Item2 + "' and WARN_USER_ID='" + item.Value.Item4 + "' and WARNTYPE='" + WarnType.Forbid_In + "' and ADD_TIME>=DATE_SUB(NOW(),INTERVAL 2 MINUTE)";

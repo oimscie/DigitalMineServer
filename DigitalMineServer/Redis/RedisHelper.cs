@@ -3,6 +3,7 @@ using ServiceStack.Redis;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using static DigitalMineServer.Structures.Comprehensive;
@@ -13,6 +14,36 @@ namespace DigitalMineServer.Redis
     {
         private readonly RedisClient client;
 
+        /// <summary>
+        /// 取消ServiceStack.Rides每小时6000条操作限制
+        /// </summary>
+            public static void Execute()
+            {
+                var field = typeof(ServiceStack.LicenseUtils).GetFields(BindingFlags.NonPublic | BindingFlags.Static)
+                    .FirstOrDefault(f => f.Name.Equals("__activatedLicense")); ;
+                var atype = typeof(ServiceStack.LicenseUtils).Assembly.GetTypes()
+                    .FirstOrDefault(t => t.Name.Equals("__ActivatedLicense"));
+                var __activatedLicense = field.GetValue(null);
+                if (__activatedLicense == null)
+                {
+                    var licenseKey = new ServiceStack.LicenseKey { Type = ServiceStack.LicenseType.FreeIndividual };//注册为个人免费版
+                    var ctr = atype.GetConstructors(BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public)[0];
+                    __activatedLicense = ctr.Invoke(new object[] { licenseKey });
+                    field.SetValue(null, __activatedLicense);
+                }
+                else
+                {
+                    var lfield = __activatedLicense.GetType().GetFields(BindingFlags.NonPublic | BindingFlags.Instance)
+                        .FirstOrDefault(f => f.Name.Equals("LicenseKey"));
+                    var licenseKey = lfield.GetValue(__activatedLicense) as ServiceStack.LicenseKey;
+                    if (licenseKey == null)
+                    {
+                        licenseKey = new ServiceStack.LicenseKey { Type = ServiceStack.LicenseType.FreeIndividual };
+                        lfield.SetValue(__activatedLicense, licenseKey);
+                    }
+                    licenseKey.Type = ServiceStack.LicenseType.FreeIndividual;
+                }
+            }
         public RedisHelper()
         {
             client = new RedisClient("127.0.0.1", 6379, "admin");

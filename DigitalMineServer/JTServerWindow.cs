@@ -13,6 +13,7 @@ using System.Configuration;
 using System.Threading;
 using System.Timers;
 using System.Windows.Forms;
+using DigitalMineServer.Redis;
 
 namespace DigitalMineServer
 {
@@ -67,6 +68,7 @@ namespace DigitalMineServer
             _ = new Resource();
             Jt808Message = new Jt808Message();
             MySqlHelper = new MySqlHelper();
+            RedisHelper.Execute();
             this.infoBox.AppendText("静态资源初始化完成\r\n");
         }
 

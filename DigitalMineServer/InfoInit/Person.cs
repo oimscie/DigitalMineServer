@@ -1,15 +1,10 @@
-﻿using DigitalMineServer.Utils;
-using DigitalMineServer.Mysql;
+﻿using DigitalMineServer.Mysql;
+using DigitalMineServer.Redis;
 using DigitalMineServer.Static;
 using DigitalMineServer.Util;
-using JtLibrary.Utils;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using static DigitalMineServer.Structures.Comprehensive;
-using DigitalMineServer.Redis;
 
 namespace DigitalMineServer.InfoInit
 {
@@ -36,20 +31,22 @@ namespace DigitalMineServer.InfoInit
                 List<Dictionary<string, string>> result = mySql.MultipleSelect(sql, fileName);
                 //临时信息存储，供围栏信息使用
                 Dictionary<string, ValueTuple<string, string, string>> temp = new Dictionary<string, (string, string, string)>();
-                //判断服务器返回的车辆信息是否为空，为空就清除车辆信息List
-                if (result != null)
+                //判断服务器返回的车辆信息是否为空
+                if (result == null)
                 {
-                    foreach (var item in result)
-                    {
-                        item.TryGetValue("PERSON_SIM", out string sim);
-                        item.TryGetValue("ID", out string id);
-                        item.TryGetValue("PERSON_TYPE", out string type);
-                        item.TryGetValue("COMPANY", out string company);
-                        item.TryGetValue("PERSON_ID", out string vid);
-                        temp.Add(sim, new ValueTuple<string, string, string>(type, vid, "未记录"));
-                        Redis.Set(sim + Redis_key_ext.person, Utils.Util.ObjectSerializ(new ValueTuple<string, string, string, string>(id, type, company, vid)));
-                    }
+                    return;
                 }
+                foreach (var item in result)
+                {
+                    item.TryGetValue("PERSON_SIM", out string sim);
+                    item.TryGetValue("ID", out string id);
+                    item.TryGetValue("PERSON_TYPE", out string type);
+                    item.TryGetValue("COMPANY", out string company);
+                    item.TryGetValue("PERSON_ID", out string vid);
+                    temp.Add(sim, new ValueTuple<string, string, string>(type, vid, "未记录"));
+                    Redis.Set(sim + Redis_key_ext.person, Utils.Util.ObjectSerializ(new ValueTuple<string, string, string, string>(id, type, company, vid)));
+                }
+
                 //围栏信息字段List（终端SIM，经度，纬度，围栏名称，围栏类型，归属公司）
                 fileName = new List<string> { "SIM", "XY", "NAME", "TYPES", "COMPANY" };
                 sql = "select SIM,XY,NAME,TYPES,COMPANY from list_fence inner join (select Person_sim from list_person ) a on a.Person_sim=SIM";
