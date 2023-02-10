@@ -45,7 +45,7 @@ namespace DigitalMineServer.SuperSocket.SocketServer
         protected override void OnNewSessionConnected(F10WatchSession session)
         {
             base.OnNewSessionConnected(session);
-            Utils.Util.ModifyLable(JtServerForm.JtForm.vehicleOnline, JtServerForm.bootstrap.GetServerByName("F10WatchServer").SessionCount.ToString());
+            Utils.Util.ModifyLable(JtServerForm.JtForm.personOnline, JtServerForm.bootstrap.GetServerByName("F10WatchServer").SessionCount.ToString());
         }
 
         protected override void OnSessionClosed(F10WatchSession session, CloseReason reason)
@@ -53,7 +53,7 @@ namespace DigitalMineServer.SuperSocket.SocketServer
             // string sim = session.Id + Redis_key_ext.equipVersion;
             base.OnSessionClosed(session, reason);
             // Redis.Delete(sim);
-            Utils.Util.ModifyLable(JtServerForm.JtForm.vehicleOnline, JtServerForm.bootstrap.GetServerByName("F10WatchServer").SessionCount.ToString());
+            Utils.Util.ModifyLable(JtServerForm.JtForm.personOnline, JtServerForm.bootstrap.GetServerByName("F10WatchServer").SessionCount.ToString());
         }
     }
 }

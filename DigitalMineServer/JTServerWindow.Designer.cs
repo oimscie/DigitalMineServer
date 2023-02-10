@@ -67,9 +67,9 @@
             this.DataText = new System.Windows.Forms.Label();
             this.label16 = new System.Windows.Forms.Label();
             this.equipType = new System.Windows.Forms.ComboBox();
-            this.label2 = new System.Windows.Forms.Label();
-            this.MonitorFile = new System.Windows.Forms.Label();
-            this.label17 = new System.Windows.Forms.Label();
+            this.monitorFile = new System.Windows.Forms.Label();
+            this.MonitorFileSockets = new System.Windows.Forms.Label();
+            this.personOnline = new System.Windows.Forms.Label();
             this.OnlinePerson = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
             this.SuspendLayout();
@@ -448,32 +448,32 @@
             this.equipType.Text = "车辆";
             this.equipType.SelectedIndexChanged += new System.EventHandler(this.equipType_SelectedIndexChanged);
             // 
-            // label2
+            // monitorFile
             // 
-            this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(217, 39);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(11, 12);
-            this.label2.TabIndex = 41;
-            this.label2.Text = "0";
+            this.monitorFile.AutoSize = true;
+            this.monitorFile.Location = new System.Drawing.Point(217, 39);
+            this.monitorFile.Name = "monitorFile";
+            this.monitorFile.Size = new System.Drawing.Size(11, 12);
+            this.monitorFile.TabIndex = 41;
+            this.monitorFile.Text = "0";
             // 
-            // MonitorFile
+            // MonitorFileSockets
             // 
-            this.MonitorFile.AutoSize = true;
-            this.MonitorFile.Location = new System.Drawing.Point(124, 38);
-            this.MonitorFile.Name = "MonitorFile";
-            this.MonitorFile.Size = new System.Drawing.Size(89, 12);
-            this.MonitorFile.TabIndex = 40;
-            this.MonitorFile.Text = "监控文件通道：";
+            this.MonitorFileSockets.AutoSize = true;
+            this.MonitorFileSockets.Location = new System.Drawing.Point(135, 38);
+            this.MonitorFileSockets.Name = "MonitorFileSockets";
+            this.MonitorFileSockets.Size = new System.Drawing.Size(65, 12);
+            this.MonitorFileSockets.TabIndex = 40;
+            this.MonitorFileSockets.Text = "监控文件：";
             // 
-            // label17
+            // personOnline
             // 
-            this.label17.AutoSize = true;
-            this.label17.Location = new System.Drawing.Point(217, 11);
-            this.label17.Name = "label17";
-            this.label17.Size = new System.Drawing.Size(11, 12);
-            this.label17.TabIndex = 39;
-            this.label17.Text = "0";
+            this.personOnline.AutoSize = true;
+            this.personOnline.Location = new System.Drawing.Point(217, 11);
+            this.personOnline.Name = "personOnline";
+            this.personOnline.Size = new System.Drawing.Size(11, 12);
+            this.personOnline.TabIndex = 39;
+            this.personOnline.Text = "0";
             // 
             // OnlinePerson
             // 
@@ -491,9 +491,9 @@
             this.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.BackColor = System.Drawing.Color.White;
             this.ClientSize = new System.Drawing.Size(1447, 808);
-            this.Controls.Add(this.label2);
-            this.Controls.Add(this.MonitorFile);
-            this.Controls.Add(this.label17);
+            this.Controls.Add(this.monitorFile);
+            this.Controls.Add(this.MonitorFileSockets);
+            this.Controls.Add(this.personOnline);
             this.Controls.Add(this.OnlinePerson);
             this.Controls.Add(this.equipType);
             this.Controls.Add(this.mintor);
@@ -581,9 +581,9 @@
         public System.Windows.Forms.Label DataText;
         private System.Windows.Forms.Label label16;
         public System.Windows.Forms.ComboBox equipType;
-        public System.Windows.Forms.Label label2;
-        public System.Windows.Forms.Label label17;
-        public System.Windows.Forms.Label MonitorFile;
+        public System.Windows.Forms.Label monitorFile;
+        public System.Windows.Forms.Label personOnline;
+        public System.Windows.Forms.Label MonitorFileSockets;
         public System.Windows.Forms.Label OnlinePerson;
     }
 }

@@ -39,13 +39,13 @@ namespace DigitalMineServer.SuperSocket.SocketServer
         protected override void OnNewSessionConnected(MonitorFileSession session)
         {
             base.OnNewSessionConnected(session);
-            Utils.Util.ModifyLable(JtServerForm.JtForm.vehicleOnline, JtServerForm.bootstrap.GetServerByName("MonitorFileServer").SessionCount.ToString());
+            Utils.Util.ModifyLable(JtServerForm.JtForm.monitorFile, JtServerForm.bootstrap.GetServerByName("MonitorFileServer").SessionCount.ToString());
         }
 
         protected override void OnSessionClosed(MonitorFileSession session, CloseReason reason)
         {
             base.OnSessionClosed(session, reason);
-            Utils.Util.ModifyLable(JtServerForm.JtForm.vehicleOnline, JtServerForm.bootstrap.GetServerByName("MonitorFileServer").SessionCount.ToString());
+            Utils.Util.ModifyLable(JtServerForm.JtForm.monitorFile, JtServerForm.bootstrap.GetServerByName("MonitorFileServer").SessionCount.ToString());
         }
     }
 }
