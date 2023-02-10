@@ -19,7 +19,7 @@ namespace SmartWatch.F10.Reponse
         /// </summary>
         /// <param name="content"></param>
         /// <returns></returns>
-        public string Encode(PacketBody.ReqLk ReqLk)
+        public string Encode(PacketBody.ReqLk_St ReqLk)
         {
             return ReqLk.messageId;
         }

@@ -21,7 +21,7 @@ namespace SmartWatch.F10.Reponse
         /// </summary>
         /// <param name="content"></param>
         /// <returns></returns>
-        public string Encode(PacketBody.ReqBtWarnSet ReqBtWarnSet)
+        public string Encode(PacketBody.ReqBtWarnSet_St ReqBtWarnSet)
         {
             return ReqBtWarnSet.messageId + splitChar + ReqBtWarnSet.lowbt + splitChar + ReqBtWarnSet.highbt + splitChar + ReqBtWarnSet.open + splitChar + ReqBtWarnSet.type + splitChar + ReqBtWarnSet.telephone;
         }

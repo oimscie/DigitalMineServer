@@ -14,7 +14,7 @@ namespace SmartWatch.F10.PacketBody
     /// 心跳[3G*XXXXXXXXXX*LEN*LK,步数,翻滚次数,电量百分数]
     /// </summary>
     [StructLayout(LayoutKind.Sequential)]
-    public struct RepLk
+    public struct RepLk_St
     {
         /// <summary>
         ///  固定格式
@@ -46,7 +46,7 @@ namespace SmartWatch.F10.PacketBody
     /// 位置数据上报[3G*XXXXXXXXXX*LEN*UD_LTE,位置数据]
     /// </summary>
     [StructLayout(LayoutKind.Sequential)]
-    public struct RepUd_Lte
+    public struct RepUd_Lte_St
     {
         /// <summary>
         ///  固定格式
@@ -61,24 +61,19 @@ namespace SmartWatch.F10.PacketBody
         /// <summary>
         /// 位置数据
         /// </summary>
-        public Position position;
+        public Position_St position;
     }
 
     /// <summary>
     /// 位置数据
     /// </summary>
     [StructLayout(LayoutKind.Sequential)]
-    public struct Position
+    public struct Position_St
     {
-        /// <summary>
-        /// 指令号
-        /// </summary>
-        public string messageNumber;
-
         /// <summary>
         /// 时间-045524，(时分秒)04 点 55 分 24 秒（格式时间，北京时间 需+8）
         /// </summary>
-        public string time;
+        public DateTime time;
 
         /// <summary>
         /// 是否定位，A:定位 V:未定位
@@ -135,7 +130,7 @@ namespace SmartWatch.F10.PacketBody
     /// 盲区补偿数据上报[3G*XXXXXXXXXX*LEN*UD2_LTE,位置数据]
     /// </summary>
     [StructLayout(LayoutKind.Sequential)]
-    public struct RepUd2_Lte
+    public struct RepUd2_Lte_St
     {
         /// <summary>
         ///  固定格式
@@ -150,14 +145,14 @@ namespace SmartWatch.F10.PacketBody
         /// <summary>
         /// 位置数据
         /// </summary>
-        public Position position;
+        public Position_St position;
     }
 
     /// <summary>
     /// 报警数据上报[3G*XXXXXXXXXX*LEN*AL_LTE,位置数据]
     /// </summary>
     [StructLayout(LayoutKind.Sequential)]
-    public struct RepAl_Lte
+    public struct RepAl_Lte_St
     {
         /// <summary>
         ///  固定格式
@@ -179,7 +174,7 @@ namespace SmartWatch.F10.PacketBody
     /// 上传间隔设置[3G*XXXXXXXXXX*LEN*UPLOAD]
     /// </summary>
     [StructLayout(LayoutKind.Sequential)]
-    public struct RepUpload
+    public struct RepUpload_St
     {
         /// <summary>
         ///  固定格式
@@ -196,7 +191,7 @@ namespace SmartWatch.F10.PacketBody
     /// SOS号码设置[3G*9617624925*0003*SOS]
     /// </summary>
     [StructLayout(LayoutKind.Sequential)]
-    public struct RepSos
+    public struct RepSos_St
     {
         /// <summary>
         ///  固定格式
@@ -213,7 +208,7 @@ namespace SmartWatch.F10.PacketBody
     /// SOS短信报警开关[3G*9617624925*0006*SOSSMS]
     /// </summary>
     [StructLayout(LayoutKind.Sequential)]
-    public struct RepSosSms
+    public struct RepSosSms_St
     {
         /// <summary>
         ///  固定格式
@@ -230,7 +225,7 @@ namespace SmartWatch.F10.PacketBody
     /// 短信报警接收号码[3G*9617624925*0006*CENTER]
     /// </summary>
     [StructLayout(LayoutKind.Sequential)]
-    public struct RepCenter
+    public struct RepCenter_St
     {
         /// <summary>
         ///  固定格式
@@ -247,7 +242,7 @@ namespace SmartWatch.F10.PacketBody
     /// 低电短信报警开关[3G*XXXXXXXXXX*LEN*LOWBAT]
     /// </summary>
     [StructLayout(LayoutKind.Sequential)]
-    public struct RepLowBat
+    public struct RepLowBat_St
     {
         /// <summary>
         ///  固定格式
@@ -264,7 +259,7 @@ namespace SmartWatch.F10.PacketBody
     /// 取下手环报警开关[3G*XXXXXXXXXX*LEN*REMOVE]
     /// </summary>
     [StructLayout(LayoutKind.Sequential)]
-    public struct RepRemove
+    public struct RepRemove_St
     {
         /// <summary>
         ///  固定格式
@@ -281,7 +276,7 @@ namespace SmartWatch.F10.PacketBody
     /// 取下手表报警开关[3G*XXXXXXXXXX*LEN*REMOVESMS]
     /// </summary>
     [StructLayout(LayoutKind.Sequential)]
-    public struct RepRemoveSms
+    public struct RepRemoveSms_St
     {
         /// <summary>
         ///  固定格式
@@ -298,7 +293,7 @@ namespace SmartWatch.F10.PacketBody
     /// 远程拍照[3G*XXXXXXXXXX*len*img,5,y,z]，参数 Y 表示 ：时间（年月日时分秒： 221112144812） 参数 Z 为照片内容。
     /// </summary>
     [StructLayout(LayoutKind.Sequential)]
-    public struct RepImg
+    public struct RepImg_St
     {
         /// <summary>
         ///  固定格式
@@ -330,7 +325,7 @@ namespace SmartWatch.F10.PacketBody
     /// 心率协议（同时测量心率、血压、血氧）[3G*9617624925*0008*hrtstart]
     /// </summary>
     [StructLayout(LayoutKind.Sequential)]
-    public struct RepHrtStart
+    public struct RepHrtStart_St
     {
         /// <summary>
         ///  固定格式
@@ -348,7 +343,7 @@ namespace SmartWatch.F10.PacketBody
     /// 值为 0 代表无效
     /// </summary>
     [StructLayout(LayoutKind.Sequential)]
-    public struct RepBphrt
+    public struct RepBphrt_St
     {
         /// <summary>
         ///  固定格式
@@ -380,7 +375,7 @@ namespace SmartWatch.F10.PacketBody
     /// 血氧上报协议[3G*XXXXXXXXXX*LEN*oxygen,type,oxy]
     /// </summary>
     [StructLayout(LayoutKind.Sequential)]
-    public struct RepOxygen
+    public struct RepOxygen_St
     {
         /// <summary>
         ///  固定格式
@@ -409,7 +404,7 @@ namespace SmartWatch.F10.PacketBody
     /// arg1 ： 0 :间隔测量关闭 1 :间隔测量开启
     /// </summary>
     [StructLayout(LayoutKind.Sequential)]
-    public struct RepBodyTemp
+    public struct RepBodyTemp_St
     {
         /// <summary>
         ///  固定格式
@@ -426,7 +421,7 @@ namespace SmartWatch.F10.PacketBody
     /// 体温异常提醒设置下发协议[3G*XXXXXXXXXX*LEN*BTWARNSET]
     /// </summary>
     [StructLayout(LayoutKind.Sequential)]
-    public struct RepBtWarnSet
+    public struct RepBtWarnSet_St
     {
         /// <summary>
         ///  固定格式

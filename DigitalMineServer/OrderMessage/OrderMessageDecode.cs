@@ -307,5 +307,22 @@ namespace DigitalMineServer.OrderMessage
                 sim = array[1],
             };
         }
+
+        /// <summary>
+        /// 人员设备（F10）指令文字解包
+        /// </summary>
+        /// <param name="order"></param>
+        /// <returns></returns>
+        public WatchText WatchText(string order)
+        {
+            string[] array = order.Split('!');
+            return new WatchText()
+            {
+                messageType = OrderMessageType.watchText,
+                id = array[1],
+                type = array[2],
+                text = array[3],
+            };
+        }
     }
 }

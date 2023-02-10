@@ -19,7 +19,7 @@ namespace SmartWatch.F10.Reponse
         /// </summary>
         /// <param name="content"></param>
         /// <returns></returns>
-        public string Encode(PacketBody.ReqSos ReqSos)
+        public string Encode(PacketBody.ReqSos_St ReqSos)
         {
             return ReqSos.messageId + splitChar + ReqSos.telephone1 + splitChar + ReqSos.telephone2 + splitChar + ReqSos.telephone3;
         }

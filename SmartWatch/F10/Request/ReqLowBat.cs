@@ -19,7 +19,7 @@ namespace SmartWatch.F10.Reponse
         /// </summary>
         /// <param name="content"></param>
         /// <returns></returns>
-        public string Encode(PacketBody.ReqLowBat ReqLowBat)
+        public string Encode(PacketBody.ReqLowBat_St ReqLowBat)
         {
             return ReqLowBat.messageId + splitChar + ReqLowBat.order;
         }

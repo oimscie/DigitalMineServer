@@ -109,6 +109,11 @@ namespace DigitalMineServer.OrderMessage
         /// 删除人员
         /// </summary>
         public const string deletePerson = "6400";
+
+        /// <summary>
+        /// 人员智能手表文本下发
+        /// </summary>
+        public const string watchText = "6500";
     }
 
     /// <summary>

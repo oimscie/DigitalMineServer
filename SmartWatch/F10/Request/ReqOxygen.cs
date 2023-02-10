@@ -19,7 +19,7 @@ namespace SmartWatch.F10.Reponse
         /// </summary>
         /// <param name="content"></param>
         /// <returns></returns>
-        public string Encode(PacketBody.ReqOxygen ReqOxygen)
+        public string Encode(PacketBody.ReqOxygen_St ReqOxygen)
         {
             return ReqOxygen.messageId + splitChar + ReqOxygen.state;
         }

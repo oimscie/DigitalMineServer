@@ -19,7 +19,7 @@ namespace SmartWatch.F10.Reponse
         /// </summary>
         /// <param name="content"></param>
         /// <returns></returns>
-        public string Encode(PacketBody.ReqUpload ReqUpload)
+        public string Encode(PacketBody.ReqUpload_St ReqUpload)
         {
             return ReqUpload.messageId + splitChar + ReqUpload.time;
         }

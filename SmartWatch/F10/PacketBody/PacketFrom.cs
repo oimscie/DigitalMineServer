@@ -16,7 +16,9 @@ namespace SmartWatch.F10.PacketBody
 
         private readonly char EndChar = ']';
 
-        private readonly char splitChar = '*';
+        private readonly char BodySplitChar = '*';
+
+        private readonly char ContentSplitChar = ',';
 
         /// <summary>
         /// F10原始数据解包,[包头*设备ID*内容长度*内容]
@@ -25,19 +27,34 @@ namespace SmartWatch.F10.PacketBody
         /// <returns></returns>
         public F10Packet F10UnPack(byte[] buffer)
         {
-            string content = Encoding.ASCII.GetString(buffer);
-            content = Util.TrimString(content, StartChar, EndChar);
-            string[] PacketItem = content.Split(splitChar);
-            return new F10Packet
+            try
             {
-                FixBody = new FixBody
+                string content = Encoding.ASCII.GetString(buffer);
+                content = Util.TrimString(content, StartChar, EndChar);
+                string[] PacketItem = content.Split(BodySplitChar);
+                ///检查内容长度项是否与内容长度相同
+                if (Convert.ToInt32(PacketItem[2], 16) != PacketItem[3].Length)
                 {
-                    head = PacketItem[0],
-                    id = PacketItem[1],
-                    length = PacketItem[2]
-                },
-                content = PacketItem[3]
-            };
+                    return new F10Packet
+                    {
+                        content = null
+                    };
+                }
+                return new F10Packet
+                {
+                    FixBody = new FixBody
+                    {
+                        head = PacketItem[0],
+                        id = PacketItem[1].PadLeft(20, '0'),//补足20位，不足补0
+                        length = PacketItem[2]
+                    },
+                    content = PacketItem[3]
+                };
+            }
+            catch
+            {
+                throw new Exception();
+            }
         }
 
         /// <summary>
@@ -47,9 +64,18 @@ namespace SmartWatch.F10.PacketBody
         /// <returns></returns>
         public byte[] F10Pack(F10Packet Packet)
         {
-            string length = Packet.content.Length.ToString();
-            string content = StartChar + Packet.FixBody.head + splitChar + Packet.FixBody.id + splitChar + length + splitChar + Packet.content + EndChar;
+            string content = StartChar + Packet.FixBody.head + BodySplitChar + Packet.FixBody.id + BodySplitChar + string.Format("{0:x4}", Packet.content.Length) + BodySplitChar + Packet.content + EndChar;
             return Encoding.ASCII.GetBytes(content);
+        }
+
+        /// <summary>
+        /// 获取F10内容中的消息类型
+        /// </summary>
+        /// <param name="content"></param>
+        /// <returns></returns>
+        public string F10GetHeadName(string content)
+        {
+            return content.Split(ContentSplitChar)[0];
         }
     }
 }

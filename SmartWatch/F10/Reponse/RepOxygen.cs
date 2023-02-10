@@ -18,10 +18,10 @@ namespace SmartWatch.F10.Reponse
         /// </summary>
         /// <param name="content"></param>
         /// <returns></returns>
-        public PacketBody.RepOxygen Decode(string content)
+        public PacketBody.RepOxygen_St Decode(string content)
         {
             string[] item = content.Split(',');
-            return new PacketBody.RepOxygen
+            return new PacketBody.RepOxygen_St
             {
                 messageId = item[0],
                 type = item[1],

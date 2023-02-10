@@ -176,7 +176,7 @@ namespace DigitalMineServer.Mysql
                         POSI_NUM = Reader.GetString("POSI_NUM"),
                         COMPANY = Reader.GetString("COMPANY"),
                         ADD_TIME = Reader.GetString("ADD_TIME"),
-                    }); ;
+                    });
                 }
                 Reader.Close();
                 if (back.Count == 0) { return null; };
@@ -218,10 +218,15 @@ namespace DigitalMineServer.Mysql
                         POSI_X = Reader.GetString("POSI_X"),
                         POSI_Y = Reader.GetString("POSI_Y"),
                         ACC = Reader.GetString("ACC"),
+                        BATTERY = Reader.GetString("BATTERY"),
+                        STEP = Reader.GetString("STEP"),
+                        STATE = Reader.GetString("STATE"),
+                        HEARTRATE = Reader.GetString("HEARTRATE"),
+                        BLPRES = Reader.GetString("BLPRES"),
                         POSI_NUM = Reader.GetString("POSI_NUM"),
                         COMPANY = Reader.GetString("COMPANY"),
                         ADD_TIME = Reader.GetString("ADD_TIME"),
-                    }); ;
+                    });
                 }
                 Reader.Close();
                 if (back.Count == 0) { return null; };

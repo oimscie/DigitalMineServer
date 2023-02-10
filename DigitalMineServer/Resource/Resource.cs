@@ -2,6 +2,7 @@
 using JtLibrary.PacketBody;
 using JtLibrary.Structures;
 using JtLibrary.Utils;
+using SuperSocket.SocketBase;
 using SuperSocket.SocketEngine.Configuration;
 using System;
 using System.Collections.Concurrent;
@@ -21,6 +22,8 @@ namespace DigitalMineServer.Static
 
             OriginalDataQueues = new ConcurrentQueue<(byte[], Jt808Session)>();
 
+            OriginalWatchDataQueues = new ConcurrentQueue<(byte[], F10WatchSession)>();
+
             Body0200Queues = new ConcurrentQueue<PacketMessage>();
 
             Vehicle0200DataQueues = new ConcurrentQueue<ValueTuple<string, PB0200>>();
@@ -35,9 +38,19 @@ namespace DigitalMineServer.Static
         }
 
         /// <summary>
+        /// 全局运行标志，false时软件停止状态
+        /// </summary>
+        public static bool IsActive = true;
+
+        /// <summary>
         ///终端上传原始数据数据队列(原始数据--session)
         /// </summary>
         public static ConcurrentQueue<ValueTuple<byte[], Jt808Session>> OriginalDataQueues;
+
+        /// <summary>
+        ///F10智能手表上传原始数据数据队列(原始数据--session)
+        /// </summary>
+        public static ConcurrentQueue<ValueTuple<byte[], F10WatchSession>> OriginalWatchDataQueues;
 
         /// <summary>
         ///0200数据包队列

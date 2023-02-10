@@ -9,9 +9,17 @@ using System.Threading.Tasks;
 
 namespace DigitalMineServer.SuperSocket
 {
-    public class Jt808Session : AppSession<Jt808Session, BinaryRequestInfo>
+    public class F10WatchSession : AppSession<F10WatchSession, BinaryRequestInfo>
     {
-        public string Sim { get; set; }
+        /// <summary>
+        /// 设备id
+        /// </summary>
+        public string Id { get; set; }
+
+        /// <summary>
+        /// 用户类型
+        /// </summary>
+        public string Type { get; set; }
 
         public override void Send(string message)
         {

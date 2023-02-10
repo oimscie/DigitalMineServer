@@ -58,7 +58,7 @@ namespace DigitalMineServer
         /// </summary>
         public void ParseMessages()
         {
-            while (true)
+            while (Resource.IsActive)
             {
                 try
                 {
@@ -151,13 +151,13 @@ namespace DigitalMineServer
         /// </summary>
         public void ParseVehicle0200()
         {
-            while (true)
+            while (Resource.IsActive)
             {
                 try
                 {
                     if (Resource.Vehicle0200DataQueues.Count < 1)
                     {
-                        Thread.Sleep(200);
+                        Thread.Sleep(500);
                         continue;
                     }
                     Resource.Vehicle0200DataQueues.TryDequeue(out ValueTuple<string, PB0200> value);
@@ -233,13 +233,13 @@ namespace DigitalMineServer
         /// </summary>
         public void ParsePerson0200()
         {
-            while (true)
+            while (Resource.IsActive)
             {
                 try
                 {
                     if (Resource.Person0200DataQueues.Count < 1)
                     {
-                        Thread.Sleep(200);
+                        Thread.Sleep(500);
                         continue;
                     }
                     Resource.Person0200DataQueues.TryDequeue(out ValueTuple<string, PB0200> value);
@@ -268,14 +268,15 @@ namespace DigitalMineServer
                     //检查人员状态表中是否存在
                     if (PersonMysql.GetCount("select count(ID) as Count from person_state where FID='" + PersonInfo.Item1 + "'") == 0)
                     {
-                        sql = "INSERT INTO `person_state`" +
-                             "(`FID`, `POSI_STATE`, `POSI_X`, `POSI_Y`, " +
-                             " `ACC`, `POSI_NUM`, `COMPANY`, `ADD_TIME`, " +
-                             "`TEMP1`, `TEMP2`, `TEMP3`, `TEMP4`) " +
-                             "VALUES" +
-                             " ('" + PersonInfo.Item1 + "', '" + IsStop + "', '" + xy[0] + "', '" + xy[1] + "'," +
-                             " '" + ACC + "',0, '" + PersonInfo.Item3 + "', '" + time + "', " +
-                              "NULL, NULL, NULL, NULL)";
+                        /*                        sql = "INSERT INTO `person_state`" +
+                                                     "(`FID`, `POSI_STATE`, `POSI_X`, `POSI_Y`, " +
+                                                     " `ACC`, `POSI_NUM`, `COMPANY`, `ADD_TIME`, " +
+                                                     "`TEMP1`, `TEMP2`, `TEMP3`, `TEMP4`) " +
+                                                     "VALUES" +
+                                                     " ('" + PersonInfo.Item1 + "', '" + IsStop + "', '" + xy[0] + "', '" + xy[1] + "'," +
+                                                     " '" + ACC + "',0, '" + PersonInfo.Item3 + "', '" + time + "', " +
+                                                      "NULL, NULL, NULL, NULL)";*/
+                        sql = "INSERT INTO `product`.`person_state`( `FID`, `POSI_STATE`, `POSI_X`, `POSI_Y`, `ACC`, `BATTERY`, `STEP`, `STATE`, `HEARTRATE`, `BLPRES`, `POSI_NUM`, `COMPANY`, `ADD_TIME`, `TEMP1`, `TEMP2`, `TEMP3`, `TEMP4`) VALUES ('" + PersonInfo.Item1 + "','" + IsStop + "', '" + xy[0] + "', '" + xy[1] + "', '" + ACC + "', '不支持', '不支持', '不支持', '不支持', '不支持', '0', '" + PersonInfo.Item3 + "', '" + time + "', NULL, NULL, NULL, NULL)";
                     }
                     else
                     {
@@ -367,11 +368,11 @@ namespace DigitalMineServer
                 {
                     if (Polygon.IsInPolygon(new Point(xy[0], xy[1]), item.Value.Item6))
                     {
-                        string sql = "select COUNT(ID) as Count from rec_unu_info where COMPANY='" + item.Value.Item2 + "' and WARN_USER_ID='" + item.Value.Item4 + "' and WARNTYPE='" + WarnType.Forbid_In + "' and ADD_TIME>=DATE_SUB(NOW(),INTERVAL 2 MINUTE)";
+                        string sql = "select COUNT(ID) as Count from rec_unu_info where COMPANY='" + item.Value.Item2 + "' and WARN_USER_ID='" + item.Value.Item4 + "' and  USERTYPE='车辆' and  WARNTYPE='" + WarnType.Forbid_In + "' and ADD_TIME>=DATE_SUB(NOW(),INTERVAL 2 MINUTE)";
                         LogHelper.WriteLog(sql);
                         if (VehicleMysql.GetCount(sql) == 0)
                         {
-                            sql = "INSERT INTO `product`.`rec_unu_info`( `WARN_USER_ID`, `WARN_USER_TYPE`, `WARNTYPE`, `INFO`, `DRIVER`, `COMPANY`, `ADD_TIME`, `TEMP1`, `TEMP2`, `TEMP3`, `TEMP4`) VALUES ('" + item.Value.Item4 + "','" + item.Value.Item3 + "', '" + WarnType.Forbid_In + "', '围栏名称：" + item.Value.Item1 + "', '" + item.Value.Item5 + "', '" + item.Value.Item2 + "', '" + DateTime.Now + "', NULL, NULL, NULL, NULL)";
+                            sql = "INSERT INTO `product`.`rec_unu_info`( `WARN_USER_ID`, `WARN_USER_TYPE`,`USERTYPE`, `WARNTYPE`, `INFO`, `DRIVER`, `COMPANY`, `ADD_TIME`, `TEMP1`, `TEMP2`, `TEMP3`, `TEMP4`) VALUES ('" + item.Value.Item4 + "','" + item.Value.Item3 + "','人员', '" + WarnType.Forbid_In + "', '围栏名称：" + item.Value.Item1 + "', '" + item.Value.Item5 + "', '" + item.Value.Item2 + "', '" + DateTime.Now + "', NULL, NULL, NULL, NULL)";
                             LogHelper.WriteLog(sql);
                             VehicleMysql.UpdOrInsOrdel(sql);
                         }
@@ -386,10 +387,10 @@ namespace DigitalMineServer
                 {
                     if (!Polygon.IsInPolygon(new Point(xy[0], xy[1]), item.Value.Item6))
                     {
-                        string sql = "select COUNT(ID) as Count from rec_unu_info where COMPANY='" + item.Value.Item2 + "' and WARN_USER_ID='" + item.Value.Item4 + "' and WARNTYPE='" + WarnType.Forbid_Out + "' and ADD_TIME>=DATE_SUB(NOW(),INTERVAL 2 MINUTE)";
+                        string sql = "select COUNT(ID) as Count from rec_unu_info where COMPANY='" + item.Value.Item2 + "' and WARN_USER_ID='" + item.Value.Item4 + "' and  USERTYPE='车辆' and  WARNTYPE='" + WarnType.Forbid_Out + "' and ADD_TIME>=DATE_SUB(NOW(),INTERVAL 2 MINUTE)";
                         if (VehicleMysql.GetCount(sql) == 0)
                         {
-                            sql = "INSERT INTO `product`.`rec_unu_info`( `WARN_USER_ID`, `WARN_USER_TYPE`, `WARNTYPE`, `INFO`, `DRIVER`, `COMPANY`, `ADD_TIME`, `TEMP1`, `TEMP2`, `TEMP3`, `TEMP4`) VALUES ('" + item.Value.Item4 + "','" + item.Value.Item3 + "', '" + WarnType.Forbid_Out + "', '围栏名称：" + item.Value.Item1 + "', '" + item.Value.Item5 + "', '" + item.Value.Item2 + "', '" + DateTime.Now + "', NULL, NULL, NULL, NULL)";
+                            sql = "INSERT INTO `product`.`rec_unu_info`( `WARN_USER_ID`, `WARN_USER_TYPE`,`USERTYPE`, `WARNTYPE`, `INFO`, `DRIVER`, `COMPANY`, `ADD_TIME`, `TEMP1`, `TEMP2`, `TEMP3`, `TEMP4`) VALUES ('" + item.Value.Item4 + "','" + item.Value.Item3 + "','人员', '" + WarnType.Forbid_Out + "', '围栏名称：" + item.Value.Item1 + "', '" + item.Value.Item5 + "', '" + item.Value.Item2 + "', '" + DateTime.Now + "', NULL, NULL, NULL, NULL)";
                             VehicleMysql.UpdOrInsOrdel(sql);
                         }
                     }
@@ -413,10 +414,10 @@ namespace DigitalMineServer
                 {
                     if (Polygon.IsInPolygon(new Point(xy[0], xy[1]), item.Value.Item6))
                     {
-                        string sql = "select COUNT(ID) as Count from rec_unu_info where COMPANY='" + item.Value.Item2 + "' and WARN_USER_ID='" + item.Value.Item4 + "' and WARNTYPE='" + WarnType.Forbid_In + "' and ADD_TIME>=DATE_SUB(NOW(),INTERVAL 2 MINUTE)";
+                        string sql = "select COUNT(ID) as Count from rec_unu_info where COMPANY='" + item.Value.Item2 + "' and WARN_USER_ID='" + item.Value.Item4 + "' and  USERTYPE='车辆' and  WARNTYPE='" + WarnType.Forbid_In + "' and ADD_TIME>=DATE_SUB(NOW(),INTERVAL 2 MINUTE)";
                         if (PersonMysql.GetCount(sql) == 0)
                         {
-                            sql = "INSERT INTO `product`.`rec_unu_info`( `WARN_USER_ID`, `WARN_USER_TYPE`, `WARNTYPE`, `INFO`, `DRIVER`, `COMPANY`, `ADD_TIME`, `TEMP1`, `TEMP2`, `TEMP3`, `TEMP4`) VALUES ('" + item.Value.Item4 + "','" + item.Value.Item3 + "', '" + WarnType.Forbid_In + "', '围栏名称：" + item.Value.Item1 + "', '', '" + item.Value.Item2 + "', '" + DateTime.Now + "', NULL, NULL, NULL, NULL)";
+                            sql = "INSERT INTO `product`.`rec_unu_info`( `WARN_USER_ID`, `WARN_USER_TYPE`,` USERTYPE`, `WARNTYPE`, `INFO`, `DRIVER`, `COMPANY`, `ADD_TIME`, `TEMP1`, `TEMP2`, `TEMP3`, `TEMP4`) VALUES ('" + item.Value.Item4 + "','" + item.Value.Item3 + "','人员', '" + WarnType.Forbid_In + "', '围栏名称：" + item.Value.Item1 + "', '', '" + item.Value.Item2 + "', '" + DateTime.Now + "', NULL, NULL, NULL, NULL)";
                             PersonMysql.UpdOrInsOrdel(sql);
                         }
                     }
@@ -431,10 +432,10 @@ namespace DigitalMineServer
                 {
                     if (!Polygon.IsInPolygon(new Point(xy[0], xy[1]), item.Value.Item6))
                     {
-                        string sql = "select COUNT(ID) as Count from rec_unu_info where COMPANY='" + item.Value.Item2 + "' and WARN_USER_ID='" + item.Value.Item4 + "' and WARNTYPE='" + WarnType.Forbid_Out + "' and ADD_TIME>=DATE_SUB(NOW(),INTERVAL 2 MINUTE)";
+                        string sql = "select COUNT(ID) as Count from rec_unu_info where COMPANY='" + item.Value.Item2 + "' and WARN_USER_ID='" + item.Value.Item4 + "' and USERTYPE='车辆' and  WARNTYPE='" + WarnType.Forbid_Out + "' and ADD_TIME>=DATE_SUB(NOW(),INTERVAL 2 MINUTE)";
                         if (PersonMysql.GetCount(sql) == 0)
                         {
-                            sql = "INSERT INTO `product`.`rec_unu_info`( `WARN_USER_ID`, `WARN_USER_TYPE`, `WARNTYPE`, `INFO`, `DRIVER`, `COMPANY`, `ADD_TIME`, `TEMP1`, `TEMP2`, `TEMP3`, `TEMP4`) VALUES ('" + item.Value.Item4 + "','" + item.Value.Item3 + "', '" + WarnType.Forbid_Out + "', '围栏名称：" + item.Value.Item1 + "', '', '" + item.Value.Item2 + "', '" + DateTime.Now + "', NULL, NULL, NULL, NULL)";
+                            sql = "INSERT INTO `product`.`rec_unu_info`( `WARN_USER_ID`, `WARN_USER_TYPE`,` USERTYPE`, `WARNTYPE`, `INFO`, `DRIVER`, `COMPANY`, `ADD_TIME`, `TEMP1`, `TEMP2`, `TEMP3`, `TEMP4`) VALUES ('" + item.Value.Item4 + "','" + item.Value.Item3 + "','人员','" + WarnType.Forbid_Out + "', '围栏名称：" + item.Value.Item1 + "', '', '" + item.Value.Item2 + "', '" + DateTime.Now + "', NULL, NULL, NULL, NULL)";
                             PersonMysql.UpdOrInsOrdel(sql);
                         }
                     }

@@ -17,10 +17,10 @@ namespace SmartWatch.F10.Reponse
         /// </summary>
         /// <param name="content"></param>
         /// <returns></returns>
-        public PacketBody.RepCenter Decode(string content)
+        public PacketBody.RepCenter_St Decode(string content)
         {
             string[] item = content.Split(',');
-            return new PacketBody.RepCenter
+            return new PacketBody.RepCenter_St
             {
                 messageId = item[0],
             };

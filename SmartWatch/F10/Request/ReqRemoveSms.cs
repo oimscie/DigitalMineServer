@@ -19,7 +19,7 @@ namespace SmartWatch.F10.Reponse
         /// </summary>
         /// <param name="content"></param>
         /// <returns></returns>
-        public string Encode(PacketBody.ReqRemoveSms ReqRemoveSms)
+        public string Encode(PacketBody.ReqRemoveSms_St ReqRemoveSms)
         {
             return ReqRemoveSms.messageId + splitChar + ReqRemoveSms.order;
         }

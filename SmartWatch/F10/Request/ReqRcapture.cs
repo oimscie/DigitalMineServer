@@ -19,7 +19,7 @@ namespace SmartWatch.F10.Reponse
         /// </summary>
         /// <param name="content"></param>
         /// <returns></returns>
-        public string Encode(PacketBody.ReqCenter ReqRcapture)
+        public string Encode(PacketBody.ReqCenter_St ReqRcapture)
         {
             return ReqRcapture.messageId;
         }

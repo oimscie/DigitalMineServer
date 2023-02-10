@@ -18,10 +18,10 @@ namespace SmartWatch.F10.Reponse
         /// </summary>
         /// <param name="content"></param>
         /// <returns></returns>
-        public PacketBody.RepBphrt Decode(string content)
+        public PacketBody.RepBphrt_St Decode(string content)
         {
             string[] item = content.Split(',');
-            return new PacketBody.RepBphrt
+            return new PacketBody.RepBphrt_St
             {
                 messageId = item[0],
                 high = item[1],

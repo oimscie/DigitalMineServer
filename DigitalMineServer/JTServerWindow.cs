@@ -14,15 +14,18 @@ using System.Threading;
 using System.Timers;
 using System.Windows.Forms;
 using DigitalMineServer.Redis;
+using DigitalMineServer.ParseMessage;
+using CloseReason = System.Windows.Forms.CloseReason;
 
 namespace DigitalMineServer
 {
     public partial class JtServerForm : Form
     {
         public static JtServerForm JtForm;
-        public static IBootstrap bootstrap;
+        public static IBootstrap bootstrap = null;
         private Jt808Message Jt808Message;
         private MySqlHelper MySqlHelper;
+        private F10WatchMessage F10WatchMessage;
         private List<VehicleStateEntity> VehicleStateEntity;
         private List<PersonStateEntity> PersonStateEntity;
 
@@ -67,6 +70,7 @@ namespace DigitalMineServer
             //初始化存储集合
             _ = new Resource();
             Jt808Message = new Jt808Message();
+            F10WatchMessage = new F10WatchMessage();
             MySqlHelper = new MySqlHelper();
             RedisHelper.Execute();
             this.infoBox.AppendText("静态资源初始化完成\r\n");
@@ -121,12 +125,18 @@ namespace DigitalMineServer
 
             #region 初始化解析服务
 
-            Thread parsr = new Thread(Jt808Message.ParseMessages)
+            Thread Jt808Parsr = new Thread(Jt808Message.ParseMessages)
             {
                 IsBackground = true
             };
-            parsr.Start();
+            Jt808Parsr.Start();
             this.infoBox.AppendText("解析服务初始化完成\r\n");
+
+            Thread F10Parsr = new Thread(F10WatchMessage.ParseMessage)
+            {
+                IsBackground = true
+            };
+            F10Parsr.Start();
 
             #endregion 初始化解析服务
 
@@ -211,7 +221,7 @@ namespace DigitalMineServer
                     break;
 
                 case "人员":
-                    sql = "select PERSON_ID ,PERSON_SIM ,PERSON_TYPE,POSI_STATE,POSI_X,POSI_Y,ACC,POSI_NUM,COMPANY,ADD_TIME from (select FID,POSI_STATE,POSI_X,POSI_Y,ACC,POSI_NUM,COMPANY,ADD_TIME from person_state " + sqlCompany + " order by ADD_TIME desc limit " + size * count + "," + count + ")a inner join (select ID,PERSON_ID,PERSON_SIM,PERSON_TYPE from LIST_PERSON " + sqlCompany + ")b on FID=ID";
+                    sql = "select PERSON_ID ,PERSON_SIM ,PERSON_TYPE,POSI_STATE,POSI_X,POSI_Y,ACC,BATTERY,STEP,STATE,HEARTRATE,BLPRES,POSI_NUM,COMPANY,ADD_TIME from (select FID,POSI_STATE,POSI_X,POSI_Y,ACC,BATTERY,STEP,STATE,HEARTRATE,BLPRES,POSI_NUM,COMPANY,ADD_TIME from person_state " + sqlCompany + " order by ADD_TIME desc limit " + size * count + "," + count + ")a inner join (select ID,PERSON_ID,PERSON_SIM,PERSON_TYPE from LIST_PERSON " + sqlCompany + ")b on FID=ID";
                     PersonStateEntity = MySqlHelper.MultipleSelect_p(sql);
                     Utils.Util.UpdataSource_p(dataGridView1, PersonStateEntity);
                     break;
@@ -275,6 +285,27 @@ namespace DigitalMineServer
         {
             size = 0;
             UpdateState(null, null);
+        }
+
+        private void JtServerForm_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            if (e.CloseReason == CloseReason.UserClosing)
+            {
+                DialogResult result = MessageBox.Show("是否关闭?", "操作提示", MessageBoxButtons.YesNo, MessageBoxIcon.Asterisk);
+                if (result == DialogResult.Yes)
+                {
+                    if (bootstrap != null)
+                    {
+                        bootstrap.Stop();
+                    }
+                    Resource.IsActive = false;
+                    Application.Exit();
+                }
+                else
+                {
+                    e.Cancel = true;
+                }
+            }
         }
     }
 }

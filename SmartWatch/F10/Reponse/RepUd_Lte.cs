@@ -1,9 +1,5 @@
 ﻿using SmartWatch.F10.PacketBody;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace SmartWatch.F10.Reponse
 {
@@ -17,26 +13,29 @@ namespace SmartWatch.F10.Reponse
         /// </summary>
         /// <param name="content"></param>
         /// <returns></returns>
-        public PacketBody.RepUd_Lte Decode(string content)
+        public PacketBody.RepUd_Lte_St Decode(string content)
         {
             string[] item = content.Split(',');
-            return new PacketBody.RepUd_Lte
+            foreach (var i in item)
+            {
+                System.Diagnostics.Debug.WriteLine(i);
+            }
+            return new PacketBody.RepUd_Lte_St
             {
                 messageId = item[0],
-                position = new Position
+                position = new Position_St
                 {
-                    messageNumber = item[1],
-                    time = item[2].Substring(4, 2) + "-" + item[2].Substring(2, 2) + "-" + item[2].Substring(0, 2) + " " + item[3].Substring(0, 2) + ":" + item[3].Substring(2, 2) + ":" + item[3].Substring(4, 2),
-                    active = item[4] == "A" ? "定位" : "未定位",
-                    lat = item[5],
-                    latType = item[6],
-                    lon = item[7],
-                    lonType = item[8],
-                    speed = item[9],
-                    battery = item[14],
-                    step = item[15],
-                    state = item[17],
-                    accuracy = item[item.Length],
+                    time = DateTime.ParseExact(item[1].Substring(4, 2) + "-" + item[1].Substring(2, 2) + "-" + item[1].Substring(0, 2) + " " + item[2].Substring(0, 2) + ":" + item[2].Substring(2, 2) + ":" + item[2].Substring(4, 2), "yy-MM-dd hh:mm:ss", System.Globalization.CultureInfo.InvariantCulture).AddHours(8),
+                    active = item[3] == "A" ? "定位" : "未定位",
+                    lat = item[4],
+                    latType = item[5],
+                    lon = item[6],
+                    lonType = item[7],
+                    speed = item[8],
+                    battery = item[13],
+                    step = item[14],
+                    state = item[16],
+                    accuracy = item[item.Length - 1],
                 }
             };
         }

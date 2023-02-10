@@ -101,6 +101,11 @@ namespace DigitalMineServer.SuperSocket.Command
                     redis.Delete(DeletePerson.sim + Redis_key_ext.person);
                     break;
 
+                case OrderMessageType.watchText:
+                    WatchText watchText = Decode.WatchText(requestInfo.Body);
+                    SendMessage_F10(Encoding.ASCII.GetBytes(watchText.text), watchText.id, session);
+                    break;
+
                 default:
                     session.Close();
                     break;
@@ -146,6 +151,26 @@ namespace DigitalMineServer.SuperSocket.Command
             else
             {
                 session.TrySend("发送失败，当前车辆离线");
+            }
+        }
+
+        private void SendMessage_F10(byte[] buffer, string id, WebSession session)
+        {
+            F10WatchServer a = JtServerForm.bootstrap.GetServerByName("F10WatchServer") as F10WatchServer;
+            var sessions = a.GetSessions(s => s.Id == id);
+            if (sessions.Count() != 0)
+            {
+                foreach (var vehicleSession in sessions)
+                {
+                    if (!vehicleSession.TrySend(buffer, 0, buffer.Length))
+                    {
+                        session.TrySend("发送失败，未知错误");
+                    }
+                }
+            }
+            else
+            {
+                session.TrySend("发送失败，当前终端离线");
             }
         }
     }

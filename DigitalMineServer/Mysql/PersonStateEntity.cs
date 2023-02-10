@@ -15,6 +15,11 @@ namespace DigitalMineServer.Mysql
         public string POSI_X { get; set; }
         public string POSI_Y { get; set; }
         public string ACC { get; set; }
+        public string BATTERY { get; set; }
+        public string STEP { get; set; }
+        public string STATE { get; set; }
+        public string HEARTRATE { get; set; }
+        public string BLPRES { get; set; }
         public string POSI_NUM { get; set; }
         public string COMPANY { get; set; }
         public string ADD_TIME { get; set; }

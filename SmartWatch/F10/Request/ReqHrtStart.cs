@@ -21,7 +21,7 @@ namespace SmartWatch.F10.Reponse
         /// </summary>
         /// <param name="content"></param>
         /// <returns></returns>
-        public string Encode(PacketBody.ReqHrtStart ReqHrtStart)
+        public string Encode(PacketBody.ReqHrtStart_St ReqHrtStart)
         {
             return ReqHrtStart.messageId + splitChar + ReqHrtStart.order;
         }

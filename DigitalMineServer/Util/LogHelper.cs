@@ -6,10 +6,11 @@ using System.Threading.Tasks;
 
 namespace DigitalMineServer.Util
 {
-    class LogHelper
+    internal class LogHelper
     {
-        public static readonly log4net.ILog loginfo = log4net.LogManager.GetLogger("infoAppender");
-        public static readonly log4net.ILog logerror = log4net.LogManager.GetLogger("errorAppender");
+        private static readonly log4net.ILog loginfo = log4net.LogManager.GetLogger("infoAppender");
+        private static readonly log4net.ILog logerror = log4net.LogManager.GetLogger("errorAppender");
+
         public static void WriteLog(string info)
         {
             if (loginfo.IsInfoEnabled)

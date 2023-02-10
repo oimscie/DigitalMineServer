@@ -67,12 +67,12 @@ namespace SmartWatch.F10.Structures
         /// <summary>
         /// 报警数据上报(平台无需回复)
         /// </summary>
-        public const String UAL_LTE = "AL_LTE";
+        public const String AL_LTE = "AL_LTE";
 
         /// <summary>
         /// 盲区补偿数据上报(平台无需回复)
         /// </summary>
-        public const String UD2_LTE = "UD_LTE";
+        public const String UD2_LTE = "UD2_LTE";
 
         /// <summary>
         /// 上传间隔设置

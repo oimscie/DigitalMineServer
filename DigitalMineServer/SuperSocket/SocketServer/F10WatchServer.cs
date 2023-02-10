@@ -16,11 +16,11 @@ using static DigitalMineServer.Structures.Comprehensive;
 
 namespace DigitalMineServer.SuperSocket.SocketServer
 {
-    public class Jt808Server : AppServer<Jt808Session, BinaryRequestInfo>
+    public class F10WatchServer : AppServer<F10WatchSession, BinaryRequestInfo>
     {
         private RedisHelper Redis = new RedisHelper();
 
-        public Jt808Server() : base(new DefaultReceiveFilterFactory<Jt808ReceiveFilter, BinaryRequestInfo>())
+        public F10WatchServer() : base(new DefaultReceiveFilterFactory<F10WatchReceiveFilter, BinaryRequestInfo>())
         {
         }
 
@@ -42,18 +42,18 @@ namespace DigitalMineServer.SuperSocket.SocketServer
             base.OnStopped();
         }
 
-        protected override void OnNewSessionConnected(Jt808Session session)
+        protected override void OnNewSessionConnected(F10WatchSession session)
         {
             base.OnNewSessionConnected(session);
-            Utils.Util.ModifyLable(JtServerForm.JtForm.vehicleOnline, JtServerForm.bootstrap.GetServerByName("Jt808Server").SessionCount.ToString());
+            Utils.Util.ModifyLable(JtServerForm.JtForm.vehicleOnline, JtServerForm.bootstrap.GetServerByName("F10WatchServer").SessionCount.ToString());
         }
 
-        protected override void OnSessionClosed(Jt808Session session, CloseReason reason)
+        protected override void OnSessionClosed(F10WatchSession session, CloseReason reason)
         {
-            // string sim = session.Sim + Redis_key_ext.equipVersion;
+            // string sim = session.Id + Redis_key_ext.equipVersion;
             base.OnSessionClosed(session, reason);
-            //Redis.Delete(sim);
-            Utils.Util.ModifyLable(JtServerForm.JtForm.vehicleOnline, JtServerForm.bootstrap.GetServerByName("Jt808Server").SessionCount.ToString());
+            // Redis.Delete(sim);
+            Utils.Util.ModifyLable(JtServerForm.JtForm.vehicleOnline, JtServerForm.bootstrap.GetServerByName("F10WatchServer").SessionCount.ToString());
         }
     }
 }

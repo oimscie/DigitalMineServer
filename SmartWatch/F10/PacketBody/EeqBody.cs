@@ -14,7 +14,7 @@ namespace SmartWatch.F10.PacketBody
     /// 心跳[3G*XXXXXXXXXX*LEN*LK]
     /// </summary>
     [StructLayout(LayoutKind.Sequential)]
-    public struct ReqLk
+    public struct ReqLk_St
     {
         /// <summary>
         ///  固定格式
@@ -31,7 +31,7 @@ namespace SmartWatch.F10.PacketBody
     /// 上传间隔设置[3G*9617624925*000A*UPLOAD,600]
     /// </summary>
     [StructLayout(LayoutKind.Sequential)]
-    public struct ReqUpload
+    public struct ReqUpload_St
     {
         /// <summary>
         ///  固定格式
@@ -53,7 +53,7 @@ namespace SmartWatch.F10.PacketBody
     /// IP设置[3g*XXXXXXXXXX*LEN*IP,IP或域名,端口]
     /// </summary>
     [StructLayout(LayoutKind.Sequential)]
-    public struct ReqIp
+    public struct ReqIp_St
     {
         /// <summary>
         ///  固定格式
@@ -80,7 +80,7 @@ namespace SmartWatch.F10.PacketBody
     /// SOS号码设置[3G*9617624925*0003*SOS,电话号码,电话号码,电话号码]
     /// </summary>
     [StructLayout(LayoutKind.Sequential)]
-    public struct ReqSos
+    public struct ReqSos_St
     {
         /// <summary>
         ///  固定格式
@@ -112,7 +112,7 @@ namespace SmartWatch.F10.PacketBody
     /// SOS短信报警开关[3G*9617624925*0006*SOSSMS,0 或1]0:关闭,1:  打开
     /// </summary>
     [StructLayout(LayoutKind.Sequential)]
-    public struct ReqSosSms
+    public struct ReqSosSms_St
     {
         /// <summary>
         ///  固定格式
@@ -134,7 +134,7 @@ namespace SmartWatch.F10.PacketBody
     /// 短信报警接收号码[3G*9617624925*0006*CENTER,电话号码]
     /// </summary>
     [StructLayout(LayoutKind.Sequential)]
-    public struct ReqCenter
+    public struct ReqCenter_St
     {
         /// <summary>
         ///  固定格式
@@ -156,7 +156,7 @@ namespace SmartWatch.F10.PacketBody
     /// 低电短信报警开关[3G*XXXXXXXXXX*LEN*LOWBAT,0 或1]0:关闭,1:  打开
     /// </summary>
     [StructLayout(LayoutKind.Sequential)]
-    public struct ReqLowBat
+    public struct ReqLowBat_St
     {
         /// <summary>
         ///  固定格式
@@ -178,7 +178,7 @@ namespace SmartWatch.F10.PacketBody
     /// 取下手环报警开关[3G*XXXXXXXXXX*LEN*REMOVE,0 或1]0:关闭,1:  打开
     /// </summary>
     [StructLayout(LayoutKind.Sequential)]
-    public struct ReqRemove
+    public struct ReqRemove_St
     {
         /// <summary>
         ///  固定格式
@@ -200,7 +200,7 @@ namespace SmartWatch.F10.PacketBody
     /// 取下手表报警开关[3G*XXXXXXXXXX*LEN*REMOVESMS,0 或1]0:关闭,1:  打开
     /// </summary>
     [StructLayout(LayoutKind.Sequential)]
-    public struct ReqRemoveSms
+    public struct ReqRemoveSms_St
     {
         /// <summary>
         ///  固定格式
@@ -222,7 +222,7 @@ namespace SmartWatch.F10.PacketBody
     /// 远程拍照[3G*XXXXXXXXXX*len*rcapture]
     /// </summary>
     [StructLayout(LayoutKind.Sequential)]
-    public struct ReqRcapture
+    public struct ReqRcapture_St
     {
         /// <summary>
         ///  固定格式
@@ -241,7 +241,7 @@ namespace SmartWatch.F10.PacketBody
     /// x 为 1 则代表终端心率单次上传，上传完后自动关闭。 x 为 0 则代表终端心率上传关闭。
     /// </summary>
     [StructLayout(LayoutKind.Sequential)]
-    public struct ReqHrtStart
+    public struct ReqHrtStart_St
     {
         /// <summary>
         ///  固定格式
@@ -265,7 +265,7 @@ namespace SmartWatch.F10.PacketBody
     /// arg1 ： 0 :间隔测量关闭 1 :间隔测量开启
     /// </summary>
     [StructLayout(LayoutKind.Sequential)]
-    public struct ReqBodyTemp
+    public struct ReqBodyTemp_St
     {
         /// <summary>
         ///  固定格式
@@ -294,7 +294,7 @@ namespace SmartWatch.F10.PacketBody
     /// arg1 ： 0 :间隔测量关闭 1 :间隔测量开启
     /// </summary>
     [StructLayout(LayoutKind.Sequential)]
-    public struct ReqBtWarnSet
+    public struct ReqBtWarnSet_St
     {
         /// <summary>
         ///  固定格式
@@ -336,7 +336,7 @@ namespace SmartWatch.F10.PacketBody
     /// 血氧上报协议[3G*XXXXXXXXXX*LEN*oxygen,status]
     /// </summary>
     [StructLayout(LayoutKind.Sequential)]
-    public struct ReqOxygen
+    public struct ReqOxygen_St
     {
         /// <summary>
         ///  固定格式

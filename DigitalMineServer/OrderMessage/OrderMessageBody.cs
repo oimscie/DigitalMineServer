@@ -431,4 +431,30 @@ namespace DigitalMineServer.OrderMessage
         /// </summary>
         public string sim;
     }
+
+    /// <summary>
+    /// 人员设备（F10）指令文字
+    /// </summary>
+    public struct WatchText
+    {
+        /// <summary>
+        /// 消息类型
+        /// </summary>
+        public string messageType;
+
+        /// <summary>
+        /// 型号
+        /// </summary>
+        public string type;
+
+        /// <summary>
+        /// 文本内容
+        /// </summary>
+        public string text;
+
+        /// <summary>
+        /// 终端id
+        /// </summary>
+        public string id;
+    }
 }

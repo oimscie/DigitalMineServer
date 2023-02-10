@@ -93,6 +93,7 @@
     <Reference Include="System.Configuration" />
     <Reference Include="System.Configuration.Install" />
     <Reference Include="System.Core" />
+    <Reference Include="System.EnterpriseServices" />
     <Reference Include="System.Management" />
     <Reference Include="System.Memory, Version=4.0.1.1, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
       <HintPath>..\packages\System.Memory.4.5.4\lib\netstandard1.1\System.Memory.dll</HintPath>
@@ -105,6 +106,7 @@
     <Reference Include="System.ValueTuple, Version=4.0.3.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
       <HintPath>..\packages\System.ValueTuple.4.5.0\lib\netstandard1.0\System.ValueTuple.dll</HintPath>
     </Reference>
+    <Reference Include="System.Web.Services" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -156,6 +158,7 @@
     <Compile Include="PacketReponse\REQ_9212.cs" />
     <Compile Include="PacketReponse\REQ_9208.cs" />
     <Compile Include="ParseMessage\AcSafeFileMessage.cs" />
+    <Compile Include="ParseMessage\F10WatchMessage.cs" />
     <Compile Include="ParseMessage\MonitorFileMessage.cs" />
     <Compile Include="ParseMessage\MontorMessage.cs" />
     <Compile Include="ParseMessage\DataMessage.cs" />
@@ -173,6 +176,7 @@
     <Compile Include="Redis\RedisHelper.cs" />
     <Compile Include="Structures\Comprehensive.cs" />
     <Compile Include="SuperSocket\Command\AcSafeFileCommand.cs" />
+    <Compile Include="SuperSocket\Command\F10WatchCommand.cs" />
     <Compile Include="SuperSocket\Command\MonitorFileCommand.cs" />
     <Compile Include="SuperSocket\Command\MontorCommand.cs" />
     <Compile Include="SuperSocket\Command\DataCommand.cs" />
@@ -186,6 +190,7 @@
     <Compile Include="SuperSocket\Command\VehicleVideoCommand.cs" />
     <Compile Include="SuperSocket\Command\ClientCommand.cs" />
     <Compile Include="SuperSocket\Command\WebOrder.cs" />
+    <Compile Include="SuperSocket\ReceiveFilter\F10WatchReceiveFilter.cs" />
     <Compile Include="SuperSocket\ReceiveFilter\MonitorFileReceiveFilter.cs" />
     <Compile Include="SuperSocket\ReceiveFilter\MontorReceiveFilter.cs" />
     <Compile Include="SuperSocket\ReceiveFilter\DataReceiveFilter.cs" />
@@ -204,6 +209,7 @@
     <Compile Include="SuperSocket\SocketServer\ClientHistoryVideoServer.cs" />
     <Compile Include="SuperSocket\SocketServer\ClientVideoServer.cs" />
     <Compile Include="SuperSocket\SocketServer\AcSafeFileServer.cs" />
+    <Compile Include="SuperSocket\SocketServer\F10WatchServer.cs" />
     <Compile Include="SuperSocket\SocketServer\MonitorFileServer.cs" />
     <Compile Include="SuperSocket\SocketServer\MontorServer.cs" />
     <Compile Include="SuperSocket\SocketServer\DataServer.cs" />
@@ -214,6 +220,7 @@
     <Compile Include="SuperSocket\SocketServer\ClientServer.cs" />
     <Compile Include="SuperSocket\SocketServer\WebSocketServer.cs" />
     <Compile Include="SuperSocket\SocketSession\AcSafeFileSession.cs" />
+    <Compile Include="SuperSocket\SocketSession\F10WatchSession.cs" />
     <Compile Include="SuperSocket\SocketSession\MonitorFileSession.cs" />
     <Compile Include="SuperSocket\SocketSession\ClientAudioSession.cs" />
     <Compile Include="SuperSocket\SocketSession\ClientHistoryAudioSession.cs" />
@@ -287,10 +294,13 @@
       <Project>{94c8025d-4d31-42ff-82bf-5842524b3641}</Project>
       <Name>JtLibrary</Name>
     </ProjectReference>
+    <ProjectReference Include="..\SmartWatch\SmartWatch.csproj">
+      <Project>{0B67B814-5227-444C-8925-703228336A99}</Project>
+      <Name>SmartWatch</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <WCFMetadata Include="Connected Services\" />
   </ItemGroup>
-  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
