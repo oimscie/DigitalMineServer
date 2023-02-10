@@ -277,6 +277,42 @@ namespace DigitalMineServer.Mysql
         }
 
         /// <summary>
+        /// 数据源查询（单列，参数fieldName）
+        /// </summary>
+        /// <param name="sql"></param>
+        /// <param name="fieldName"></param>
+        /// <returns></returns>
+        public DataTable MultipleSelects(string sql, string fieldName)
+        {
+            if (!CheckConn()) { return null; }
+            Command.CommandText = sql;
+            Reader = Command.ExecuteReader();
+            DataTable back = new DataTable();
+            back.Columns.Add(new DataColumn(fieldName));
+            try
+            {
+                while (Reader.Read())
+                {
+                    DataRow row = back.NewRow();
+                    row[fieldName] = Reader.GetString(fieldName);
+                    back.Rows.Add(row);
+                }
+                Reader.Close();
+                if (back.Rows.Count == 0) { return null; };
+                return back;
+            }
+            catch (Exception e)
+            {
+                LogHelper.WriteLog("sql查询错误----" + sql, e);
+                return null;
+            }
+            finally
+            {
+                Close();
+            }
+        }
+
+        /// <summary>
         /// 单字段多行查询，查询失败或结果为空均返回null
         /// </summary>
         /// <param name="sql">SQL语句</param>

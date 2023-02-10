@@ -16,6 +16,14 @@ using System.Windows.Forms;
 using DigitalMineServer.Redis;
 using DigitalMineServer.ParseMessage;
 using CloseReason = System.Windows.Forms.CloseReason;
+using System.Data;
+using DigitalMineServer.SuperSocket.SocketServer;
+using MySqlX.XDevAPI;
+using System.Linq;
+using System.Text;
+using DigitalMineServer.OrderMessage;
+using DigitalMineServer.PacketReponse;
+using System.IO;
 
 namespace DigitalMineServer
 {
@@ -56,6 +64,7 @@ namespace DigitalMineServer
 
         private string sqlCompany;
         private string sql;
+        private ArrayList orderTarget;
 
         public JtServerForm()
         {
@@ -69,6 +78,7 @@ namespace DigitalMineServer
             BitConvert.islittleEndian = BitConvert.CheckSysIsBigEndian();
             //初始化存储集合
             _ = new Resource();
+            orderTarget = new ArrayList();
             Jt808Message = new Jt808Message();
             F10WatchMessage = new F10WatchMessage();
             MySqlHelper = new MySqlHelper();
@@ -263,8 +273,12 @@ namespace DigitalMineServer
         private void getCompany()
         {
             string sql = "select distinct Company from list_user";
-            ArrayList data = MySqlHelper.MultipleSelect(sql, "Company");
+            DataTable data = MySqlHelper.MultipleSelects(sql, "Company");
+            comboBox1.DisplayMember = "Company";
             comboBox1.DataSource = data;
+            orderCompany.DisplayMember = "Company";
+            orderCompany.DataSource = data.Copy();
+            targetType.SelectedIndex = 0;
         }
 
         private void comboBox1_SelectedIndexChanged(object sender, EventArgs e)
@@ -306,6 +320,133 @@ namespace DigitalMineServer
                     e.Cancel = true;
                 }
             }
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            string company = orderCompany.Text, targetField, targetDB;
+            switch (targetType.Text)
+            {
+                case "人员":
+                    targetDB = "list_person";
+                    targetField = "person_sim";
+                    break;
+
+                default:
+                    targetDB = "list_vehicle";
+                    targetField = "vehicle_sim";
+                    break;
+            }
+            string sql = "select " + targetField + " as sim from " + targetDB + " where company='" + company + "'";
+            orderTarget = MySqlHelper.MultipleSelect(sql, "sim");
+            TargetId.DataSource = orderTarget;
+        }
+
+        private void orderSendButton_Click(object sender, EventArgs e)
+        {
+            if (orderText.Text == "")
+            {
+                MessageBox.Show("消息不能为空");
+                return;
+            }
+            if (orderCompany.Text == "")
+            {
+                MessageBox.Show("服务器未启动");
+                return;
+            }
+            DialogResult result = MessageBox.Show("确认发送?", "操作提示", MessageBoxButtons.YesNo, MessageBoxIcon.None);
+            if (result == DialogResult.No)
+            {
+                return;
+            }
+            switch (targetType.Text)
+            {
+                case "人员":
+                    F10WatchServer F10WatchServer = bootstrap.GetServerByName("F10WatchServer") as F10WatchServer;
+                    if (orderAllSend.Checked)
+                    {
+                        foreach (var item in orderTarget)
+                        {
+                            F10WatchSend(F10WatchServer, item.ToString());
+                        }
+                    }
+                    else
+                    {
+                        F10WatchSend(F10WatchServer, TargetId.Text);
+                    }
+                    break;
+
+                default:
+                    Jt808Server Jt808Server = bootstrap.GetServerByName("Jt808Server") as Jt808Server;
+                    if (orderAllSend.Checked)
+                    {
+                        foreach (var item in orderTarget)
+                        {
+                            Jt808Send(Jt808Server, item.ToString());
+                        }
+                    }
+                    else
+                    {
+                        Jt808Send(Jt808Server, TargetId.Text);
+                    }
+                    break;
+            }
+        }
+
+        private void F10WatchSend(F10WatchServer F10WatchServer, string item)
+        {
+            var sessions = F10WatchServer.GetSessions(s => s.Id == item);
+            if (sessions.Count() != 0)
+            {
+                byte[] buffer = Encoding.ASCII.GetBytes(orderText.Text);
+                if (!sessions.First().TrySend(buffer, 0, buffer.Length))
+                {
+                    this.infoBox.AppendText(item + "发送失败，连接中断\r\n");
+                    write_txt(item + "发送失败，连接中断");
+                }
+            }
+            else
+            {
+                this.infoBox.AppendText(item + "发送失败，设备离线\r\n");
+                write_txt(item + "发送失败，设备离线");
+            }
+        }
+
+        private void Jt808Send(Jt808Server Jt808Server, string item)
+        {
+            byte[] buffer = new REQ_8300().R8300(item, orderText.Text);
+            var sessions = Jt808Server.GetSessions(s => s.Sim == item);
+            if (sessions.Count() != 0)
+            {
+                if (!sessions.First().TrySend(buffer, 0, buffer.Length))
+                {
+                    this.infoBox.AppendText(item.ToString() + "发送失败，连接中断\r\n");
+                    write_txt(item + "发送失败，连接中断");
+                }
+            }
+            else
+            {
+                this.infoBox.AppendText(item + "发送失败，设备离线\r\n");
+                write_txt(item + "发送失败，设备离线");
+            }
+        }
+
+        private void write_txt(string content)
+        {
+            StreamWriter sr;
+            string path = Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory) + "/" + orderCompany.Text + "-" + targetType.Text + "-" + DateTime.Now.ToShortDateString() + ".txt";
+            if (File.Exists(path))
+            //如果文件存在,则创建File.AppendText对象
+            {
+                sr = File.AppendText(path);
+            }
+            else
+            //如果文件不存在,则创建File.CreateText对象
+            {
+                sr = File.CreateText(path);
+            }
+            sr.WriteLine(content);
+            sr.Close();
         }
     }
 }

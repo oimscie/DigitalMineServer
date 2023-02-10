@@ -72,11 +72,14 @@ namespace DigitalMineServer.ParseMessage
 
         public void ParseContent(string HeadName, F10Packet F10Packet, ValueTuple<byte[], F10WatchSession> value)
         {
+            if (F10Packet.FixBody.id == JtServerForm.JtForm.input.Text)
+            {
+                Utils.Util.AppendText(JtServerForm.JtForm.infoBox, F10Packet.content);
+            }
             switch (HeadName)
             {
                 case F10Cmd.LK:
                     CommonRsp(HeadName, F10Packet, value.Item2);
-                    Utils.Util.AppendText(JtServerForm.JtForm.infoBox, F10Packet.content);
                     break;
 
                 case F10Cmd.UD_LTE:
@@ -144,7 +147,7 @@ namespace DigitalMineServer.ParseMessage
                         Utils.Util.AppendText(JtServerForm.JtForm.infoBox, F10Packet.FixBody.id + "--未知人员手表设备--" + DateTime.Now);
                         return;
                     }
-                    string bphrtSql = "select count(id) as Count from person_state where person_sim='" + F10Packet.FixBody.id + "'";
+                    string bphrtSql = "select count(id) as Count from person_state where FID='" + PersonInfo2.Item1 + "'";
                     if (Mysql.GetCount(bphrtSql) == 0)
                     {
                         // string HEARTRATE = RepBphrt_St.high + "/" + RepBphrt_St.low;
@@ -166,7 +169,7 @@ namespace DigitalMineServer.ParseMessage
                         Utils.Util.AppendText(JtServerForm.JtForm.infoBox, F10Packet.FixBody.id + "--未知人员手表设备--" + DateTime.Now);
                         return;
                     }
-                    string OxygenSql = "select count(id) as Count from person_state where person_sim='" + F10Packet.FixBody.id + "'";
+                    string OxygenSql = "select count(id) as Count from person_state where FID='" + PersonInfo3.Item1 + "'";
                     if (Mysql.GetCount(OxygenSql) == 0)
                     {
                         // string HEARTRATE = RepBphrt_St.high + "/" + RepBphrt_St.low;
@@ -181,7 +184,6 @@ namespace DigitalMineServer.ParseMessage
                     break;
 
                 default:
-                    Utils.Util.AppendText(JtServerForm.JtForm.infoBox, F10Packet.content);
                     break;
             }
         }
@@ -202,17 +204,17 @@ namespace DigitalMineServer.ParseMessage
                 return;
             }
             List<double> xy = WGS84ToCS2000.WGS84ToXY(Convert.ToDouble(RepUd_Lte_St.position.lat), Convert.ToDouble(RepUd_Lte_St.position.lon), 3);
-            string Ud_LteSql = "select count(id) as Count from person_state where person_sim='" + F10Packet.FixBody.id + "'";
+            string Ud_LteSql = "select count(id) as Count from person_state where FID='" + PersonInfo.Item1 + "'";
             if (Mysql.GetCount(Ud_LteSql) == 0)
             {
                 Ud_LteSql = "INSERT INTO `person_state`(`FID`, `POSI_STATE`, `POSI_X`, `POSI_Y`, `ACC`, `BATTERY`, `STEP`, `STATE`, `HEARTRATE`, `BLPRES`, `POSI_NUM`, `COMPANY`, `ADD_TIME`, `TEMP1`, `TEMP2`, `TEMP3`, `TEMP4`) VALUES ('" + PersonInfo.Item1 + "', '" + RepUd_Lte_St.position.active + "', '" + xy[0] + "', '" + xy[1] + "', '不支持', '" + RepUd_Lte_St.position.battery + "', '" + RepUd_Lte_St.position.step + "', '终端状态', '暂无', '暂无', 0, '" + PersonInfo.Item3 + "', '" + RepUd_Lte_St.position.time + "', NULL, NULL, NULL, NULL)";
             }
             else
             {
-                Dictionary<string, string> dic = Mysql.SingleSelect("select POSI_NUM from vehicle_state where FID='" + PersonInfo.Item1 + "' ", "POSI_NUM");
+                Dictionary<string, string> dic = Mysql.SingleSelect("select POSI_NUM from person_state where FID='" + PersonInfo.Item1 + "' ", "POSI_NUM");
                 //获取定位更新次数
                 dic.TryGetValue("POSI_NUM", out string num);
-                Ud_LteSql = "update  `person_state` set `POSI_STATE`='" + RepUd_Lte_St.position.active + "',`POSI_X`='" + xy[0] + "', `POSI_Y`='" + xy[0] + "',`BATTERY`='" + RepUd_Lte_St.position.battery + "', `STEP`='" + RepUd_Lte_St.position.step + "', `STATE`='终端状态',`POSI_NUM`='" + (int.Parse(num) + 1) + "',ADD_TIME='" + RepUd_Lte_St.position.time + "' where `FID`='" + PersonInfo.Item1 + "'";
+                Ud_LteSql = "update  `person_state` set `POSI_STATE`='" + RepUd_Lte_St.position.active + "',`POSI_X`='" + xy[0] + "', `POSI_Y`='" + xy[1] + "',`BATTERY`='" + RepUd_Lte_St.position.battery + "', `STEP`='" + RepUd_Lte_St.position.step + "', `STATE`='终端状态',`POSI_NUM`='" + (int.Parse(num) + 1) + "',ADD_TIME='" + RepUd_Lte_St.position.time + "' where `FID`='" + PersonInfo.Item1 + "'";
             }
             Mysql.UpdOrInsOrdel(Ud_LteSql);
         }

@@ -71,6 +71,19 @@
             this.MonitorFileSockets = new System.Windows.Forms.Label();
             this.personOnline = new System.Windows.Forms.Label();
             this.OnlinePerson = new System.Windows.Forms.Label();
+            this.orderText = new System.Windows.Forms.TextBox();
+            this.orderCompany = new System.Windows.Forms.ComboBox();
+            this.label2 = new System.Windows.Forms.Label();
+            this.label15 = new System.Windows.Forms.Label();
+            this.targetType = new System.Windows.Forms.ComboBox();
+            this.label17 = new System.Windows.Forms.Label();
+            this.TargetId = new System.Windows.Forms.ComboBox();
+            this.label18 = new System.Windows.Forms.Label();
+            this.orderSendButton = new System.Windows.Forms.Button();
+            this.button1 = new System.Windows.Forms.Button();
+            this.label19 = new System.Windows.Forms.Label();
+            this.label20 = new System.Windows.Forms.Label();
+            this.orderAllSend = new System.Windows.Forms.CheckBox();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
             this.SuspendLayout();
             // 
@@ -82,7 +95,7 @@
             this.infoBox.Location = new System.Drawing.Point(1, 544);
             this.infoBox.Multiline = true;
             this.infoBox.Name = "infoBox";
-            this.infoBox.Size = new System.Drawing.Size(1443, 197);
+            this.infoBox.Size = new System.Drawing.Size(972, 197);
             this.infoBox.TabIndex = 0;
             // 
             // label1
@@ -162,7 +175,7 @@
             this.input.Location = new System.Drawing.Point(1, 744);
             this.input.Multiline = true;
             this.input.Name = "input";
-            this.input.Size = new System.Drawing.Size(1443, 63);
+            this.input.Size = new System.Drawing.Size(972, 63);
             this.input.TabIndex = 9;
             // 
             // dataGridView1
@@ -484,6 +497,127 @@
             this.OnlinePerson.TabIndex = 38;
             this.OnlinePerson.Text = "在线人员：";
             // 
+            // orderText
+            // 
+            this.orderText.Location = new System.Drawing.Point(975, 610);
+            this.orderText.Multiline = true;
+            this.orderText.Name = "orderText";
+            this.orderText.Size = new System.Drawing.Size(470, 131);
+            this.orderText.TabIndex = 42;
+            // 
+            // orderCompany
+            // 
+            this.orderCompany.FormattingEnabled = true;
+            this.orderCompany.Location = new System.Drawing.Point(1005, 567);
+            this.orderCompany.Name = "orderCompany";
+            this.orderCompany.Size = new System.Drawing.Size(145, 20);
+            this.orderCompany.TabIndex = 43;
+            // 
+            // label2
+            // 
+            this.label2.AutoSize = true;
+            this.label2.Location = new System.Drawing.Point(1172, 592);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(65, 12);
+            this.label2.TabIndex = 44;
+            this.label2.Text = "文本信息框";
+            // 
+            // label15
+            // 
+            this.label15.AutoSize = true;
+            this.label15.Location = new System.Drawing.Point(1058, 549);
+            this.label15.Name = "label15";
+            this.label15.Size = new System.Drawing.Size(53, 12);
+            this.label15.TabIndex = 45;
+            this.label15.Text = "公司列表";
+            // 
+            // targetType
+            // 
+            this.targetType.FormattingEnabled = true;
+            this.targetType.Items.AddRange(new object[] {
+            "人员",
+            "车辆"});
+            this.targetType.Location = new System.Drawing.Point(1156, 567);
+            this.targetType.Name = "targetType";
+            this.targetType.Size = new System.Drawing.Size(96, 20);
+            this.targetType.TabIndex = 47;
+            // 
+            // label17
+            // 
+            this.label17.AutoSize = true;
+            this.label17.Location = new System.Drawing.Point(1188, 549);
+            this.label17.Name = "label17";
+            this.label17.Size = new System.Drawing.Size(29, 12);
+            this.label17.TabIndex = 48;
+            this.label17.Text = "类别";
+            // 
+            // TargetId
+            // 
+            this.TargetId.FormattingEnabled = true;
+            this.TargetId.Location = new System.Drawing.Point(1258, 567);
+            this.TargetId.Name = "TargetId";
+            this.TargetId.Size = new System.Drawing.Size(126, 20);
+            this.TargetId.TabIndex = 49;
+            // 
+            // label18
+            // 
+            this.label18.AutoSize = true;
+            this.label18.Location = new System.Drawing.Point(1298, 550);
+            this.label18.Name = "label18";
+            this.label18.Size = new System.Drawing.Size(29, 12);
+            this.label18.TabIndex = 50;
+            this.label18.Text = "目标";
+            // 
+            // orderSendButton
+            // 
+            this.orderSendButton.BackColor = System.Drawing.Color.White;
+            this.orderSendButton.ForeColor = System.Drawing.SystemColors.ControlText;
+            this.orderSendButton.Location = new System.Drawing.Point(975, 744);
+            this.orderSendButton.Name = "orderSendButton";
+            this.orderSendButton.Size = new System.Drawing.Size(470, 63);
+            this.orderSendButton.TabIndex = 52;
+            this.orderSendButton.Text = "发送";
+            this.orderSendButton.UseVisualStyleBackColor = false;
+            this.orderSendButton.Click += new System.EventHandler(this.orderSendButton_Click);
+            // 
+            // button1
+            // 
+            this.button1.BackColor = System.Drawing.Color.White;
+            this.button1.Location = new System.Drawing.Point(1390, 566);
+            this.button1.Name = "button1";
+            this.button1.Size = new System.Drawing.Size(54, 22);
+            this.button1.TabIndex = 53;
+            this.button1.Text = "查询";
+            this.button1.UseVisualStyleBackColor = false;
+            this.button1.Click += new System.EventHandler(this.button1_Click);
+            // 
+            // label19
+            // 
+            this.label19.AutoSize = true;
+            this.label19.Location = new System.Drawing.Point(1402, 550);
+            this.label19.Name = "label19";
+            this.label19.Size = new System.Drawing.Size(29, 12);
+            this.label19.TabIndex = 54;
+            this.label19.Text = "操作";
+            // 
+            // label20
+            // 
+            this.label20.AutoSize = true;
+            this.label20.Location = new System.Drawing.Point(975, 551);
+            this.label20.Name = "label20";
+            this.label20.Size = new System.Drawing.Size(29, 12);
+            this.label20.TabIndex = 56;
+            this.label20.Text = "全体";
+            // 
+            // orderAllSend
+            // 
+            this.orderAllSend.AutoSize = true;
+            this.orderAllSend.Location = new System.Drawing.Point(982, 571);
+            this.orderAllSend.Name = "orderAllSend";
+            this.orderAllSend.Size = new System.Drawing.Size(15, 14);
+            this.orderAllSend.TabIndex = 57;
+            this.orderAllSend.UseVisualStyleBackColor = true;
+            // 
             // JtServerForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
@@ -491,6 +625,19 @@
             this.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.BackColor = System.Drawing.Color.White;
             this.ClientSize = new System.Drawing.Size(1447, 808);
+            this.Controls.Add(this.orderAllSend);
+            this.Controls.Add(this.label20);
+            this.Controls.Add(this.label19);
+            this.Controls.Add(this.button1);
+            this.Controls.Add(this.orderSendButton);
+            this.Controls.Add(this.label18);
+            this.Controls.Add(this.TargetId);
+            this.Controls.Add(this.label17);
+            this.Controls.Add(this.targetType);
+            this.Controls.Add(this.label15);
+            this.Controls.Add(this.label2);
+            this.Controls.Add(this.orderCompany);
+            this.Controls.Add(this.orderText);
             this.Controls.Add(this.monitorFile);
             this.Controls.Add(this.MonitorFileSockets);
             this.Controls.Add(this.personOnline);
@@ -585,6 +732,19 @@
         public System.Windows.Forms.Label personOnline;
         public System.Windows.Forms.Label MonitorFileSockets;
         public System.Windows.Forms.Label OnlinePerson;
+        private System.Windows.Forms.Label label2;
+        private System.Windows.Forms.Label label15;
+        private System.Windows.Forms.Label label17;
+        private System.Windows.Forms.Label label18;
+        public System.Windows.Forms.TextBox orderText;
+        public System.Windows.Forms.ComboBox orderCompany;
+        public System.Windows.Forms.ComboBox targetType;
+        public System.Windows.Forms.ComboBox TargetId;
+        public System.Windows.Forms.Button orderSendButton;
+        public System.Windows.Forms.Button button1;
+        private System.Windows.Forms.Label label19;
+        private System.Windows.Forms.Label label20;
+        public System.Windows.Forms.CheckBox orderAllSend;
     }
 }
 

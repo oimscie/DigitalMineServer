@@ -26,7 +26,7 @@ namespace SmartWatch.F10.Reponse
                 position = new Position_St
                 {
                     time = DateTime.ParseExact(item[1].Substring(4, 2) + "-" + item[1].Substring(2, 2) + "-" + item[1].Substring(0, 2) + " " + item[2].Substring(0, 2) + ":" + item[2].Substring(2, 2) + ":" + item[2].Substring(4, 2), "yy-MM-dd hh:mm:ss", System.Globalization.CultureInfo.InvariantCulture).AddHours(8),
-                    active = item[3] == "A" ? "定位" : "未定位",
+                    active = item[3] == "A" ? "已定位" : "未定位",
                     lat = item[4],
                     latType = item[5],
                     lon = item[6],
