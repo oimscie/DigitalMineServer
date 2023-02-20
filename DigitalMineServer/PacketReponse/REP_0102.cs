@@ -39,12 +39,12 @@ namespace DigitalMineServer.PacketReponse
             }
             //查找服务器存储的1078版本与主动安全版本
             string sql = "select EQUIP_1078_TYPE as equip_1078,EQUIP_AcSafe_TYPE as AcSafe from list_vehicle where VEHICLE_SIM='" + sim + "'";
-            List<Dictionary<string, string>> list = mysql.MultipleSelect(sql, new List<string>() { "equip_1078", "AcSafe" });
+            List<Dictionary<string, string>> list = mysql.MultipleSelect_List_dic(sql, new List<string>() { "equip_1078", "AcSafe" });
             if (list == null)
             {
                 //判断是否是人员
                 sql = "select EQUIP_1078_TYPE as equip_1078 from list_person where PERSON_SIM='" + sim + "'";
-                list = mysql.MultipleSelect(sql, new List<string>() { "equip_1078" });
+                list = mysql.MultipleSelect_List_dic(sql, new List<string>() { "equip_1078" });
                 if (list == null)
                 {
                     return;

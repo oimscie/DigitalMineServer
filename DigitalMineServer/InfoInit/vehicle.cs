@@ -36,7 +36,7 @@ namespace DigitalMineServer.InfoInit
                 List<string> fileName = new List<string> { "ID", "VEHICLE_SIM", "VEHICLE_TYPE", "VEHICLE_SPEED", "COMPANY", "VEHICLE_ID", "VEHICLE_DRIVER" };
                 //更新车辆信息
                 string sql = "select ID,VEHICLE_ID,VEHICLE_SIM,VEHICLE_TYPE,VEHICLE_SPEED,VEHICLE_DRIVER,COMPANY from list_vehicle";
-                List<Dictionary<string, string>> result = mySql.MultipleSelect(sql, fileName);
+                List<Dictionary<string, string>> result = mySql.MultipleSelect_List_dic(sql, fileName);
                 //临时信息存储，供围栏信息使用
                 Dictionary<string, ValueTuple<string, string, string>> temp = new Dictionary<string, (string, string, string)>();
                 //服务器车辆写入redis
@@ -62,7 +62,7 @@ namespace DigitalMineServer.InfoInit
                 //围栏信息字段List（终端SIM，经度，纬度，围栏名称，围栏类型，车辆归属公司）
                 fileName = new List<string> { "SIM", "XY", "NAME", "TYPES", "COMPANY" };
                 sql = "select SIM,XY,NAME,TYPES,COMPANY from list_fence inner join (select VEHICLE_SIM from list_vehicle ) a on a.VEHICLE_SIM=SIM";
-                new Fence().UpdateFence(mySql.MultipleSelect(sql, fileName), temp, Redis);
+                new Fence().UpdateFence(mySql.MultipleSelect_List_dic(sql, fileName), temp, Redis);
             }
             catch (Exception ex)
             {

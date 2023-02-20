@@ -28,7 +28,7 @@ namespace DigitalMineServer.InfoInit
                 List<string> fileName = new List<string> { "ID", "PERSON_SIM", "PERSON_TYPE", "COMPANY", "PERSON_ID" };
                 //更新人员信息
                 string sql = "select ID,PERSON_ID,PERSON_SIM,PERSON_TYPE,COMPANY from list_person";
-                List<Dictionary<string, string>> result = mySql.MultipleSelect(sql, fileName);
+                List<Dictionary<string, string>> result = mySql.MultipleSelect_List_dic(sql, fileName);
                 //临时信息存储，供围栏信息使用
                 Dictionary<string, ValueTuple<string, string, string>> temp = new Dictionary<string, (string, string, string)>();
                 //判断服务器返回的车辆信息是否为空
@@ -42,16 +42,16 @@ namespace DigitalMineServer.InfoInit
                     item.TryGetValue("ID", out string id);
                     item.TryGetValue("PERSON_TYPE", out string type);
                     item.TryGetValue("COMPANY", out string company);
-                    item.TryGetValue("PERSON_ID", out string vid);
-                    temp.Add(sim, new ValueTuple<string, string, string>(type, vid, "未记录"));
-                    Redis.Set(sim + Redis_key_ext.person, Utils.Util.ObjectSerializ(new ValueTuple<string, string, string, string>(id, type, company, vid)));
+                    item.TryGetValue("PERSON_ID", out string pid);
+                    temp.Add(sim, new ValueTuple<string, string, string>(type, pid, "未记录"));
+                    Redis.Set(sim + Redis_key_ext.person, Utils.Util.ObjectSerializ(new ValueTuple<string, string, string, string>(id, type, company, pid)));
                 }
 
                 //围栏信息字段List（终端SIM，经度，纬度，围栏名称，围栏类型，归属公司）
                 fileName = new List<string> { "SIM", "XY", "NAME", "TYPES", "COMPANY" };
                 sql = "select SIM,XY,NAME,TYPES,COMPANY from list_fence inner join (select Person_sim from list_person ) a on a.Person_sim=SIM";
                 //服务器围栏写入redis
-                new Fence().UpdateFence(mySql.MultipleSelect(sql, fileName), temp, Redis);
+                new Fence().UpdateFence(mySql.MultipleSelect_List_dic(sql, fileName), temp, Redis);
             }
             catch (Exception ex)
             {

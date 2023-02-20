@@ -124,6 +124,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="InfoInit\ClockIn.cs" />
     <Compile Include="InfoInit\Fence.cs" />
     <Compile Include="InfoInit\Person.cs" />
     <Compile Include="JTServerWindow.cs">
@@ -235,6 +236,7 @@
     <Compile Include="SuperSocket\SocketSession\VehicleVideoSession.cs" />
     <Compile Include="SuperSocket\SocketSession\WebSession.cs" />
     <Compile Include="Util\DecodeBSJ.cs" />
+    <Compile Include="Util\PersonUtils.cs" />
     <Compile Include="Util\Polygon.cs" />
     <Compile Include="Util\Util.cs" />
     <Compile Include="Program.cs" />

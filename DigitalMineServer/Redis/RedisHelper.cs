@@ -7,6 +7,7 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using static DigitalMineServer.Structures.Comprehensive;
+using static ServiceStack.Script.Lisp;
 
 namespace DigitalMineServer.Redis
 {
@@ -17,33 +18,34 @@ namespace DigitalMineServer.Redis
         /// <summary>
         /// 取消ServiceStack.Rides每小时6000条操作限制
         /// </summary>
-            public static void Execute()
+        public static void Execute()
+        {
+            var field = typeof(ServiceStack.LicenseUtils).GetFields(BindingFlags.NonPublic | BindingFlags.Static)
+                .FirstOrDefault(f => f.Name.Equals("__activatedLicense")); ;
+            var atype = typeof(ServiceStack.LicenseUtils).Assembly.GetTypes()
+                .FirstOrDefault(t => t.Name.Equals("__ActivatedLicense"));
+            var __activatedLicense = field.GetValue(null);
+            if (__activatedLicense == null)
             {
-                var field = typeof(ServiceStack.LicenseUtils).GetFields(BindingFlags.NonPublic | BindingFlags.Static)
-                    .FirstOrDefault(f => f.Name.Equals("__activatedLicense")); ;
-                var atype = typeof(ServiceStack.LicenseUtils).Assembly.GetTypes()
-                    .FirstOrDefault(t => t.Name.Equals("__ActivatedLicense"));
-                var __activatedLicense = field.GetValue(null);
-                if (__activatedLicense == null)
-                {
-                    var licenseKey = new ServiceStack.LicenseKey { Type = ServiceStack.LicenseType.FreeIndividual };//注册为个人免费版
-                    var ctr = atype.GetConstructors(BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public)[0];
-                    __activatedLicense = ctr.Invoke(new object[] { licenseKey });
-                    field.SetValue(null, __activatedLicense);
-                }
-                else
-                {
-                    var lfield = __activatedLicense.GetType().GetFields(BindingFlags.NonPublic | BindingFlags.Instance)
-                        .FirstOrDefault(f => f.Name.Equals("LicenseKey"));
-                    var licenseKey = lfield.GetValue(__activatedLicense) as ServiceStack.LicenseKey;
-                    if (licenseKey == null)
-                    {
-                        licenseKey = new ServiceStack.LicenseKey { Type = ServiceStack.LicenseType.FreeIndividual };
-                        lfield.SetValue(__activatedLicense, licenseKey);
-                    }
-                    licenseKey.Type = ServiceStack.LicenseType.FreeIndividual;
-                }
+                var licenseKey = new ServiceStack.LicenseKey { Type = ServiceStack.LicenseType.FreeIndividual };//注册为个人免费版
+                var ctr = atype.GetConstructors(BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public)[0];
+                __activatedLicense = ctr.Invoke(new object[] { licenseKey });
+                field.SetValue(null, __activatedLicense);
             }
+            else
+            {
+                var lfield = __activatedLicense.GetType().GetFields(BindingFlags.NonPublic | BindingFlags.Instance)
+                    .FirstOrDefault(f => f.Name.Equals("LicenseKey"));
+                var licenseKey = lfield.GetValue(__activatedLicense) as ServiceStack.LicenseKey;
+                if (licenseKey == null)
+                {
+                    licenseKey = new ServiceStack.LicenseKey { Type = ServiceStack.LicenseType.FreeIndividual };
+                    lfield.SetValue(__activatedLicense, licenseKey);
+                }
+                licenseKey.Type = ServiceStack.LicenseType.FreeIndividual;
+            }
+        }
+
         public RedisHelper()
         {
             client = new RedisClient("127.0.0.1", 6379, "admin");
@@ -61,6 +63,10 @@ namespace DigitalMineServer.Redis
             if (key == null)
             {
                 return false;
+            }
+            if (expiresIn == -1)
+            {
+                return client.Set(key, value);
             }
             if (expiresIn != 0)
             {
@@ -86,11 +92,11 @@ namespace DigitalMineServer.Redis
             {
                 return client.Set(key, value);
             }
-            if (expiresIn == 0)
+            if (expiresIn != 0)
             {
-                return client.Set(key, value, new TimeSpan(18000000000));
+                return client.Set(key, value, new TimeSpan(ticks: expiresIn * 600000000L));
             }
-            return client.Set(key, value, new TimeSpan(expiresIn * 600000000L));
+            return client.Set(key, value, new TimeSpan(18000000000));
         }
 
         public byte[] ReadBytes(string key)
@@ -101,6 +107,16 @@ namespace DigitalMineServer.Redis
         public string ReadString(string key)
         {
             return client.Get<string>(key);
+        }
+
+        public string ReadByteToString(string key)
+        {
+            byte[] buffer = ReadBytes(key);
+            if (buffer is null)
+            {
+                return null;
+            }
+            return (string)Utils.Util.Deserialization(buffer);
         }
 
         public void Delete(string key)
@@ -196,6 +212,21 @@ namespace DigitalMineServer.Redis
                 return null;
             }
             return (Dictionary<string, ValueTuple<string, string, string, string, string, List<Point>>>)Utils.Util.Deserialization(buffer);
+        }
+
+        /// <summary>
+        /// 读取打卡范围信息
+        /// </summary>
+        /// <param name="key"></param>
+        /// <returns></returns>
+        public List<Point> GetClockInFench(string key)
+        {
+            byte[] buffer = ReadBytes(key);
+            if (buffer is null)
+            {
+                return null;
+            }
+            return (List<Point>)Utils.Util.Deserialization(buffer);
         }
 
         /// <summary>

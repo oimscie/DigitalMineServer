@@ -24,6 +24,11 @@ namespace DigitalMineServer.Structures
             public const string fench_in = "-f-i";
 
             /// <summary>
+            /// 打卡围栏
+            /// </summary>
+            public const string clock_in = "-c-i";
+
+            /// <summary>
             /// 车辆信息
             /// </summary>
             public const string vehicle = "-v";

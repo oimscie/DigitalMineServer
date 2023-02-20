@@ -110,7 +110,7 @@ namespace DigitalMineServer.Mysql
         /// <param name="sql">SQL语句</param>
         /// <param name="fieldName">要查询的数据字段名称集合</param>
         /// <returns>List<Dictionary<string, string>>，以输入的字段名称为key值</returns>
-        public List<Dictionary<string, string>> MultipleSelect(string sql, List<string> fieldName)
+        public List<Dictionary<string, string>> MultipleSelect_List_dic(string sql, List<string> fieldName)
         {
             if (!CheckConn()) { return null; }
             Command.CommandText = sql;
@@ -151,7 +151,7 @@ namespace DigitalMineServer.Mysql
         /// <param name="sql">SQL语句</param>
         /// <param name="fieldName">List<vehicleStateEntity>datagridView数据源</param>
         /// <returns>List<vehicleStateEntity></returns>
-        public List<VehicleStateEntity> MultipleSelect_v(string sql)
+        public List<VehicleStateEntity> MultipleSelect_List_dic_v(string sql)
         {
             if (!CheckConn()) { return null; }
             Command.CommandText = sql;
@@ -199,7 +199,7 @@ namespace DigitalMineServer.Mysql
         /// <param name="sql">SQL语句</param>
         /// <param name="fieldName">List<vehicleStateEntity>datagridView数据源</param>
         /// <returns>List<vehicleStateEntity></returns>
-        public List<PersonStateEntity> MultipleSelect_p(string sql)
+        public List<PersonStateEntity> MultipleSelect_List_dic_p(string sql)
         {
             if (!CheckConn()) { return null; }
             Command.CommandText = sql;
@@ -249,7 +249,7 @@ namespace DigitalMineServer.Mysql
         /// <param name="sql">SQL语句</param>
         /// <param name="fieldName">要查询的数据字段名称</param>
         /// <returns>ArrayList</returns>
-        public ArrayList MultipleSelect(string sql, string fieldName)
+        public ArrayList MultipleSelect_Arr(string sql, string fieldName)
         {
             if (!CheckConn()) { return null; }
             Command.CommandText = sql;
@@ -282,7 +282,7 @@ namespace DigitalMineServer.Mysql
         /// <param name="sql"></param>
         /// <param name="fieldName"></param>
         /// <returns></returns>
-        public DataTable MultipleSelects(string sql, string fieldName)
+        public DataTable MultipleSelect_DataTable(string sql, string fieldName)
         {
             if (!CheckConn()) { return null; }
             Command.CommandText = sql;
@@ -318,7 +318,7 @@ namespace DigitalMineServer.Mysql
         /// <param name="sql">SQL语句</param>
         /// <param name="fieldName">要查询的数据字段名称</param>
         /// <returns>Dictionary<string, string>，以输入的字段名称为key值</returns>
-        public Dictionary<string, string> SingleSelect(string sql, string fieldName)
+        public Dictionary<string, string> SingleSelect_Dic(string sql, string fieldName)
         {
             if (!CheckConn()) { return null; }
             Command.CommandText = sql;
@@ -329,10 +329,42 @@ namespace DigitalMineServer.Mysql
                 while (Reader.Read())
                 {
                     back.Add(fieldName, Reader.GetString(fieldName));
+                    break;
                 }
                 Reader.Close();
                 if (back.Count == 0) { return null; };
                 return back;
+            }
+            catch (Exception e)
+            {
+                LogHelper.WriteLog("sql查询错误----" + sql, e);
+                return null;
+            }
+            finally
+            {
+                Close();
+            }
+        }
+
+        /// <summary>
+        /// 单字段多行查询，查询失败或结果为空均返回null
+        /// </summary>
+        /// <param name="sql">SQL语句</param>
+        /// <param name="fieldName">要查询的数据字段名称</param>
+        /// <returns>Dictionary<string, string>，以输入的字段名称为key值</returns>
+        public string SingleSelect_Str(string sql, string fieldName)
+        {
+            if (!CheckConn()) { return null; }
+            Command.CommandText = sql;
+            Reader = Command.ExecuteReader();
+            try
+            {
+                if (Reader.HasRows)
+                {
+                    return Reader.GetString(fieldName);
+                }
+                Reader.Close();
+                return null;
             }
             catch (Exception e)
             {

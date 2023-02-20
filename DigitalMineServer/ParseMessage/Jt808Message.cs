@@ -45,12 +45,15 @@ namespace DigitalMineServer
 
         private readonly RedisHelper VehicleRedis;
 
+        private readonly PersonUtils PersonUtils;
+
         public Jt808Message()
         {
             VehicleMysql = new MySqlHelper();
             PersonMysql = new MySqlHelper();
             PersonRedis = new RedisHelper();
             VehicleRedis = new RedisHelper();
+            PersonUtils = new PersonUtils();
         }
 
         /// <summary>
@@ -197,7 +200,7 @@ namespace DigitalMineServer
                     }
                     else
                     {
-                        Dictionary<string, string> dic = VehicleMysql.SingleSelect("select POSI_NUM from vehicle_state where FID='" + vehicleInfo.Item1 + "' ", "POSI_NUM");
+                        Dictionary<string, string> dic = VehicleMysql.SingleSelect_Dic("select POSI_NUM from vehicle_state where FID='" + vehicleInfo.Item1 + "' ", "POSI_NUM");
                         //获取定位更新次数
                         dic.TryGetValue("POSI_NUM", out string num);
                         sql = "UPDATE `vehicle_state` SET " +
@@ -268,19 +271,11 @@ namespace DigitalMineServer
                     //检查人员状态表中是否存在
                     if (PersonMysql.GetCount("select count(ID) as Count from person_state where FID='" + PersonInfo.Item1 + "'") == 0)
                     {
-                        /*                        sql = "INSERT INTO `person_state`" +
-                                                     "(`FID`, `POSI_STATE`, `POSI_X`, `POSI_Y`, " +
-                                                     " `ACC`, `POSI_NUM`, `COMPANY`, `ADD_TIME`, " +
-                                                     "`TEMP1`, `TEMP2`, `TEMP3`, `TEMP4`) " +
-                                                     "VALUES" +
-                                                     " ('" + PersonInfo.Item1 + "', '" + IsStop + "', '" + xy[0] + "', '" + xy[1] + "'," +
-                                                     " '" + ACC + "',0, '" + PersonInfo.Item3 + "', '" + time + "', " +
-                                                      "NULL, NULL, NULL, NULL)";*/
                         sql = "INSERT INTO `product`.`person_state`( `FID`, `POSI_STATE`, `POSI_X`, `POSI_Y`, `ACC`, `BATTERY`, `STEP`, `STATE`, `HEARTRATE`, `BLPRES`, `POSI_NUM`, `COMPANY`, `ADD_TIME`, `TEMP1`, `TEMP2`, `TEMP3`, `TEMP4`) VALUES ('" + PersonInfo.Item1 + "','" + IsStop + "', '" + xy[0] + "', '" + xy[1] + "', '" + ACC + "', '不支持', '不支持', '不支持', '不支持', '不支持', '0', '" + PersonInfo.Item3 + "', '" + time + "', NULL, NULL, NULL, NULL)";
                     }
                     else
                     {
-                        Dictionary<string, string> dic = PersonMysql.SingleSelect("select POSI_NUM from person_state where FID='" + PersonInfo.Item1 + "' ", "POSI_NUM");
+                        Dictionary<string, string> dic = PersonMysql.SingleSelect_Dic("select POSI_NUM from person_state where FID='" + PersonInfo.Item1 + "' ", "POSI_NUM");
                         //获取定位更新次数
                         dic.TryGetValue("POSI_NUM", out string num);
                         sql = "UPDATE `person_state` SET " +
@@ -288,7 +283,9 @@ namespace DigitalMineServer
                     }
                     PersonMysql.UpdOrInsOrdel(sql);
                     //围栏检查
-                    CheckPersonFence(Sim, xy);
+                    PersonUtils.CheckPersonFence(Sim, xy);
+                    //打卡检测
+                    PersonUtils.ClockInCheck(PersonInfo.Item4, xy, PersonInfo.Item3);
                 }
                 catch (Exception e)
                 {
@@ -372,7 +369,7 @@ namespace DigitalMineServer
                         LogHelper.WriteLog(sql);
                         if (VehicleMysql.GetCount(sql) == 0)
                         {
-                            sql = "INSERT INTO `product`.`rec_unu_info`( `WARN_USER_ID`, `WARN_USER_TYPE`,`USERTYPE`, `WARNTYPE`, `INFO`, `DRIVER`, `COMPANY`, `ADD_TIME`, `TEMP1`, `TEMP2`, `TEMP3`, `TEMP4`) VALUES ('" + item.Value.Item4 + "','" + item.Value.Item3 + "','人员', '" + WarnType.Forbid_In + "', '围栏名称：" + item.Value.Item1 + "', '" + item.Value.Item5 + "', '" + item.Value.Item2 + "', '" + DateTime.Now + "', NULL, NULL, NULL, NULL)";
+                            sql = "INSERT INTO `product`.`rec_unu_info`( `WARN_USER_ID`, `WARN_USER_TYPE`,`USERTYPE`, `WARNTYPE`, `INFO`, `DRIVER`, `COMPANY`, `ADD_TIME`, `TEMP1`, `TEMP2`, `TEMP3`, `TEMP4`) VALUES ('" + item.Value.Item4 + "','" + item.Value.Item3 + "','车辆', '" + WarnType.Forbid_In + "', '围栏名称：" + item.Value.Item1 + "', '" + item.Value.Item5 + "', '" + item.Value.Item2 + "', '" + DateTime.Now + "', NULL, NULL, NULL, NULL)";
                             LogHelper.WriteLog(sql);
                             VehicleMysql.UpdOrInsOrdel(sql);
                         }
@@ -390,53 +387,8 @@ namespace DigitalMineServer
                         string sql = "select COUNT(ID) as Count from rec_unu_info where COMPANY='" + item.Value.Item2 + "' and WARN_USER_ID='" + item.Value.Item4 + "' and  USERTYPE='车辆' and  WARNTYPE='" + WarnType.Forbid_Out + "' and ADD_TIME>=DATE_SUB(NOW(),INTERVAL 2 MINUTE)";
                         if (VehicleMysql.GetCount(sql) == 0)
                         {
-                            sql = "INSERT INTO `product`.`rec_unu_info`( `WARN_USER_ID`, `WARN_USER_TYPE`,`USERTYPE`, `WARNTYPE`, `INFO`, `DRIVER`, `COMPANY`, `ADD_TIME`, `TEMP1`, `TEMP2`, `TEMP3`, `TEMP4`) VALUES ('" + item.Value.Item4 + "','" + item.Value.Item3 + "','人员', '" + WarnType.Forbid_Out + "', '围栏名称：" + item.Value.Item1 + "', '" + item.Value.Item5 + "', '" + item.Value.Item2 + "', '" + DateTime.Now + "', NULL, NULL, NULL, NULL)";
+                            sql = "INSERT INTO `product`.`rec_unu_info`( `WARN_USER_ID`, `WARN_USER_TYPE`,`USERTYPE`, `WARNTYPE`, `INFO`, `DRIVER`, `COMPANY`, `ADD_TIME`, `TEMP1`, `TEMP2`, `TEMP3`, `TEMP4`) VALUES ('" + item.Value.Item4 + "','" + item.Value.Item3 + "','车辆', '" + WarnType.Forbid_Out + "', '围栏名称：" + item.Value.Item1 + "', '" + item.Value.Item5 + "', '" + item.Value.Item2 + "', '" + DateTime.Now + "', NULL, NULL, NULL, NULL)";
                             VehicleMysql.UpdOrInsOrdel(sql);
-                        }
-                    }
-                }
-            }
-        }
-
-        /// <summary>
-        /// 判断人员围栏
-        /// </summary>
-        /// <param name="sim">SIM号</param>
-        /// <param name="xy">2000坐标</param>
-        private void CheckPersonFence(string sim, List<double> xy)
-        {
-            //判断禁入围栏
-
-            Dictionary<string, ValueTuple<string, string, string, string, string, List<Point>>> dic = PersonRedis.GetFench(sim, Redis_key_ext.fench_in);
-            if (dic != null)
-            {
-                foreach (var item in dic)
-                {
-                    if (Polygon.IsInPolygon(new Point(xy[0], xy[1]), item.Value.Item6))
-                    {
-                        string sql = "select COUNT(ID) as Count from rec_unu_info where COMPANY='" + item.Value.Item2 + "' and WARN_USER_ID='" + item.Value.Item4 + "' and  USERTYPE='车辆' and  WARNTYPE='" + WarnType.Forbid_In + "' and ADD_TIME>=DATE_SUB(NOW(),INTERVAL 2 MINUTE)";
-                        if (PersonMysql.GetCount(sql) == 0)
-                        {
-                            sql = "INSERT INTO `product`.`rec_unu_info`( `WARN_USER_ID`, `WARN_USER_TYPE`,` USERTYPE`, `WARNTYPE`, `INFO`, `DRIVER`, `COMPANY`, `ADD_TIME`, `TEMP1`, `TEMP2`, `TEMP3`, `TEMP4`) VALUES ('" + item.Value.Item4 + "','" + item.Value.Item3 + "','人员', '" + WarnType.Forbid_In + "', '围栏名称：" + item.Value.Item1 + "', '', '" + item.Value.Item2 + "', '" + DateTime.Now + "', NULL, NULL, NULL, NULL)";
-                            PersonMysql.UpdOrInsOrdel(sql);
-                        }
-                    }
-                }
-            }
-
-            //判断禁出围栏
-            dic = PersonRedis.GetFench(sim, Redis_key_ext.fench_out);
-            if (dic != null)
-            {
-                foreach (var item in dic)
-                {
-                    if (!Polygon.IsInPolygon(new Point(xy[0], xy[1]), item.Value.Item6))
-                    {
-                        string sql = "select COUNT(ID) as Count from rec_unu_info where COMPANY='" + item.Value.Item2 + "' and WARN_USER_ID='" + item.Value.Item4 + "' and USERTYPE='车辆' and  WARNTYPE='" + WarnType.Forbid_Out + "' and ADD_TIME>=DATE_SUB(NOW(),INTERVAL 2 MINUTE)";
-                        if (PersonMysql.GetCount(sql) == 0)
-                        {
-                            sql = "INSERT INTO `product`.`rec_unu_info`( `WARN_USER_ID`, `WARN_USER_TYPE`,` USERTYPE`, `WARNTYPE`, `INFO`, `DRIVER`, `COMPANY`, `ADD_TIME`, `TEMP1`, `TEMP2`, `TEMP3`, `TEMP4`) VALUES ('" + item.Value.Item4 + "','" + item.Value.Item3 + "','人员','" + WarnType.Forbid_Out + "', '围栏名称：" + item.Value.Item1 + "', '', '" + item.Value.Item2 + "', '" + DateTime.Now + "', NULL, NULL, NULL, NULL)";
-                            PersonMysql.UpdOrInsOrdel(sql);
                         }
                     }
                 }

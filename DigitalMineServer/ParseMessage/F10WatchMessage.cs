@@ -33,11 +33,14 @@ namespace DigitalMineServer.ParseMessage
 
         private readonly RedisHelper PersonRedis;
 
+        private readonly PersonUtils PersonUtils;
+
         public F10WatchMessage()
         {
             PacketFrom = new PacketFrom();
             Mysql = new MySqlHelper();
             PersonRedis = new RedisHelper();
+            PersonUtils = new PersonUtils();
         }
 
         public void ParseMessage()
@@ -172,7 +175,6 @@ namespace DigitalMineServer.ParseMessage
                     string OxygenSql = "select count(id) as Count from person_state where FID='" + PersonInfo3.Item1 + "'";
                     if (Mysql.GetCount(OxygenSql) == 0)
                     {
-                        // string HEARTRATE = RepBphrt_St.high + "/" + RepBphrt_St.low;
                         bphrtSql = "INSERT INTO `person_state`(`FID`, `POSI_STATE`, `POSI_X`, `POSI_Y`, `ACC`, `BATTERY`, `STEP`, `STATE`, `HEARTRATE`, `BLPRES`, `POSI_NUM`, `COMPANY`, `ADD_TIME`, `TEMP1`, `TEMP2`, `TEMP3`, `TEMP4`) VALUES ('" + PersonInfo3.Item1 + "', '未定位', '未定位', '未定位', '不支持', '暂无', '暂无', '终端状态', '暂无', '" + RepOxygen_St.oxy + "', 0, '" + PersonInfo3.Item3 + "', '" + DateTime.Now + "', NULL, NULL, NULL, NULL)";
                     }
                     else
@@ -211,12 +213,16 @@ namespace DigitalMineServer.ParseMessage
             }
             else
             {
-                Dictionary<string, string> dic = Mysql.SingleSelect("select POSI_NUM from person_state where FID='" + PersonInfo.Item1 + "' ", "POSI_NUM");
+                Dictionary<string, string> dic = Mysql.SingleSelect_Dic("select POSI_NUM from person_state where FID='" + PersonInfo.Item1 + "' ", "POSI_NUM");
                 //获取定位更新次数
                 dic.TryGetValue("POSI_NUM", out string num);
                 Ud_LteSql = "update  `person_state` set `POSI_STATE`='" + RepUd_Lte_St.position.active + "',`POSI_X`='" + xy[0] + "', `POSI_Y`='" + xy[1] + "',`BATTERY`='" + RepUd_Lte_St.position.battery + "', `STEP`='" + RepUd_Lte_St.position.step + "', `STATE`='终端状态',`POSI_NUM`='" + (int.Parse(num) + 1) + "',ADD_TIME='" + RepUd_Lte_St.position.time + "' where `FID`='" + PersonInfo.Item1 + "'";
             }
             Mysql.UpdOrInsOrdel(Ud_LteSql);
+            //围栏检查
+            PersonUtils.CheckPersonFence(F10Packet.FixBody.id, xy);
+            //打卡检测
+            PersonUtils.ClockInCheck(PersonInfo.Item4, xy, PersonInfo.Item3);
         }
 
         /// <summary>

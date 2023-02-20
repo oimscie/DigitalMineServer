@@ -116,9 +116,12 @@ namespace DigitalMineServer
 
             #region 初始化车辆人员信息
 
+            this.infoBox.AppendText("初始化车辆及人员信息\r\n");
             new Vehicle().VehicleInfo(null, null);
 
             new Person().PersonInfo(null, null);
+
+            new ClockIn().ClockInInfo(null, null);
             Thread VehicleInfo = new Thread(CarInfoCheckTimers)
             {
                 IsBackground = true
@@ -129,6 +132,13 @@ namespace DigitalMineServer
                 IsBackground = true
             };
             PersonInfo.Start();
+
+            Thread ClockInInfo = new Thread(ClockInInfoCheckTimers)
+            {
+                IsBackground = true
+            };
+            ClockInInfo.Start();
+
             this.infoBox.AppendText("车辆人员信息初始化完成\r\n");
 
             #endregion 初始化车辆人员信息
@@ -192,7 +202,7 @@ namespace DigitalMineServer
         /// </summary>
         public void CarInfoCheckTimers()
         {
-            VehicleInfo = new System.Timers.Timer(1000 * 60 * 1);
+            VehicleInfo = new System.Timers.Timer(1000 * 60 * 2);
             VehicleInfo.Elapsed += new ElapsedEventHandler(new Vehicle().VehicleInfo);
             VehicleInfo.AutoReset = true;
             VehicleInfo.Enabled = true;
@@ -203,8 +213,19 @@ namespace DigitalMineServer
         /// </summary>
         public void PersonInfoCheckTimers()
         {
-            PersonInfo = new System.Timers.Timer(1000 * 60 * 1);
+            PersonInfo = new System.Timers.Timer(1000 * 60 * 2);
             PersonInfo.Elapsed += new ElapsedEventHandler(new Person().PersonInfo);
+            PersonInfo.AutoReset = true;
+            PersonInfo.Enabled = true;
+        }
+
+        /// <summary>
+        ///  打卡范围信息更新
+        /// </summary>
+        public void ClockInInfoCheckTimers()
+        {
+            PersonInfo = new System.Timers.Timer(1000 * 60 * 60);
+            PersonInfo.Elapsed += new ElapsedEventHandler(new ClockIn().ClockInInfo);
             PersonInfo.AutoReset = true;
             PersonInfo.Enabled = true;
         }
@@ -226,13 +247,13 @@ namespace DigitalMineServer
             {
                 case "车辆":
                     sql = "select VEHICLE_ID ,VEHICLE_SIM ,VEHICLE_TYPE ,VEHICLE_DRIVER,POSI_STATE,POSI_X,POSI_Y,POSI_SPEED,REAl_FUEL,ACC,POSI_NUM,COMPANY,ADD_TIME from (select FID,POSI_STATE,POSI_X,POSI_Y,POSI_SPEED,REAl_FUEL,ACC,POSI_NUM,COMPANY,ADD_TIME from vehicle_state " + sqlCompany + " order by ADD_TIME desc limit " + size * count + "," + count + ")a inner join (select ID,VEHICLE_ID,VEHICLE_SIM,VEHICLE_TYPE,VEHICLE_DRIVER from LIST_VEHICLE " + sqlCompany + ")b on FID=ID";
-                    VehicleStateEntity = MySqlHelper.MultipleSelect_v(sql);
+                    VehicleStateEntity = MySqlHelper.MultipleSelect_List_dic_v(sql);
                     Utils.Util.UpdataSource_v(dataGridView1, VehicleStateEntity);
                     break;
 
                 case "人员":
                     sql = "select PERSON_ID ,PERSON_SIM ,PERSON_TYPE,POSI_STATE,POSI_X,POSI_Y,ACC,BATTERY,STEP,STATE,HEARTRATE,BLPRES,POSI_NUM,COMPANY,ADD_TIME from (select FID,POSI_STATE,POSI_X,POSI_Y,ACC,BATTERY,STEP,STATE,HEARTRATE,BLPRES,POSI_NUM,COMPANY,ADD_TIME from person_state " + sqlCompany + " order by ADD_TIME desc limit " + size * count + "," + count + ")a inner join (select ID,PERSON_ID,PERSON_SIM,PERSON_TYPE from LIST_PERSON " + sqlCompany + ")b on FID=ID";
-                    PersonStateEntity = MySqlHelper.MultipleSelect_p(sql);
+                    PersonStateEntity = MySqlHelper.MultipleSelect_List_dic_p(sql);
                     Utils.Util.UpdataSource_p(dataGridView1, PersonStateEntity);
                     break;
             }
@@ -273,7 +294,7 @@ namespace DigitalMineServer
         private void getCompany()
         {
             string sql = "select distinct Company from list_user";
-            DataTable data = MySqlHelper.MultipleSelects(sql, "Company");
+            DataTable data = MySqlHelper.MultipleSelect_DataTable(sql, "Company");
             comboBox1.DisplayMember = "Company";
             comboBox1.DataSource = data;
             orderCompany.DisplayMember = "Company";
@@ -338,7 +359,7 @@ namespace DigitalMineServer
                     break;
             }
             string sql = "select " + targetField + " as sim from " + targetDB + " where company='" + company + "'";
-            orderTarget = MySqlHelper.MultipleSelect(sql, "sim");
+            orderTarget = MySqlHelper.MultipleSelect_Arr(sql, "sim");
             TargetId.DataSource = orderTarget;
         }
 
@@ -433,20 +454,27 @@ namespace DigitalMineServer
 
         private void write_txt(string content)
         {
-            StreamWriter sr;
-            string path = Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory) + "/" + orderCompany.Text + "-" + targetType.Text + "-" + DateTime.Now.ToShortDateString() + ".txt";
-            if (File.Exists(path))
-            //如果文件存在,则创建File.AppendText对象
+            try
             {
-                sr = File.AppendText(path);
+                StreamWriter sr;
+                string path = Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory) + "/" + orderCompany.Text + "-" + targetType.Text + "-" + DateTime.Now.ToShortDateString() + ".txt";
+                if (File.Exists(path))
+                //如果文件存在,则创建File.AppendText对象
+                {
+                    sr = File.AppendText(path);
+                }
+                else
+                //如果文件不存在,则创建File.CreateText对象
+                {
+                    sr = File.CreateText(path);
+                }
+                sr.WriteLine(content);
+                sr.Close();
             }
-            else
-            //如果文件不存在,则创建File.CreateText对象
+            catch (Exception e)
             {
-                sr = File.CreateText(path);
+                LogHelper.WriteLog("文件写入错误-------", e);
             }
-            sr.WriteLine(content);
-            sr.Close();
         }
     }
 }

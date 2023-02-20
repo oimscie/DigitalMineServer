@@ -73,6 +73,9 @@ namespace DigitalMineServer.Static
         //是否正在更新人员信息
         public static bool isPersonUpdate;
 
+        //是否正在更新打卡范围信息
+        public static bool isClockInUpdate;
+
         /// <summary>
         /// 终端录像查询指令流水号<流水号，终端sim>
         /// </summary>
