@@ -20,12 +20,14 @@ using MySqlX.XDevAPI;
 using SuperSocket.SocketBase;
 using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Xml.Linq;
 using static ActionSafe.AcSafe_Su.PacketBody.PacketBody;
 using static DigitalMineServer.Structures.Comprehensive;
+using static ServiceStack.Script.Lisp;
 
 namespace DigitalMineServer
 {
@@ -47,8 +49,12 @@ namespace DigitalMineServer
 
         private readonly PersonUtils PersonUtils;
 
+        //重复位置入库时间间隔
+        private readonly string PosiInterval;
+
         public Jt808Message()
         {
+            PosiInterval = ConfigurationManager.AppSettings["PosiInterval"];
             VehicleMysql = new MySqlHelper();
             PersonMysql = new MySqlHelper();
             PersonRedis = new RedisHelper();
@@ -186,6 +192,7 @@ namespace DigitalMineServer
                     byte[] state = BitConvert.UInt32ToBit(bodyinfo.StatusIndication);
                     string ACC = state[0] == 0 ? ACC = "关" : ACC = "开";
                     string IsStop = state[1] == 0 ? IsStop = "未定位" : IsStop = "已定位";
+                    bool InsertDb = true;//记录是否存入数据库
                     //检查车辆在状态表中是否存在
                     if (VehicleMysql.GetCount("select count(ID) as Count from vehicle_state where FID='" + vehicleInfo.Item1 + "'") == 0)
                     {
@@ -206,13 +213,43 @@ namespace DigitalMineServer
                         sql = "UPDATE `vehicle_state` SET " +
                             " `POSI_STATE` = '" + IsStop + "', `POSI_X` = '" + xy[0] + "', `POSI_Y` = '" + xy[1] + "', `POSI_SPEED` ='" + bodyinfo.Speed * 0.1 + "', `ACC` = '" + ACC + "', `POSI_NUM` = '" + (int.Parse(num) + 1) + "',`ADD_TIME`='" + time + "' WHERE FID='" + vehicleInfo.Item1 + "' ";
                     }
+                    //判断是否存在上次车辆定位及时间信息
                     VehicleMysql.UpdOrInsOrdel(sql);
-                    //定位信息插入临时表
-                    sql = "INSERT INTO `temp_posi`( `VEHICLE_ID`, `VEHICLE_TYPE`, `POSI_X`, `POSI_Y`, `POSI_SPEED`, `COMPANY`, `ADD_TIME`, `TEMP1`, `TEMP2`, `TEMP3`, `TEMP4`) VALUES ( '" + vehicleInfo.Item5 + "', '" + vehicleInfo.Item2 + "'," + xy[0] + ", " + xy[1] + ", '" + bodyinfo.Speed * 0.1 + "', '" + vehicleInfo.Item3 + "', '" + time + "', NULL, NULL, NULL, NULL)";
-                    VehicleMysql.UpdOrInsOrdel(sql);
-                    //定位信息插入永久表
-                    sql = "INSERT INTO `posi_vehicle`( `VEHICLE_ID`, `VEHICLE_TYPE`, `POSI_X`, `POSI_Y`, `POSI_SPEED`, `COMPANY`, `ADD_TIME`, `TEMP1`, `TEMP2`, `TEMP3`, `TEMP4`) VALUES ( '" + vehicleInfo.Item5 + "', '" + vehicleInfo.Item2 + "'," + xy[0] + ", " + xy[1] + ", '" + bodyinfo.Speed * 0.1 + "', '" + vehicleInfo.Item3 + "', '" + time + "', NULL, NULL, NULL, NULL)";
-                    VehicleMysql.UpdOrInsOrdel(sql);
+                    if (!VehicleRedis.CheckKeyExist(Sim + Redis_key_ext.vehiclePosiAndTime))
+                    {
+                        //车辆定位相关信息存入redis
+                        VehicleRedis.Set(Sim + Redis_key_ext.vehiclePosiAndTime, Utils.Util.ObjectSerializ(new ValueTuple<double, double, DateTime, string, string, string>
+                        {
+                            Item1 = xy[0],
+                            Item2 = xy[1],
+                            Item3 = DateTime.Now
+                        }));
+                    }
+                    else
+                    {
+                        ValueTuple<double, double, DateTime, string, string, string> info = VehicleRedis.GetVehiclePosiAndTime(Sim);
+                        //判断位置是否变动或时间是否超时
+                        if (info.Item1 == xy[0] && info.Item2 == xy[1] && (DateTime.Now - info.Item3).TotalSeconds < int.Parse(PosiInterval))
+                        {
+                            InsertDb = false;
+                        }
+                        else
+                        {
+                            info.Item1 = xy[0];
+                            info.Item2 = xy[1];
+                            info.Item3 = DateTime.Now;
+                            VehicleRedis.Set(Sim + Redis_key_ext.vehiclePosiAndTime, Utils.Util.ObjectSerializ(info));
+                        }
+                    }
+                    if (InsertDb)
+                    {
+                        //定位信息插入临时表
+                        sql = "INSERT INTO `temp_posi`( `VEHICLE_ID`, `VEHICLE_TYPE`, `POSI_X`, `POSI_Y`, `POSI_SPEED`, `COMPANY`, `ADD_TIME`, `TEMP1`, `TEMP2`, `TEMP3`, `TEMP4`) VALUES ( '" + vehicleInfo.Item5 + "', '" + vehicleInfo.Item2 + "'," + xy[0] + ", " + xy[1] + ", '" + bodyinfo.Speed * 0.1 + "', '" + vehicleInfo.Item3 + "', '" + time + "', NULL, NULL, NULL, NULL)";
+                        VehicleMysql.UpdOrInsOrdel(sql);
+                        //定位信息插入永久表
+                        sql = "INSERT INTO `posi_vehicle`( `VEHICLE_ID`, `VEHICLE_TYPE`, `POSI_X`, `POSI_Y`, `POSI_SPEED`, `COMPANY`, `ADD_TIME`, `TEMP1`, `TEMP2`, `TEMP3`, `TEMP4`) VALUES ( '" + vehicleInfo.Item5 + "', '" + vehicleInfo.Item2 + "'," + xy[0] + ", " + xy[1] + ", '" + bodyinfo.Speed * 0.1 + "', '" + vehicleInfo.Item3 + "', '" + time + "', NULL, NULL, NULL, NULL)";
+                        VehicleMysql.UpdOrInsOrdel(sql);
+                    }
                     //检查超速
                     CheckSpeed(Sim, time, vehicleInfo, bodyinfo, xy);
                     //处理附加消息体

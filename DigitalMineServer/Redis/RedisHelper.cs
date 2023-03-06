@@ -151,6 +151,29 @@ namespace DigitalMineServer.Redis
         }
 
         /// <summary>
+        /// 获取车辆上一次位置及更新时间
+        /// </summary>
+        /// <param name="sim"></param>
+        /// <returns>
+        /// item1：2000系X
+        /// item2：2000系Y
+        /// item3：更新时间
+        /// item4：预留
+        /// item5：预留
+        /// item6：预留
+        /// </returns>
+        public ValueTuple<double, double, DateTime, string, string, string> GetVehiclePosiAndTime(string sim)
+        {
+            ValueTuple<double, double, DateTime, string, string, string> Info = new ValueTuple<double, double, DateTime, string, string, string>();
+            byte[] buffer = ReadBytes(sim + Redis_key_ext.vehiclePosiAndTime);
+            if (buffer is null)
+            {
+                return Info;
+            }
+            return (ValueTuple<double, double, DateTime, string, string, string>)Utils.Util.Deserialization(buffer);
+        }
+
+        /// <summary>
         /// 获取指定人员
         /// </summary>
         /// <param name="sim"></param>

@@ -47,6 +47,11 @@ namespace DigitalMineServer.Structures
             /// 终端版本号
             /// </summary>
             public const string equipVersion = "-e-v";
+
+            /// <summary>
+            /// 上一次车辆位置及更新时间
+            /// </summary>
+            public const string vehiclePosiAndTime = "-v-p-t";
         }
     }
 }
