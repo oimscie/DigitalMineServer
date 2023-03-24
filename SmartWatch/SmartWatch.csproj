@@ -42,6 +42,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="F10\PacketBody\PacketFrom.cs" />
+    <Compile Include="F10\Reponse\RepBtemp2.cs" />
     <Compile Include="F10\Reponse\RepBodyTemp.cs" />
     <Compile Include="F10\Reponse\RepBtWarnSet.cs" />
     <Compile Include="F10\Reponse\RepOxygen.cs" />

@@ -9,6 +9,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Configuration;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement.Tab;
 
 namespace DigitalMineServer.Mysql
 {
@@ -223,6 +224,8 @@ namespace DigitalMineServer.Mysql
                         STATE = Reader.GetString("STATE"),
                         HEARTRATE = Reader.GetString("HEARTRATE"),
                         BLPRES = Reader.GetString("BLPRES"),
+                        BLOXY = Reader.GetString("BLOXY"),
+                        BODYTEMP = Reader.GetString("BODYTEMP"),
                         POSI_NUM = Reader.GetString("POSI_NUM"),
                         COMPANY = Reader.GetString("COMPANY"),
                         ADD_TIME = Reader.GetString("ADD_TIME"),

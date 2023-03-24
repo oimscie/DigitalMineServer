@@ -18,17 +18,24 @@ using static DigitalMineServer.Structures.Comprehensive;
 using JtLibrary.Utils;
 using System.ComponentModel.DataAnnotations;
 using static ServiceStack.Script.Lisp;
+using SmartWatch.F10.PacketBody;
+using SmartWatch.F10.Reponse;
+using SmartWatch.F10.Structures;
+using DigitalMineServer.Mysql;
 
 namespace DigitalMineServer.SuperSocket.Command
 {
     public class WebOrder : SubCommandBase<WebSession>
     {
+        private readonly MySqlHelper MySql;
+
         private readonly OrderMessageDecode Decode;
 
         private readonly RedisHelper redis;
 
         public WebOrder()
         {
+            MySql = new MySqlHelper();
             Decode = new OrderMessageDecode();
             redis = new RedisHelper();
         }
@@ -106,6 +113,59 @@ namespace DigitalMineServer.SuperSocket.Command
                     SendMessage_F10(Encoding.ASCII.GetBytes(watchText.text), watchText.id, session);
                     break;
 
+                case OrderMessageType.Temperature:
+                    Temperature Temperature = Decode.Temperature(requestInfo.Body);
+                    byte[] TemperatureBuffer = new PacketFrom().F10Pack(
+                    new F10Packet
+                    {
+                        FixBody = new FixBody
+                        {
+                            head = "3G",
+                            id = Temperature.id
+                        },
+                        content = new ReqBodyTemp().Encode(
+                          new ReqBodyTemp_St
+                          {
+                              messageId = Temperature.messageType,
+                              arg1 = Temperature.arg1,
+                              arg2 = Temperature.arg2,
+                          }
+                       )
+                    });
+                    Utils.Util.AppendText(JtServerForm.JtForm.infoBox, Encoding.ASCII.GetString(TemperatureBuffer));
+                    if (SendMessage_F10(TemperatureBuffer, Temperature.id.PadLeft(20, '0'), session))
+                    {
+                        string sql = "update list_person set TEMPERATURE='" + Temperature.arg1 + "' where PERSON_SIM='" + Temperature.id.PadLeft(20, '0') + "' ";
+                        MySql.UpdOrInsOrdel(sql);
+                    }
+                    break;
+
+                case OrderMessageType.Heart_blood_pressure:
+                    Hrtstart Hrtstart = Decode.Hrtstart(requestInfo.Body);
+                    byte[] HrtstartBuffer = new PacketFrom().F10Pack(
+                    new F10Packet
+                    {
+                        FixBody = new FixBody
+                        {
+                            head = "3G",
+                            id = Hrtstart.id
+                        },
+                        content = new ReqHrtStart().Encode(
+                          new ReqHrtStart_St
+                          {
+                              messageId = Hrtstart.messageType,
+                              order = Hrtstart.order,
+                          }
+                       )
+                    });
+                    Utils.Util.AppendText(JtServerForm.JtForm.infoBox, Encoding.ASCII.GetString(HrtstartBuffer));
+                    if (SendMessage_F10(HrtstartBuffer, Hrtstart.id.PadLeft(20, '0'), session))
+                    {
+                        string sql = "update list_person set HEART_BLOOD_PRESSURE='" + Hrtstart.order + "' where PERSON_SIM='" + Hrtstart.id.PadLeft(20, '0') + "' ";
+                        MySql.UpdOrInsOrdel(sql);
+                    }
+                    break;
+
                 default:
                     session.Close();
                     break;
@@ -154,8 +214,9 @@ namespace DigitalMineServer.SuperSocket.Command
             }
         }
 
-        private void SendMessage_F10(byte[] buffer, string id, WebSession session)
+        private bool SendMessage_F10(byte[] buffer, string id, WebSession session)
         {
+            bool result = false;
             F10WatchServer a = JtServerForm.bootstrap.GetServerByName("F10WatchServer") as F10WatchServer;
             var sessions = a.GetSessions(s => s.Id == id);
             if (sessions.Count() != 0)
@@ -165,13 +226,20 @@ namespace DigitalMineServer.SuperSocket.Command
                     if (!vehicleSession.TrySend(buffer, 0, buffer.Length))
                     {
                         session.TrySend("发送失败，未知错误");
+                        result = false;
+                    }
+                    else
+                    {
+                        result = true;
                     }
                 }
             }
             else
             {
                 session.TrySend("发送失败，当前终端离线");
+                result = false;
             }
+            return result;
         }
     }
 }

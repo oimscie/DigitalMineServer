@@ -20,6 +20,8 @@ namespace DigitalMineServer.Mysql
         public string STATE { get; set; }
         public string HEARTRATE { get; set; }
         public string BLPRES { get; set; }
+        public string BLOXY { get; set; }
+        public string BODYTEMP { get; set; }
         public string POSI_NUM { get; set; }
         public string COMPANY { get; set; }
         public string ADD_TIME { get; set; }

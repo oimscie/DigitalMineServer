@@ -114,6 +114,16 @@ namespace DigitalMineServer.OrderMessage
         /// 人员智能手表文本下发
         /// </summary>
         public const string watchText = "6500";
+
+        /// <summary>
+        /// 体温检测
+        /// </summary>
+        public const string Temperature = "6600";
+
+        /// <summary>
+        /// 心率、血压等监测
+        /// </summary>
+        public const string Heart_blood_pressure = "6700";
     }
 
     /// <summary>

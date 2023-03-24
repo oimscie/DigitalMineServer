@@ -41,7 +41,7 @@ namespace SmartWatch.F10.Structures
         public string id;
 
         /// <summary>
-        /// 内容长度
+        /// 内容长度，无需设置，封包时自动计算
         /// </summary>
         public string length;
     }
@@ -153,6 +153,11 @@ namespace SmartWatch.F10.Structures
         /// 血氧上报
         /// </summary>
         public const String oxygen = "oxygen";
+
+        /// <summary>
+        /// 体温上报
+        /// </summary>
+        public const String btemp2 = "btemp2";
 
         #endregion 消息类型
     }

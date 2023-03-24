@@ -252,7 +252,7 @@ namespace DigitalMineServer
                     break;
 
                 case "人员":
-                    sql = "select PERSON_ID ,PERSON_SIM ,PERSON_TYPE,POSI_STATE,POSI_X,POSI_Y,ACC,BATTERY,STEP,STATE,HEARTRATE,BLPRES,POSI_NUM,COMPANY,ADD_TIME from (select FID,POSI_STATE,POSI_X,POSI_Y,ACC,BATTERY,STEP,STATE,HEARTRATE,BLPRES,POSI_NUM,COMPANY,ADD_TIME from person_state " + sqlCompany + " order by ADD_TIME desc limit " + size * count + "," + count + ")a inner join (select ID,PERSON_ID,PERSON_SIM,PERSON_TYPE from LIST_PERSON " + sqlCompany + ")b on FID=ID";
+                    sql = "select PERSON_ID ,PERSON_SIM ,PERSON_TYPE,POSI_STATE,POSI_X,POSI_Y,ACC,BATTERY,STEP,STATE,HEARTRATE,BLPRES,BLOXY,BODYTEMP,POSI_NUM,COMPANY,ADD_TIME from (select FID,POSI_STATE,POSI_X,POSI_Y,ACC,BATTERY,STEP,STATE,HEARTRATE,BLPRES,BLOXY,BODYTEMP,POSI_NUM,COMPANY,ADD_TIME from person_state " + sqlCompany + " order by ADD_TIME desc limit " + size * count + "," + count + ")a inner join (select ID,PERSON_ID,PERSON_SIM,PERSON_TYPE from LIST_PERSON " + sqlCompany + ")b on FID=ID";
                     PersonStateEntity = MySqlHelper.MultipleSelect_List_dic_p(sql);
                     Utils.Util.UpdataSource_p(dataGridView1, PersonStateEntity);
                     break;

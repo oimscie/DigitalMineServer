@@ -55,6 +55,7 @@ namespace DigitalMineServer.ParseMessage
                         continue;
                     }
                     Resource.OriginalWatchDataQueues.TryDequeue(out ValueTuple<byte[], F10WatchSession> value);
+                    LogHelper.WriteLog(Encoding.ASCII.GetString(value.Item1));
                     F10Packet F10Packet = PacketFrom.F10UnPack(value.Item1);
                     if (F10Packet.content == null)
                     {
@@ -147,14 +148,13 @@ namespace DigitalMineServer.ParseMessage
                     ValueTuple<string, string, string, string> PersonInfo2 = PersonRedis.GetPersonList(F10Packet.FixBody.id);
                     if (PersonInfo2.Item1 is null)
                     {
-                        Utils.Util.AppendText(JtServerForm.JtForm.infoBox, F10Packet.FixBody.id + "--未知人员手表设备--" + DateTime.Now);
+                        Utils.Util.AppendText(JtServerForm.JtForm.infoBox, F10Packet.FixBody.id + "--未知人员手表设备--心率" + DateTime.Now);
                         return;
                     }
                     string bphrtSql = "select count(id) as Count from person_state where FID='" + PersonInfo2.Item1 + "'";
                     if (Mysql.GetCount(bphrtSql) == 0)
                     {
-                        // string HEARTRATE = RepBphrt_St.high + "/" + RepBphrt_St.low;
-                        bphrtSql = "INSERT INTO `person_state`(`FID`, `POSI_STATE`, `POSI_X`, `POSI_Y`, `ACC`, `BATTERY`, `STEP`, `STATE`, `HEARTRATE`, `BLPRES`, `POSI_NUM`, `COMPANY`, `ADD_TIME`, `TEMP1`, `TEMP2`, `TEMP3`, `TEMP4`) VALUES ('" + PersonInfo2.Item1 + "', '未定位', '未定位', '未定位', '不支持', '暂无', '暂无', '终端状态', '" + RepBphrt_St.HeartRate + "', '" + RepBphrt_St.high + "/" + RepBphrt_St.low + "', 0, '" + PersonInfo2.Item3 + "', '" + DateTime.Now + "', NULL, NULL, NULL, NULL)";
+                        bphrtSql = "INSERT INTO `person_state`(`FID`, `POSI_STATE`, `POSI_X`, `POSI_Y`, `ACC`, `BATTERY`, `STEP`, `STATE`, `HEARTRATE`, `BLPRES`,`BLOXY`,`BODYTEMP`, `POSI_NUM`, `COMPANY`, `ADD_TIME`, `TEMP1`, `TEMP2`, `TEMP3`, `TEMP4`) VALUES ('" + PersonInfo2.Item1 + "', '未定位', '未定位', '未定位', '不支持', '暂无', '暂无', '正常', '" + RepBphrt_St.HeartRate + "', '" + RepBphrt_St.high + "/" + RepBphrt_St.low + "',0,0,0, '" + PersonInfo2.Item3 + "', '" + DateTime.Now + "', NULL, NULL, NULL, NULL)";
                     }
                     else
                     {
@@ -169,20 +169,41 @@ namespace DigitalMineServer.ParseMessage
                     ValueTuple<string, string, string, string> PersonInfo3 = PersonRedis.GetPersonList(F10Packet.FixBody.id);
                     if (PersonInfo3.Item1 is null)
                     {
-                        Utils.Util.AppendText(JtServerForm.JtForm.infoBox, F10Packet.FixBody.id + "--未知人员手表设备--" + DateTime.Now);
+                        Utils.Util.AppendText(JtServerForm.JtForm.infoBox, F10Packet.FixBody.id + "--未知人员手表设备--血氧" + DateTime.Now);
                         return;
                     }
                     string OxygenSql = "select count(id) as Count from person_state where FID='" + PersonInfo3.Item1 + "'";
                     if (Mysql.GetCount(OxygenSql) == 0)
                     {
-                        bphrtSql = "INSERT INTO `person_state`(`FID`, `POSI_STATE`, `POSI_X`, `POSI_Y`, `ACC`, `BATTERY`, `STEP`, `STATE`, `HEARTRATE`, `BLPRES`, `POSI_NUM`, `COMPANY`, `ADD_TIME`, `TEMP1`, `TEMP2`, `TEMP3`, `TEMP4`) VALUES ('" + PersonInfo3.Item1 + "', '未定位', '未定位', '未定位', '不支持', '暂无', '暂无', '终端状态', '暂无', '" + RepOxygen_St.oxy + "', 0, '" + PersonInfo3.Item3 + "', '" + DateTime.Now + "', NULL, NULL, NULL, NULL)";
+                        OxygenSql = "INSERT INTO `person_state`(`FID`, `POSI_STATE`, `POSI_X`, `POSI_Y`, `ACC`, `BATTERY`, `STEP`, `STATE`, `HEARTRATE`, `BLPRES`,`BLOXY`,`BODYTEMP`,`POSI_NUM`, `COMPANY`, `ADD_TIME`, `TEMP1`, `TEMP2`, `TEMP3`, `TEMP4`) VALUES ('" + PersonInfo3.Item1 + "', '未定位', '未定位', '未定位', '不支持', '暂无', '暂无', '正常', '0',0, '" + RepOxygen_St.oxy + "',0,0, '" + PersonInfo3.Item3 + "', '" + DateTime.Now + "', NULL, NULL, NULL, NULL)";
                     }
                     else
                     {
-                        bphrtSql = "update  `person_state` set `BLPRES`='" + RepOxygen_St.oxy + "',ADD_TIME='" + DateTime.Now + "' where `FID`='" + PersonInfo3.Item1 + "'";
+                        OxygenSql = "update  `person_state` set `BLOXY`='" + RepOxygen_St.oxy + "',ADD_TIME='" + DateTime.Now + "' where `FID`='" + PersonInfo3.Item1 + "'";
                     }
-                    Mysql.UpdOrInsOrdel(bphrtSql);
+                    Mysql.UpdOrInsOrdel(OxygenSql);
                     RepOxygen(HeadName, F10Packet, value.Item2);
+                    break;
+
+                case F10Cmd.btemp2:
+                    //检查人员信息List中是否存在此人员，不存在就返回
+                    RepBtemp2_St RepBtemp2_St = new RepBtemp2().Decode(F10Packet.content);
+                    ValueTuple<string, string, string, string> PersonInfo4 = PersonRedis.GetPersonList(F10Packet.FixBody.id);
+                    if (PersonInfo4.Item1 is null)
+                    {
+                        Utils.Util.AppendText(JtServerForm.JtForm.infoBox, F10Packet.FixBody.id + "--未知人员手表设备--体温" + DateTime.Now);
+                        return;
+                    }
+                    string Btemp2Sql = "select count(id) as Count from person_state where FID='" + PersonInfo4.Item1 + "'";
+                    if (Mysql.GetCount(Btemp2Sql) == 0)
+                    {
+                        Btemp2Sql = "INSERT INTO `person_state`(`FID`, `POSI_STATE`, `POSI_X`, `POSI_Y`, `ACC`, `BATTERY`, `STEP`, `STATE`, `HEARTRATE`, `BLPRES`,`BLOXY`,`BODYTEMP`,`POSI_NUM`, `COMPANY`, `ADD_TIME`, `TEMP1`, `TEMP2`, `TEMP3`, `TEMP4`) VALUES ('" + PersonInfo4.Item1 + "', '未定位', '未定位', '未定位', '不支持', '暂无', '暂无', '正常', '0',0,'0', '" + RepBtemp2_St.temp + "',0, '" + PersonInfo4.Item3 + "', '" + DateTime.Now + "', NULL, NULL, NULL, NULL)";
+                    }
+                    else
+                    {
+                        Btemp2Sql = "update  `person_state` set `BODYTEMP`='" + RepBtemp2_St.temp + "',ADD_TIME='" + DateTime.Now + "' where `FID`='" + PersonInfo4.Item1 + "'";
+                    }
+                    Mysql.UpdOrInsOrdel(Btemp2Sql);
                     break;
 
                 default:
@@ -202,21 +223,21 @@ namespace DigitalMineServer.ParseMessage
             ValueTuple<string, string, string, string> PersonInfo = PersonRedis.GetPersonList(F10Packet.FixBody.id);
             if (PersonInfo.Item1 is null)
             {
-                Utils.Util.AppendText(JtServerForm.JtForm.infoBox, F10Packet.FixBody.id + "--未知人员手表设备--" + DateTime.Now);
+                Utils.Util.AppendText(JtServerForm.JtForm.infoBox, F10Packet.FixBody.id + "--未知人员手表设备--定位" + DateTime.Now);
                 return;
             }
             List<double> xy = WGS84ToCS2000.WGS84ToXY(Convert.ToDouble(RepUd_Lte_St.position.lat), Convert.ToDouble(RepUd_Lte_St.position.lon), 3);
             string Ud_LteSql = "select count(id) as Count from person_state where FID='" + PersonInfo.Item1 + "'";
             if (Mysql.GetCount(Ud_LteSql) == 0)
             {
-                Ud_LteSql = "INSERT INTO `person_state`(`FID`, `POSI_STATE`, `POSI_X`, `POSI_Y`, `ACC`, `BATTERY`, `STEP`, `STATE`, `HEARTRATE`, `BLPRES`, `POSI_NUM`, `COMPANY`, `ADD_TIME`, `TEMP1`, `TEMP2`, `TEMP3`, `TEMP4`) VALUES ('" + PersonInfo.Item1 + "', '" + RepUd_Lte_St.position.active + "', '" + xy[0] + "', '" + xy[1] + "', '不支持', '" + RepUd_Lte_St.position.battery + "', '" + RepUd_Lte_St.position.step + "', '终端状态', '暂无', '暂无', 0, '" + PersonInfo.Item3 + "', '" + RepUd_Lte_St.position.time + "', NULL, NULL, NULL, NULL)";
+                Ud_LteSql = "INSERT INTO `person_state`(`FID`, `POSI_STATE`, `POSI_X`, `POSI_Y`, `ACC`, `BATTERY`, `STEP`, `STATE`, `HEARTRATE`, `BLPRES`,`BLOXY`,`BODYTEMP`, `POSI_NUM`, `COMPANY`, `ADD_TIME`, `TEMP1`, `TEMP2`, `TEMP3`, `TEMP4`) VALUES ('" + PersonInfo.Item1 + "', '" + RepUd_Lte_St.position.active + "', '" + xy[0] + "', '" + xy[1] + "', '不支持', '" + RepUd_Lte_St.position.battery + "', '" + RepUd_Lte_St.position.step + "', '正常', '暂无', '暂无','0','0', 0, '" + PersonInfo.Item3 + "', '" + RepUd_Lte_St.position.time + "', NULL, NULL, NULL, NULL)";
             }
             else
             {
                 Dictionary<string, string> dic = Mysql.SingleSelect_Dic("select POSI_NUM from person_state where FID='" + PersonInfo.Item1 + "' ", "POSI_NUM");
                 //获取定位更新次数
                 dic.TryGetValue("POSI_NUM", out string num);
-                Ud_LteSql = "update  `person_state` set `POSI_STATE`='" + RepUd_Lte_St.position.active + "',`POSI_X`='" + xy[0] + "', `POSI_Y`='" + xy[1] + "',`BATTERY`='" + RepUd_Lte_St.position.battery + "', `STEP`='" + RepUd_Lte_St.position.step + "', `STATE`='终端状态',`POSI_NUM`='" + (int.Parse(num) + 1) + "',ADD_TIME='" + RepUd_Lte_St.position.time + "' where `FID`='" + PersonInfo.Item1 + "'";
+                Ud_LteSql = "update  `person_state` set `POSI_STATE`='" + RepUd_Lte_St.position.active + "',`POSI_X`='" + xy[0] + "', `POSI_Y`='" + xy[1] + "',`BATTERY`='" + RepUd_Lte_St.position.battery + "', `STEP`='" + RepUd_Lte_St.position.step + "', `STATE`='正常',`POSI_NUM`='" + (int.Parse(num) + 1) + "',ADD_TIME='" + RepUd_Lte_St.position.time + "' where `FID`='" + PersonInfo.Item1 + "'";
             }
             Mysql.UpdOrInsOrdel(Ud_LteSql);
             //围栏检查

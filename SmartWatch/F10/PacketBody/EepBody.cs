@@ -399,6 +399,35 @@ namespace SmartWatch.F10.PacketBody
     }
 
     /// <summary>
+    /// 体温上报协议[3G*9617624925*000E*btemp2,1,36.51]
+    /// Type ： 1（手腕模式）
+    /// Temp ：体温
+    /// </summary>
+    [StructLayout(LayoutKind.Sequential)]
+    public struct RepBtemp2_St
+    {
+        /// <summary>
+        ///  固定格式
+        /// </summary>
+        public FixBody fixBody;
+
+        /// <summary>
+        /// 信息id
+        /// </summary>
+        public string messageId;
+
+        /// <summary>
+        ///测量类型
+        /// </summary>
+        public string type;
+
+        /// <summary>
+        /// 体温
+        /// </summary>
+        public string temp;
+    }
+
+    /// <summary>
     /// 体温间隔测量下发协议[3G*XXXXXXXXXX*LEN*bodytemp]
     /// arg2 ： 2 :间隔时间，单位小时，取值： 1-12（夜间模式不上报）
     /// arg1 ： 0 :间隔测量关闭 1 :间隔测量开启

@@ -324,5 +324,38 @@ namespace DigitalMineServer.OrderMessage
                 text = array[3],
             };
         }
+
+        /// <summary>
+        /// 体温检测解包
+        /// </summary>
+        /// <param name="order"></param>
+        /// <returns></returns>
+        public Temperature Temperature(string order)
+        {
+            string[] array = order.Split('!');
+            return new Temperature()
+            {
+                messageType = "bodytemp",
+                id = array[1],
+                arg1 = array[2],
+                arg2 = array[3]
+            };
+        }
+
+        /// <summary>
+        /// 心率、血压等监测解包
+        /// </summary>
+        /// <param name="order"></param>
+        /// <returns></returns>
+        public Hrtstart Hrtstart(string order)
+        {
+            string[] array = order.Split('!');
+            return new Hrtstart()
+            {
+                messageType = "hrtstart",
+                id = array[1],
+                order = array[2],
+            };
+        }
     }
 }

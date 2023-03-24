@@ -457,4 +457,52 @@ namespace DigitalMineServer.OrderMessage
         /// </summary>
         public string id;
     }
+
+    /// <summary>
+    /// 体温检测
+    /// </summary>
+    public struct Temperature
+    {
+        /// <summary>
+        /// 消息类型
+        /// </summary>
+        public string messageType;
+
+        /// <summary>
+        ///  2 :间隔时间，单位小时，取值： 1-12（夜间模式不上报）
+        /// </summary>
+        public string arg2;
+
+        /// <summary>
+        /// 0 :间隔测量关闭 1 :间隔测量开启
+        /// </summary>
+        public string arg1;
+
+        /// <summary>
+        /// 终端id
+        /// </summary>
+        public string id;
+    }
+
+    /// <summary>
+    /// 心率、血压等监测
+    /// </summary>
+    public struct Hrtstart
+    {
+        /// <summary>
+        /// 消息类型
+        /// </summary>
+        public string messageType;
+
+        /// <summary>
+        /// 上传间隔时间，单位秒,连续上传时最小时间不小于 300 秒，最大不超过 65535。
+        /// 为 1 则代表终端心率单次上传，上传完后自动关闭。 为 0 则代表终端心率上传关闭
+        /// </summary>
+        public string order;
+
+        /// <summary>
+        /// 终端id
+        /// </summary>
+        public string id;
+    }
 }
